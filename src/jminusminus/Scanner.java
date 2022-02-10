@@ -158,6 +158,9 @@ class Scanner {
         case '*':
             nextCh();
             return new TokenInfo(STAR, line);
+        case '%':
+            nextCh();
+            return new TokenInfo(REM, line);
         case '+':
             nextCh();
             if (ch == '=') {
@@ -188,12 +191,26 @@ class Scanner {
             }
         case '>':
             nextCh();
-            return new TokenInfo(GT, line);
+            if (ch == '>') {
+                nextCh();
+                if (ch == '>') {
+                    nextCh();
+                    return new TokenInfo(USHIFT_RIGHT, line);
+                } else {
+                    return new TokenInfo(SHIFT_RIGHT, line);
+                }
+            } else {
+                return new TokenInfo(GT, line);
+            }
+
         case '<':
             nextCh();
             if (ch == '=') {
                 nextCh();
                 return new TokenInfo(LE, line);
+            } else if (ch == '<') {
+                nextCh();
+                return new TokenInfo(SHIFT_LEFT, line);
             } else {
                 reportScannerError("Operator < is not supported in j--.");
                 return getNextToken();

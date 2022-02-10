@@ -1076,16 +1076,35 @@ public class Parser {
 
     private JExpression relationalExpression() {
         int line = scanner.token().line();
-        JExpression lhs = additiveExpression();
+        JExpression lhs = shiftExpression();
         if (have(GT)) {
-            return new JGreaterThanOp(line, lhs, additiveExpression());
+            return new JGreaterThanOp(line, lhs, shiftExpression());
         } else if (have(LE)) {
-            return new JLessEqualOp(line, lhs, additiveExpression());
+            return new JLessEqualOp(line, lhs, shiftExpression());
         } else if (have(INSTANCEOF)) {
             return new JInstanceOfOp(line, lhs, referenceType());
         } else {
             return lhs;
         }
+    }
+
+    private JExpression shiftExpression() {
+        int line = scanner.token().line();
+        boolean more = true;
+        JExpression lhs = additiveExpression();
+        while (more) {
+            if (have(SHIFT_LEFT)){
+                lhs = new JShiftLeftOp(line, lhs , additiveExpression());
+            } else if (have(SHIFT_RIGHT)) {
+                lhs = new JShiftRightOp(line, lhs, additiveExpression());
+            } else if (have(USHIFT_RIGHT)) {
+                lhs = new JUShiftRightOp(line, lhs, additiveExpression());
+            } else {
+                more = false;
+            }
+        }
+
+        return lhs;
     }
 
     /**
@@ -1135,6 +1154,8 @@ public class Parser {
                 lhs = new JMultiplyOp(line, lhs, unaryExpression());
             } else if (have(DIV)) {
                 lhs = new JDivideOp(line, lhs, unaryExpression());
+            } else if (have(REM)) {
+                lhs = new JRemainderOp(line, lhs, unaryExpression());
             } else {
                 more = false;
             }

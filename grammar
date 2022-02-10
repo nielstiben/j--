@@ -79,15 +79,18 @@ conditionalAndExpression ::= equalityExpression // level 10
 equalityExpression ::= relationalExpression  // level 6
                          {EQUAL relationalExpression}
 
-relationalExpression ::= additiveExpression       // level 5
-                           [(GT | LE) additiveExpression
+relationalExpression ::= shiftExpression       // level 5
+                           [(GT | LE) shiftExpression
                            | INSTANCEOF referenceType]
+
+shiftExpression ::= additiveExpression  // level 4
+                    {(SHIFT_LEFT | SHIFT_RIGHT | USHIFT_RIGHT) additiveExpression}
 
 additiveExpression ::= multiplicativeExpression // level 3
                          {(PLUS | MINUS) multiplicativeExpression}
 
 multiplicativeExpression ::= unaryExpression       // level 2
-                               {(STAR | DIV) unaryExpression}
+                               {(STAR | DIV | REM) unaryExpression}
 
 unaryExpression ::= INC unaryExpression  // level 1
                   | MINUS unaryExpression
