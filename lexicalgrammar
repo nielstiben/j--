@@ -50,6 +50,10 @@ REM         ::= "%"
 SHIFT_LEFT  ::= "<<"
 SHIFT_RIGHT ::= ">>"
 USHIFT_RIGHT   ::= ">>>"
+UNARY_COMPLEMENT    ::= "~"
+OR          ::= "|"
+XOR         ::= "^"
+AND         ::= "&"
 
 // Separators
 COMMA       ::= ","

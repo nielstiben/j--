@@ -180,6 +180,23 @@ class JLogicalNotOp extends JUnaryExpression {
 
 }
 
+class JUnaryComplementOp extends JUnaryExpression {
+    public JUnaryComplementOp(int line, JExpression arg){
+        super(line, "~", arg);
+    }
+
+    public JExpression analyze(Context context) {
+        arg = (JExpression) arg.analyze(context);
+        arg.type().mustMatchExpected(line(), Type.INT);
+        type = Type.INT;
+        return this;
+    }
+
+    public void codegen(CLEmitter output) {
+        arg.codegen(output);
+        output.addNoArgInstruction(INEG);
+    }
+}
 /**
  * The AST node for an expr--.
  */

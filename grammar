@@ -73,8 +73,17 @@ expression ::= assignmentExpression
 assignmentExpression ::= conditionalAndExpression  // must be a valid lhs
                            [(ASSIGN | PLUS_ASSIGN) assignmentExpression]
 
-conditionalAndExpression ::= equalityExpression // level 10
-                               {LAND equalityExpression}
+conditionalAndExpression ::= inclusiveOrExpression // level 10
+                               {LAND inclusiveOrExpression}
+
+inclusiveOrExpression ::= exclusiveOrExpression // level 9
+                               {OR exclusiveOrExpression}
+
+exclusiveOrExpression ::= andExpression // level 8
+                               {XOR andExpression}
+
+andExpression ::= equalityExpression // level 7
+                               {AND equalityExpression}
 
 equalityExpression ::= relationalExpression  // level 6
                          {EQUAL relationalExpression}
@@ -96,7 +105,7 @@ unaryExpression ::= INC unaryExpression  // level 1
                   | MINUS unaryExpression
                   | simpleUnaryExpression
 
-simpleUnaryExpression ::= LNOT unaryExpression
+simpleUnaryExpression ::= (LNOT | UNARY_COMPLEMENT) unaryExpression
                         | LPAREN basicType RPAREN unaryExpression //casted
                         | LPAREN // casted               
                             referenceType

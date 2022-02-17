@@ -1026,10 +1026,52 @@ public class Parser {
     private JExpression conditionalAndExpression() {
         int line = scanner.token().line();
         boolean more = true;
-        JExpression lhs = equalityExpression();
+        JExpression lhs = inclusiveOrExpression();
         while (more) {
             if (have(LAND)) {
-                lhs = new JLogicalAndOp(line, lhs, equalityExpression());
+                lhs = new JLogicalAndOp(line, lhs, inclusiveOrExpression());
+            } else {
+                more = false;
+            }
+        }
+        return lhs;
+    }
+
+    private JExpression inclusiveOrExpression() {
+        int line = scanner.token().line();
+        boolean more = true;
+        JExpression lhs = exclusiveOrExpression();
+        while (more) {
+            if (have(OR)) {
+                lhs = new JOrOp(line, lhs, exclusiveOrExpression());
+            } else {
+                more = false;
+            }
+        }
+        return lhs;
+    }
+
+    private JExpression exclusiveOrExpression() {
+        int line = scanner.token().line();
+        boolean more = true;
+        JExpression lhs = andExpression();
+        while (more) {
+            if (have(XOR)) {
+                lhs = new JXorOp(line, lhs, andExpression());
+            } else {
+                more = false;
+            }
+        }
+        return lhs;
+    }
+
+    private JExpression andExpression() {
+        int line = scanner.token().line();
+        boolean more = true;
+        JExpression lhs = equalityExpression();
+        while (more) {
+            if (have(AND)) {
+                lhs = new JAndOp(line, lhs, equalityExpression());
             } else {
                 more = false;
             }
@@ -1206,6 +1248,8 @@ public class Parser {
         int line = scanner.token().line();
         if (have(LNOT)) {
             return new JLogicalNotOp(line, unaryExpression());
+        } else if (have(UNARY_COMPLEMENT)) {
+            return new JUnaryComplementOp(line, unaryExpression());
         } else if (seeCast()) {
             mustBe(LPAREN);
             boolean isBasicType = seeBasicType();

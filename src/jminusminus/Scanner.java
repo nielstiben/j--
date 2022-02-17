@@ -155,6 +155,9 @@ class Scanner {
         case '!':
             nextCh();
             return new TokenInfo(LNOT, line);
+        case '~':
+            nextCh();
+            return new TokenInfo(UNARY_COMPLEMENT, line);
         case '*':
             nextCh();
             return new TokenInfo(STAR, line);
@@ -186,9 +189,14 @@ class Scanner {
                 nextCh();
                 return new TokenInfo(LAND, line);
             } else {
-                reportScannerError("Operator & is not supported in j--.");
-                return getNextToken();
+                return new TokenInfo(AND, line);
             }
+        case '|':
+            nextCh();
+            return new TokenInfo(OR, line);
+        case '^':
+            nextCh();
+            return new TokenInfo(XOR, line);
         case '>':
             nextCh();
             if (ch == '>') {
@@ -202,7 +210,6 @@ class Scanner {
             } else {
                 return new TokenInfo(GT, line);
             }
-
         case '<':
             nextCh();
             if (ch == '=') {

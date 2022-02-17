@@ -297,6 +297,87 @@ class JRemainderOp extends JBinaryExpression {
     }
 }
 
+class JOrOp extends JBooleanBinaryExpression {
+    public JOrOp(int line, JExpression lhs, JExpression rhs) {
+        super(line, "|", lhs, rhs );
+    }
+
+    public JExpression analyze(Context context) {
+        lhs = (JExpression) lhs.analyze(context);
+        rhs = (JExpression) rhs.analyze(context);
+        lhs.type().mustMatchExpected(line(), Type.BOOLEAN);
+        rhs.type().mustMatchExpected(line(), Type.BOOLEAN);
+        type = Type.BOOLEAN;
+        return this;
+    }
+
+    public void codegen(CLEmitter output, String targetLabel, boolean onTrue) {
+        if (onTrue)  {
+            lhs.codegen(output, targetLabel, true);
+            rhs.codegen(output, targetLabel, true);
+        } else {
+            String falseLabel = output.createLabel();
+            lhs.codegen(output, falseLabel, true);
+            rhs.codegen(output, targetLabel, false);
+            output.addLabel(falseLabel);
+        }
+    }
+}
+
+class JXorOp extends JBooleanBinaryExpression {
+    public JXorOp(int line, JExpression lhs, JExpression rhs) {
+        super(line, "^", lhs, rhs );
+    }
+
+    public JExpression analyze(Context context) {
+        lhs = (JExpression) lhs.analyze(context);
+        rhs = (JExpression) rhs.analyze(context);
+        lhs.type().mustMatchExpected(line(), Type.BOOLEAN);
+        rhs.type().mustMatchExpected(line(), Type.BOOLEAN);
+        type = Type.BOOLEAN;
+        return this;
+    }
+
+    public void codegen(CLEmitter output, String targetLabel, boolean onTrue) {
+        if (onTrue)  {
+            lhs.codegen(output, targetLabel, true);
+            rhs.codegen(output, targetLabel, true);
+        } else {
+            String falseLabel = output.createLabel();
+            lhs.codegen(output, falseLabel, true);
+            rhs.codegen(output, targetLabel, false);
+            output.addLabel(falseLabel);
+        }
+    }
+}
+
+class JAndOp extends JBooleanBinaryExpression {
+    public JAndOp(int line, JExpression lhs, JExpression rhs) {
+        super(line, "&", lhs, rhs );
+    }
+
+    public JExpression analyze(Context context) {
+        lhs = (JExpression) lhs.analyze(context);
+        rhs = (JExpression) rhs.analyze(context);
+        lhs.type().mustMatchExpected(line(), Type.BOOLEAN);
+        rhs.type().mustMatchExpected(line(), Type.BOOLEAN);
+        type = Type.BOOLEAN;
+        return this;
+    }
+
+    public void codegen(CLEmitter output, String targetLabel, boolean onTrue) {
+        if (onTrue)  {
+            lhs.codegen(output, targetLabel, false);
+            rhs.codegen(output, targetLabel, true);
+        } else {
+            String falseLabel = output.createLabel();
+            lhs.codegen(output, falseLabel, false);
+            rhs.codegen(output, targetLabel, false);
+            output.addLabel(falseLabel);
+        }
+    }
+}
+
 class JShiftLeftOp extends JBinaryExpression {
     public JShiftLeftOp(int line, JExpression lhs, JExpression rhs) {
         super(line, "<<", lhs, rhs);
