@@ -9,8 +9,7 @@ qualifiedIdentifier ::= IDENTIFIER {DOT IDENTIFIER}
 
 typeDeclaration ::= modifiers classDeclaration
 
-modifiers ::= {PUBLIC | PROTECTED | PRIVATE | STATIC | ABSTRACT}
-
+modifiers ::= {PUBLIC | PROTECTED | PRIVATE | STATIC | ABSTRACT | FINAL}
 classDeclaration ::= CLASS IDENTIFIER 
                        [EXTENDS qualifiedIdentifier] 
                        classBody
@@ -24,15 +23,24 @@ memberDecl ::= IDENTIFIER            // constructor
                  (block | SEMI)
              | type variableDeclarators SEMI // field
 
-block ::= LCURLY {blockStatement} RCURLY 
-
+block ::= LCURLY {blockStatement} RCURLY
 blockStatement ::= localVariableDeclarationStatement
                  | statement
 
+switchBlock ::= LCURLY {switchBlockStatement} RCURLY
+switchBlockStatement ::= switchLabel blockStatement
+switchLabel ::= CASE constantExpression SEMI
+                 | DEFAULT SEMI
+
+
+
 statement ::= block
             | IF parExpression statement [ELSE statement]
-            | WHILE parExpression statement 
+            | WHILE parExpression statement
+            | SWITCH parExpression switchBlock
             | RETURN [expression] SEMI
+            | CONTINUE SEMI
+            | BREAK SEMI
             | SEMI 
             | statementExpression SEMI
 
@@ -61,7 +69,7 @@ arguments ::= LPAREN [expression {COMMA expression}] RPAREN
 
 type ::= referenceType | basicType
 
-basicType ::= BOOLEAN | CHAR | INT 
+basicType ::= BOOLEAN | CHAR | INT | BYTE
 
 referenceType ::= basicType LBRACK RBRACK {LBRACK RBRACK}
                 | qualifiedIdentifier {LBRACK RBRACK}
@@ -86,7 +94,7 @@ andExpression ::= equalityExpression // level 7
                                {AND equalityExpression}
 
 equalityExpression ::= relationalExpression  // level 6
-                         {EQUAL relationalExpression}
+                         {(EQUAL | NEQ) relationalExpression}
 
 relationalExpression ::= shiftExpression       // level 5
                            [(GT | LE) shiftExpression
@@ -136,4 +144,5 @@ newArrayDeclarator ::= LBRACK expression RBRACK
                          {LBRACK expression RBRACK} {LBRACK RBRACK}
 
 literal ::= INT_LITERAL | CHAR_LITERAL | STRING_LITERAL
+          | BYTE_LITERAL
           | TRUE        | FALSE        | NULL

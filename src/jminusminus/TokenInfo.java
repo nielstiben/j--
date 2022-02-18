@@ -14,8 +14,9 @@ enum TokenKind {
     EOF("<EOF>"),
 
     // Reserved words
-    ABSTRACT("abstract"), BOOLEAN("boolean"), CHAR("char"), CLASS("class"),
-    ELSE("else"), EXTENDS("extends"), IF("if"), IMPORT("import"),
+    ABSTRACT("abstract"), BOOLEAN("boolean"), BREAK("break"), BYTE("byte"),
+    CASE("case"), CHAR("char"), CONTINUE("continue"),CLASS("class"),
+    DEFAULT("default"),ELSE("else"), EXTENDS("extends"), IF("if"), IMPORT("import"),
     INSTANCEOF("instanceof"), INT("int"), NEW("new"), PACKAGE("package"),
     PRIVATE("private"), PROTECTED("protected"), PUBLIC("public"),
     RETURN("return"), STATIC("static"), SUPER("super"), THIS("this"),
@@ -23,7 +24,7 @@ enum TokenKind {
 
     // Operators
     ASSIGN("="), DEC("--"), EQUAL("=="), GT(">"), INC("++"), LAND("&&"),
-    LE("<="), LNOT("!"), MINUS("-"), PLUS("+"), PLUS_ASSIGN("+="), STAR("*"),
+    LE("<="), LNOT("!"), MINUS("-"),NEQ("!="), PLUS("+"), PLUS_ASSIGN("+="), STAR("*"),
     DIV("/"), REM("%"), SHIFT_LEFT("<<"), SHIFT_RIGHT(">>"), USHIFT_RIGHT(">>>"),
     UNARY_COMPLEMENT("~"), OR("|"), XOR("^"), AND("&"),
 

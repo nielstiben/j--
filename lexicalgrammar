@@ -32,6 +32,13 @@ THIS        ::= "this"
 TRUE        ::= "true"
 VOID        ::= "void"
 WHILE       ::= "while"
+BREAK       ::= "break"
+BYTE        ::= "byte"
+CASE        ::= "case"
+SWITCH    ::= "switch"
+CONST       ::= "const"
+CONTINUE    ::= "continue"
+DEFAULT     ::= "default"
 
 // Operators
 ASSIGN      ::= "="
@@ -41,6 +48,7 @@ INC         ::= "++"
 LAND        ::= "&&"
 LE          ::= "<="
 LNOT        ::= "!"
+NEQ         ::= "!="
 MINUS       ::= "-"
 PLUS        ::= "+"
 PLUS_ASSIGN ::= "+="
@@ -71,6 +79,7 @@ IDENTIFIER ::= ("a"-"z"|"A"-"Z"|"_"|"$") {"a"-"z"|"A"-"Z"|"_"|"0"-"9"|"$"}
 
 // Literals
 INT_LITERAL    ::= "0" | ("1"-"9") {"0"-"9"}
+BYTE_LITERAL   ::= "0" | ("0"-"1") {"0"-"1"}
 ESC            ::= "\\" ("n"|"r"|"t"|"b"|"f"|"'"|"\""|"\\")
 STRING_LITERAL ::= "\"" {ESC | ~("\""|"\\"|"\n"|"\r")} "\""
 CHAR_LITERAL   ::= "'" (ESC | ~("'"|"\n"|"\r"|"\\")) "'"
