@@ -69,7 +69,7 @@ arguments ::= LPAREN [expression {COMMA expression}] RPAREN
 
 type ::= referenceType | basicType
 
-basicType ::= BOOLEAN | CHAR | INT | BYTE
+basicType ::= BOOLEAN | CHAR | INT | BYTE | FLOAT | DOUBLE
 
 referenceType ::= basicType LBRACK RBRACK {LBRACK RBRACK}
                 | qualifiedIdentifier {LBRACK RBRACK}
@@ -94,7 +94,7 @@ andExpression ::= equalityExpression // level 7
                                {AND equalityExpression}
 
 equalityExpression ::= relationalExpression  // level 6
-                         {(EQUAL | NEQ) relationalExpression}
+                         {(EQUAL | NEQ | DIVEQ) relationalExpression}
 
 relationalExpression ::= shiftExpression       // level 5
                            [(GT | LE) shiftExpression
@@ -143,6 +143,6 @@ creator ::= (basicType | qualifiedIdentifier)
 newArrayDeclarator ::= LBRACK expression RBRACK 
                          {LBRACK expression RBRACK} {LBRACK RBRACK}
 
-literal ::= INT_LITERAL | CHAR_LITERAL | STRING_LITERAL
+literal ::= INT_LITERAL | CHAR_LITERAL | STRING_LITERAL | FLOAT_LITERAL | DOUBLE_LITERAL
           | BYTE_LITERAL
           | TRUE        | FALSE        | NULL

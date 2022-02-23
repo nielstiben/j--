@@ -6,7 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
-
+import java.security.cert.CertPathValidatorException.Reason;
 import java.util.Hashtable;
 
 import static jminusminus.TokenKind.*;
@@ -77,7 +77,12 @@ class Scanner {
         reserved.put(IF.image(), IF);
         reserved.put(IMPORT.image(), IMPORT);
         reserved.put(INSTANCEOF.image(), INSTANCEOF);
+        reserved.put(FOR.image(),FOR);
         reserved.put(INT.image(), INT);
+        reserved.put(FLOAT.image(), FLOAT);
+        reserved.put(DOUBLE.image(), DOUBLE);
+        reserved.put(FINALLY.image(),FINALLY);
+        reserved.put(DO.image(), DO);
         reserved.put(NEW.image(), NEW);
         reserved.put(NULL.image(), NULL);
         reserved.put(PACKAGE.image(), PACKAGE);
@@ -111,6 +116,10 @@ class Scanner {
             }
             if (ch == '/') {
                 nextCh();
+                if (ch == '='){
+                    nextCh();
+                    return new TokenInfo(DIVEQ, line);
+                }
                 if (ch == '/') {
                     // CharReader maps all new lines to '\n'
                     while (ch != '\n' && ch != EOFCH) {
@@ -302,6 +311,14 @@ class Scanner {
             while (isDigit(ch)) {
                 buffer.append(ch);
                 nextCh();
+            }
+            if (ch == '.'){
+                buffer.append(ch);
+                nextCh();
+                return new TokenInfo(FLOAT_LITERAL,buffer.toString(), line);
+                /* abit in doubt about this way of doing it - the idea is that if the next token after a 
+                    digit is a '.', then the digit must be a float/double - duno how to diferentiate between them thoug 
+                **/
             }
             return new TokenInfo(INT_LITERAL, buffer.toString(), line);
         default:

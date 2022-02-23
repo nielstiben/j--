@@ -12,21 +12,20 @@ package jminusminus;
 
 enum TokenKind {
     EOF("<EOF>"),
-
+    // 
     // Reserved words
-    ABSTRACT("abstract"), BOOLEAN("boolean"), BREAK("break"), BYTE("byte"),
-    CASE("case"), CHAR("char"), CONTINUE("continue"),CLASS("class"),
-    DEFAULT("default"),ELSE("else"), EXTENDS("extends"), IF("if"), IMPORT("import"),
-    INSTANCEOF("instanceof"), INT("int"), NEW("new"), PACKAGE("package"),
+    ABSTRACT("abstract"), BOOLEAN("boolean"), CHAR("char"), CLASS("class"), BREAK("break"),
+    ELSE("else"), CASE("case"), CONTINUE("continue"), DEFAULT("default"), EXTENDS("extends"), IF("if"), IMPORT("import"),
+    INSTANCEOF("instanceof"), INT("int"), BYTE("byte"), NEW("new"), PACKAGE("package"),
     PRIVATE("private"), PROTECTED("protected"), PUBLIC("public"),
     RETURN("return"), STATIC("static"), SUPER("super"), THIS("this"),
-    VOID("void"), WHILE("while"),
+    VOID("void"), WHILE("while"),DO("do"),DOUBLE("double"),FINAL("final"),FINALLY("finally"),FLOAT("float"),FOR("for"),
 
     // Operators
     ASSIGN("="), DEC("--"), EQUAL("=="), GT(">"), INC("++"), LAND("&&"),
-    LE("<="), LNOT("!"), MINUS("-"),NEQ("!="), PLUS("+"), PLUS_ASSIGN("+="), STAR("*"),
+    LE("<="), LNOT("!"), MINUS("-"), PLUS("+"), PLUS_ASSIGN("+="), STAR("*"),
     DIV("/"), REM("%"), SHIFT_LEFT("<<"), SHIFT_RIGHT(">>"), USHIFT_RIGHT(">>>"),
-    UNARY_COMPLEMENT("~"), OR("|"), XOR("^"), AND("&"),
+    UNARY_COMPLEMENT("~"), OR("|"), XOR("^"), AND("&"), DIVEQ("/="), NEQ("!="),
 
     // Separators
     LPAREN("("), RPAREN(")"), LCURLY("{"), RCURLY("}"), LBRACK("["),
@@ -37,7 +36,7 @@ enum TokenKind {
 
     // Literals
     NULL("null"), FALSE("false"), TRUE("true"),
-    INT_LITERAL("<INT_LITERAL>"), CHAR_LITERAL("<CHAR_LITERAL>"),
+    INT_LITERAL("<INT_LITERAL>"), CHAR_LITERAL("<CHAR_LITERAL>"),DOUBLE_LITERAL("<DOUBLE_LITERAL>"),FLOAT_LITERAL("<FLOAT LITERAL>"),
     STRING_LITERAL("<STRING_LITERAL>");
 
     /** The token's string representation. */
