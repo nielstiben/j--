@@ -39,6 +39,9 @@ statement ::= block
             | WHILE parExpression statement
             | SWITCH parExpression switchBlock
             | RETURN [expression] SEMI
+            | FOR parExpression statement
+            | DO block
+            | FINALLY SEMI
             | CONTINUE SEMI
             | BREAK SEMI
             | SEMI 
