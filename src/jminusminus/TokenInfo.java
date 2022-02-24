@@ -14,12 +14,12 @@ enum TokenKind {
     EOF("<EOF>"),
 
     // Reserved words
-    ABSTRACT("abstract"), BOOLEAN("boolean"), CHAR("char"), CLASS("class"),
-    ELSE("else"), EXTENDS("extends"), IF("if"), IMPORT("import"),
-    INSTANCEOF("instanceof"), INT("int"), NEW("new"), PACKAGE("package"),
+    ABSTRACT("abstract"), BOOLEAN("boolean"), CHAR("char"), CLASS("class"), BREAK("break"),
+    ELSE("else"), CASE("case"), CONTINUE("continue"), DEFAULT("default"), EXTENDS("extends"), IF("if"), IMPORT("import"),
+    INSTANCEOF("instanceof"), INT("int"), BYTE("byte"), NEW("new"), PACKAGE("package"),
     PRIVATE("private"), PROTECTED("protected"), PUBLIC("public"),
     RETURN("return"), STATIC("static"), SUPER("super"), THIS("this"),
-    VOID("void"), WHILE("while"),
+    VOID("void"), WHILE("while"),DO("do"),DOUBLE("double"),FINAL("final"),FINALLY("finally"),FLOAT("float"),FOR("for"),
 
     // Operators
     ASSIGN("="), DEC("--"), EQUAL("=="), GT(">"), INC("++"), LAND("&&"),
@@ -28,7 +28,7 @@ enum TokenKind {
     UNARY_COMPLEMENT("~"), OR("|"), LOR("||"), XOR("^"), AND("&"),
     STAR_ASSIGN("*="), MODULO_ASSIGN("%="), SHIFT_LEFT_ASSIGN("<<="), SHIFT_RIGHT_ASSIGN(">>="),
     USHIFT_RIGHT_ASSIGN(">>>="), XOR_EQUALS_ASSIGN("^="), AND_EQUALS_ASSIGN("&="),
-    OR_EQUALS_ASSIGN("|="), GE(">="),
+    OR_EQUALS_ASSIGN("|="), GE(">="), DIVEQ("/="), NEQ("!="),
 
     // Separators
     LPAREN("("), RPAREN(")"), LCURLY("{"), RCURLY("}"), LBRACK("["),
@@ -39,7 +39,7 @@ enum TokenKind {
 
     // Literals
     NULL("null"), FALSE("false"), TRUE("true"),
-    INT_LITERAL("<INT_LITERAL>"), CHAR_LITERAL("<CHAR_LITERAL>"),
+    INT_LITERAL("<INT_LITERAL>"), CHAR_LITERAL("<CHAR_LITERAL>"),DOUBLE_LITERAL("<DOUBLE_LITERAL>"),FLOAT_LITERAL("<FLOAT LITERAL>"),
     STRING_LITERAL("<STRING_LITERAL>");
 
     /** The token's string representation. */
