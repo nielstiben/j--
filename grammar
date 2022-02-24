@@ -29,10 +29,8 @@ blockStatement ::= localVariableDeclarationStatement
 
 switchBlock ::= LCURLY {switchBlockStatement} RCURLY
 switchBlockStatement ::= switchLabel blockStatement
-switchLabel ::= CASE constantExpression SEMI
+switchLabel ::= CASE constantExpression COLON
                  | DEFAULT SEMI
-
-
 
 statement ::= block
             | IF parExpression statement [ELSE statement]

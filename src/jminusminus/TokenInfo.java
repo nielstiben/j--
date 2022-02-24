@@ -20,7 +20,7 @@ enum TokenKind {
     PRIVATE("private"), PROTECTED("protected"), PUBLIC("public"),
     RETURN("return"), STATIC("static"), SUPER("super"), THIS("this"),
     VOID("void"), WHILE("while"),DO("do"),DOUBLE("double"),FINAL("final"),FINALLY("finally"),FLOAT("float"),FOR("for"),
-    TRY("try"),CATCH("catch"), THROW("throw"),THROWS("throws"),
+    TRY("try"),CATCH("catch"), THROW("throw"),THROWS("throws"),SWITCH("switch"),
 
     // Operators
     ASSIGN("="), DEC("--"), EQUAL("=="), GT(">"), INC("++"), LAND("&&"),

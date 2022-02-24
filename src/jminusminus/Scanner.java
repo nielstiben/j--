@@ -91,6 +91,7 @@ class Scanner {
         reserved.put(PUBLIC.image(), PUBLIC);
         reserved.put(RETURN.image(), RETURN);
         reserved.put(STATIC.image(), STATIC);
+        reserved.put(STATIC.image(), SWITCH);
         reserved.put(SUPER.image(), SUPER);
         reserved.put(THIS.image(), THIS);
         reserved.put(THIS.image(), THROW);
