@@ -10,7 +10,7 @@ qualifiedIdentifier ::= IDENTIFIER {DOT IDENTIFIER}
 typeDeclaration ::= modifiers classDeclaration
 
 modifiers ::= {PUBLIC | PROTECTED | PRIVATE | STATIC | ABSTRACT | FINAL}
-classDeclaration ::= CLASS IDENTIFIER 
+classDeclaration ::= CLASS IDENTIFIER
                        [EXTENDS qualifiedIdentifier] 
                        classBody
 
@@ -18,7 +18,7 @@ classBody ::= LCURLY {modifiers memberDecl} RCURLY
 
 memberDecl ::= IDENTIFIER            // constructor
                  formalParameters block
-             | (VOID | type) IDENTIFIER  // method
+             | (VOID | type) IDENTIFIER [THROWS IDENTIFIER]// method
                  formalParameters
                  (block | SEMI)
              | type variableDeclarators SEMI // field
@@ -41,7 +41,8 @@ statement ::= block
             | RETURN [expression] SEMI
             | FOR parExpression statement
             | DO block
-            | FINALLY SEMI
+            | THROW expression SEMI
+            | TRY block CATCH block [FINALLY block]
             | CONTINUE SEMI
             | BREAK SEMI
             | SEMI 

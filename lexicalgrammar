@@ -30,12 +30,15 @@ STATIC      ::= "static"
 SUPER       ::= "super"
 THIS        ::= "this"
 TRUE        ::= "true"
+TRY         ::= "try"
+CATCH       ::= "catch"
 VOID        ::= "void"
 WHILE       ::= "while"
 BREAK       ::= "break"
 BYTE        ::= "byte"
 CASE        ::= "case"
 SWITCH    ::= "switch"
+// Why const isn't it final?
 CONST       ::= "const"
 CONTINUE    ::= "continue"
 DEFAULT     ::= "default"
@@ -86,7 +89,10 @@ IDENTIFIER ::= ("a"-"z"|"A"-"Z"|"_"|"$") {"a"-"z"|"A"-"Z"|"_"|"0"-"9"|"$"}
 
 // Literals
 INT_LITERAL    ::= "0" | ("1"-"9") {"0"-"9"}
-BYTE_LITERAL   ::= "0" | ("0"-"1") {"0"-"1"}
+BYTE_LITERAL   ::= "0" | ("1"-"9") {"0"-"9"}
+// Is this correct?
+DOUBLE_LITERAL ::= ("0"-"9") {"0"-"9"} "." {"0"-"9"}
+FLOAT_LITERAL  ::= ("0"-"9") {"0"-"9"} "." {"0"-"9"}
 ESC            ::= "\\" ("n"|"r"|"t"|"b"|"f"|"'"|"\""|"\\")
 STRING_LITERAL ::= "\"" {ESC | ~("\""|"\\"|"\n"|"\r")} "\""
 CHAR_LITERAL   ::= "'" (ESC | ~("'"|"\n"|"\r"|"\\")) "'"

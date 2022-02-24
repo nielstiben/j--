@@ -93,6 +93,10 @@ class Scanner {
         reserved.put(STATIC.image(), STATIC);
         reserved.put(SUPER.image(), SUPER);
         reserved.put(THIS.image(), THIS);
+        reserved.put(THIS.image(), THROW);
+        reserved.put(THIS.image(), THROWS);
+        reserved.put(THIS.image(), TRY);
+        reserved.put(THIS.image(), CATCH);
         reserved.put(TRUE.image(), TRUE);
         reserved.put(VOID.image(), VOID);
         reserved.put(WHILE.image(), WHILE);
@@ -355,7 +359,11 @@ class Scanner {
             if (ch == '.'){
                 buffer.append(ch);
                 nextCh();
-                return new TokenInfo(FLOAT_LITERAL,buffer.toString(), line);
+                while (isDigit(ch)) {
+                    buffer.append(ch);
+                    nextCh();
+                }
+                return new TokenInfo(DOUBLE_LITERAL,buffer.toString(), line);
                 /* abit in doubt about this way of doing it - the idea is that if the next token after a 
                     digit is a '.', then the digit must be a float/double - duno how to diferentiate between them thoug 
                 **/
