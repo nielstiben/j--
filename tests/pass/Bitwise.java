@@ -7,6 +7,9 @@ public class Bitwise {
     public boolean or(boolean x, boolean y){
         return x | y;
     }
+    public boolean logicalOr(boolean x, boolean y) {
+        return x || y;
+    }
     public boolean exclusiveOr(boolean x, boolean y){
         return x ^ y;
     }
