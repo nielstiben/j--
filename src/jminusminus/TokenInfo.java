@@ -20,7 +20,8 @@ enum TokenKind {
     PRIVATE("private"), PROTECTED("protected"), PUBLIC("public"),
     RETURN("return"), STATIC("static"), SUPER("super"), THIS("this"),
     VOID("void"), WHILE("while"),DO("do"),DOUBLE("double"),FINAL("final"),FINALLY("finally"),FLOAT("float"),FOR("for"),
-    TRY("try"),CATCH("catch"), THROW("throw"),THROWS("throws"),
+    TRY("try"),CATCH("catch"), THROW("throw"),THROWS("throws"),GOTO("goto"),IMPLEMENTS("implements"),INTERFACE("interface"),
+    NATIVE("native"),STRICTFP("strictfp"), SHORT("short"),
 
     // Operators
     ASSIGN("="), DEC("--"), EQUAL("=="), GT(">"), INC("++"), LAND("&&"),
@@ -40,7 +41,7 @@ enum TokenKind {
     IDENTIFIER("<IDENTIFIER>"),
 
     // Literals
-    NULL("null"), FALSE("false"), TRUE("true"),
+    NULL("null"), FALSE("false"), TRUE("true"), SHORT_LITERAL("SHORT_LITERAL"),
     INT_LITERAL("<INT_LITERAL>"), CHAR_LITERAL("<CHAR_LITERAL>"),DOUBLE_LITERAL("<DOUBLE_LITERAL>"),FLOAT_LITERAL("<FLOAT LITERAL>"),
     STRING_LITERAL("<STRING_LITERAL>");
 
