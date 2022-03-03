@@ -6,7 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
-import java.security.cert.CertPathValidatorException.Reason;
 import java.util.Hashtable;
 
 import static jminusminus.TokenKind.*;
@@ -193,7 +192,7 @@ class Scanner {
             nextCh();
             if (ch == '=') {
                 nextCh();
-                return new TokenInfo(MODULO_ASSIGN, line);
+                return new TokenInfo(REM_ASSIGN, line);
             } else {
                 return new TokenInfo(REM, line);
             }
@@ -213,6 +212,9 @@ class Scanner {
             if (ch == '-') {
                 nextCh();
                 return new TokenInfo(DEC, line);
+            } else if (ch == '=') {
+                nextCh();
+                return new TokenInfo(MINUS_ASSIGN, line);
             } else {
                 return new TokenInfo(MINUS, line);
             }
@@ -223,21 +225,26 @@ class Scanner {
                 return new TokenInfo(LAND, line);
             } else if (ch == '=') {
                 nextCh();
-                return new TokenInfo(AND_EQUALS_ASSIGN, line);
+                return new TokenInfo(AND_ASSIGN, line);
             } else {
                 return new TokenInfo(AND, line);
             }
         case '|':
             nextCh();
             if (ch == '=') {
-                return new TokenInfo(OR_EQUALS_ASSIGN, line);
+                nextCh();
+                return new TokenInfo(OR_ASSIGN, line);
+            } else if (ch == '|') {
+                nextCh();
+                return new TokenInfo(LOR, line);
             } else {
                 return new TokenInfo(OR, line);
             }
         case '^':
             nextCh();
             if (ch == '=') {
-                return new TokenInfo(XOR_EQUALS_ASSIGN, line);
+                nextCh();
+                return new TokenInfo(XOR_ASSIGN, line);
             } else {
                 return new TokenInfo(XOR, line);
             }
@@ -255,7 +262,7 @@ class Scanner {
                     }
                 } else if (ch == '='){
                     nextCh();
-                    return new TokenInfo(SHIFT_RIGHT, line);
+                    return new TokenInfo(SHIFT_RIGHT_ASSIGN, line);
                 }
                 else {
                     return new TokenInfo(SHIFT_RIGHT, line);

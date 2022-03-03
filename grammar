@@ -3,7 +3,7 @@
 
 compilationUnit ::= [PACKAGE qualifiedIdentifier SEMI]
                     {IMPORT  qualifiedIdentifier SEMI}
-                    {typeDeclaration} EOF 
+                    {typeDeclaration} EOF
 
 qualifiedIdentifier ::= IDENTIFIER {DOT IDENTIFIER}
 
@@ -11,7 +11,7 @@ typeDeclaration ::= modifiers classDeclaration
 
 modifiers ::= {PUBLIC | PROTECTED | PRIVATE | STATIC | ABSTRACT | FINAL}
 classDeclaration ::= CLASS IDENTIFIER
-                       [EXTENDS qualifiedIdentifier] 
+                       [EXTENDS qualifiedIdentifier]
                        classBody
 
 classBody ::= LCURLY {modifiers memberDecl} RCURLY
@@ -45,10 +45,10 @@ statement ::= block
             | TRY block CATCH block [FINALLY block]
             | CONTINUE SEMI
             | BREAK SEMI
-            | SEMI 
+            | SEMI
             | statementExpression SEMI
 
-formalParameters ::= LPAREN 
+formalParameters ::= LPAREN
                        [formalParameter {COMMA formalParameter}]
                      RPAREN
 
@@ -61,13 +61,13 @@ localVariableDeclarationStatement ::= type variableDeclarators SEMI
 variableDeclarators ::= variableDeclarator {COMMA variableDeclarator}
 
 variableDeclarator ::= IDENTIFIER [ASSIGN variableInitializer]
-                    
+
 variableInitializer ::= arrayInitializer | expression
 
-arrayInitializer ::= LCURLY 
+arrayInitializer ::= LCURLY
                        [variableInitializer
                          {COMMA variableInitializer} [COMMA]]
-                     RCURLY 
+                     RCURLY
 
 arguments ::= LPAREN [expression {COMMA expression}] RPAREN
 
@@ -83,7 +83,22 @@ statementExpression ::= expression // but must have side-effect, eg i++
 expression ::= assignmentExpression
 
 assignmentExpression ::= conditionalAndExpression  // must be a valid lhs
-                           [(ASSIGN | PLUS_ASSIGN) assignmentExpression]
+                           [(ASSIGN | compoundAssignmentExpression) assignmentExpression]
+
+compoundAssignmentExpression ::= PLUS_ASSIGN
+                               | MINUS_ASSIGN
+                               | STAR_ASSIGN
+                               | REM_ASSIGN
+                               | SHIFT_LEFT_ASSIGN
+                               | SHIFT_RIGHT_ASSIGN
+                               | USHIFT_RIGHT_ASSIGN
+                               | OR_ASSIGN
+                               | XOR_ASSIGN
+                               | AND_ASSIGN
+                               | DIVEQ
+
+conditionalOrExpression ::= conditionalAndExpression // level 11
+                               {LOR conditionalAndExpression}
 
 conditionalAndExpression ::= inclusiveOrExpression // level 10
                                {LAND inclusiveOrExpression}
@@ -119,10 +134,10 @@ unaryExpression ::= INC unaryExpression  // level 1
 
 simpleUnaryExpression ::= (LNOT | UNARY_COMPLEMENT) unaryExpression
                         | LPAREN basicType RPAREN unaryExpression //casted
-                        | LPAREN // casted               
+                        | LPAREN // casted
                             referenceType
                           RPAREN simpleUnaryExpression
-                        | postfixExpression 
+                        | postfixExpression
 
 postfixExpression ::= primary {selector} {DEC}
 
@@ -131,20 +146,20 @@ selector ::= DOT qualifiedIdentifier [arguments]
 
 primary ::= parExpression
           | THIS [arguments]
-          | SUPER ( arguments 
-                  | DOT IDENTIFIER [arguments] 
+          | SUPER ( arguments
+                  | DOT IDENTIFIER [arguments]
                   )
           | literal
           | NEW creator
           | qualifiedIdentifier [arguments]
 
-creator ::= (basicType | qualifiedIdentifier) 
+creator ::= (basicType | qualifiedIdentifier)
               ( arguments
               | LBRACK RBRACK {LBRACK RBRACK} [arrayInitializer]
               | newArrayDeclarator
               )
 
-newArrayDeclarator ::= LBRACK expression RBRACK 
+newArrayDeclarator ::= LBRACK expression RBRACK
                          {LBRACK expression RBRACK} {LBRACK RBRACK}
 
 literal ::= INT_LITERAL | CHAR_LITERAL | STRING_LITERAL | FLOAT_LITERAL | DOUBLE_LITERAL

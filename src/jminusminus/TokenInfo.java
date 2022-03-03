@@ -27,9 +27,10 @@ enum TokenKind {
     LE("<="), LNOT("!"), MINUS("-"), PLUS("+"), PLUS_ASSIGN("+="), STAR("*"),
     DIV("/"), REM("%"), SHIFT_LEFT("<<"), SHIFT_RIGHT(">>"), USHIFT_RIGHT(">>>"),
     UNARY_COMPLEMENT("~"), OR("|"), LOR("||"), XOR("^"), AND("&"),
-    STAR_ASSIGN("*="), MODULO_ASSIGN("%="), SHIFT_LEFT_ASSIGN("<<="), SHIFT_RIGHT_ASSIGN(">>="),
-    USHIFT_RIGHT_ASSIGN(">>>="), XOR_EQUALS_ASSIGN("^="), AND_EQUALS_ASSIGN("&="),
-    OR_EQUALS_ASSIGN("|="), GE(">="), DIVEQ("/="), NEQ("!="),
+    STAR_ASSIGN("*="), REM_ASSIGN("%="), SHIFT_LEFT_ASSIGN("<<="), SHIFT_RIGHT_ASSIGN(">>="),
+    USHIFT_RIGHT_ASSIGN(">>>="), XOR_ASSIGN("^="), AND_ASSIGN("&="),
+    OR_ASSIGN("|="), GE(">="), DIVEQ("/="), NEQ("!="), MINUS_ASSIGN("-="),
+
 
     // Separators
     LPAREN("("), RPAREN(")"), LCURLY("{"), RCURLY("}"), LBRACK("["),
