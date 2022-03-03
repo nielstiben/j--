@@ -24,24 +24,30 @@ memberDecl ::= IDENTIFIER            // constructor
              | type variableDeclarators SEMI // field
 
 block ::= LCURLY {blockStatement} RCURLY
+
 blockStatement ::= localVariableDeclarationStatement
                  | statement
 
 switchBlock ::= LCURLY {switchBlockStatement} RCURLY
-switchBlockStatement ::= switchLabel blockStatement
-switchLabel ::= CASE constantExpression COLON
+
+switchBlockStatement ::=switchLabels  blockStatement
+
+switchLabels ::=  switchLabel
+                | switchLabels switchLabel
+
+switchLabel ::= CASE expression COLON
                  | DEFAULT SEMI
 
 statement ::= block
             | IF parExpression statement [ELSE statement]
             | WHILE parExpression statement
-            | SWITCH parExpression switchBlock
+            | SWITCH expression switchBlock
             | RETURN [expression] SEMI
+            | CONTINUE SEMI
             | FOR parExpression statement
             | DO block
             | THROW expression SEMI
             | TRY block CATCH block [FINALLY block]
-            | CONTINUE SEMI
             | BREAK SEMI
             | SEMI 
             | statementExpression SEMI

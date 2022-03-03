@@ -2,7 +2,7 @@ package pass;
 
 public class Switch {
     public void test(int i) {
-        switch (i) {
+        switch (i){
             case 1:
                 break;
             case 2:

@@ -2,6 +2,7 @@
 
 package jminusminus;
 
+import java.beans.Expression;
 import java.util.ArrayList;
 
 import static jminusminus.TokenKind.*;
@@ -628,6 +629,45 @@ public class Parser {
         }
     }
 
+    private JSwitchBlock switchBlock() {
+        int line = scanner.token().line();
+        mustBe(LCURLY);
+        ArrayList<JSwitchBlockStatement> blockStatements = new ArrayList<JSwitchBlockStatement>();
+        while (!see(RCURLY) && !see(EOF)) {
+            blockStatements.add(switchBlockStatement());
+        }
+        mustBe(RCURLY);
+        return new JSwitchBlock(line, blockStatements);
+    }
+
+    private JSwitchBlockStatement switchBlockStatement() {
+        int line = scanner.token().line();
+        ArrayList<JSwitchLabel> labels = new ArrayList<JSwitchLabel>();
+        ArrayList<JStatement> statements = new ArrayList<JStatement>();
+        while (see(CASE) || see(DEFAULT)) {
+            labels.add(switchLabel());
+            while (!see(CASE) && !see(DEFAULT) && !see(RCURLY) && !see(EOF)) {
+                statements.add(statement());
+            }
+            return new JSwitchBlockStatement(line, labels, statements);
+        }
+        // throw error
+    }
+
+    private JSwitchLabel switchLabel() {
+        int line = scanner.token().line();
+        if (see(CASE)) {
+            mustBe(CASE);
+            JExpression expr = expression();
+            mustBe(COLON);
+            return new JSwitchLabel(line, expr);
+        } else {
+            mustBe(DEFAULT);
+            mustBe(COLON);
+            return new JSwitchLabel(line);
+        }
+    }
+
     /**
      * Parse a statement.
      * 
@@ -664,7 +704,17 @@ public class Parser {
                 mustBe(SEMI);
                 return new JReturnStatement(line, expr);
             }
-        } else if (have(SEMI)) {
+        } else if (have(CONTINUE)) {
+            throw new RuntimeException("continue not implemented");
+        } else if (see(BREAK)) {
+            throw new RuntimeException("break not implemented");
+        } else if (have(SWITCH)) {
+            JExpression test = expression();
+            JStatement block = switchBlock();
+//            return new JSwitchStatement(line, test, block);
+            throw new RuntimeException("switch not implemented");
+        }
+        else if (have(SEMI)) {
             return new JEmptyStatement(line);
         } else { // Must be a statementExpression
             JStatement statement = statementExpression();
@@ -903,7 +953,10 @@ public class Parser {
             return Type.BOOLEAN;
         } else if (have(CHAR)) {
             return Type.CHAR;
-        } else if (have(INT)) {
+        } else if (have(BYTE)) {
+            return Type.Byte;
+        }
+        else if (have(INT)) {
             return Type.INT;
         } else {
             reportParserError("Type sought where %s found", scanner.token()

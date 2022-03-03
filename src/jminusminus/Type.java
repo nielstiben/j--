@@ -39,6 +39,9 @@ class Type {
     /** The primitive type, char. */
     public final static Type CHAR = typeFor(char.class);
 
+    /** The primitive type, char. */
+    public final static Type Byte = typeFor(byte.class);
+
     /** The primitive type, boolean. */
     public final static Type BOOLEAN = typeFor(boolean.class);
 
