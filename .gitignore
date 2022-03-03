@@ -1,5 +1,7 @@
 java2html/
 javadoc/
 classes/
+.idea/
+outputfolder/
 lib/
 bin/

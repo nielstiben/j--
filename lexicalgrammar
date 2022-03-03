@@ -48,6 +48,12 @@ FINAL		::= "final"
 FINALLY		::= "finally"
 FLOAT		::= "float"
 FOR 		::= "for"
+GOTO		::= "goto"
+IMPLEMENTS  ::= "implements"
+INTERFACE	::= "interface"
+NATIVE		::= "native"
+SHORT		::= "short"
+STRICTFP	::= "strictfp"
 
 
 // Operators
@@ -72,7 +78,8 @@ UNARY_COMPLEMENT    ::= "~"
 OR          ::= "|"
 XOR         ::= "^"
 AND         ::= "&"
-DIVEQ		:: = "/="
+DIVEQ		::= "/="
+MINUS_ASSIGN::= "-="
 // Separators
 COMMA       ::= ","
 DOT         ::= "."
@@ -88,6 +95,8 @@ SEMI        ::= ";"
 IDENTIFIER ::= ("a"-"z"|"A"-"Z"|"_"|"$") {"a"-"z"|"A"-"Z"|"_"|"0"-"9"|"$"}
 
 // Literals
+SHORT_LITERAL  ::= "0" | ("1"-"9") {"0"-"9"}
+
 INT_LITERAL    ::= "0" | ("1"-"9") {"0"-"9"}
 //BYTE_LITERAL   ::= "0" | ("1"-"9") {"0"-"9"}
 // Is this correct?
