@@ -3,3 +3,5 @@ javadoc/
 classes/
 .idea/
 outputfolder/
+lib/
+bin/
