@@ -18,6 +18,7 @@ FALSE       ::= "false"
 IF          ::= "if"
 IMPORT      ::= "import"
 INSTANCEOF  ::= "instanceof"
+SHORT		::= "short"
 INT         ::= "int"
 NEW         ::= "new"
 NULL        ::= "null"
@@ -52,7 +53,6 @@ GOTO		::= "goto"
 IMPLEMENTS  ::= "implements"
 INTERFACE	::= "interface"
 NATIVE		::= "native"
-SHORT		::= "short"
 STRICTFP	::= "strictfp"
 
 
@@ -106,7 +106,6 @@ IDENTIFIER ::= ("a"-"z"|"A"-"Z"|"_"|"$") {"a"-"z"|"A"-"Z"|"_"|"0"-"9"|"$"}
 
 // Literals
 SHORT_LITERAL  ::= "0" | ("1"-"9") {"0"-"9"}
-
 INT_LITERAL    ::= "0" | ("1"-"9") {"0"-"9"}
 BYTE_LITERAL   ::= "0" | ("1"-"9") {"0"-"9"}
 // Is this correct?

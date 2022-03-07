@@ -1,3 +1,5 @@
-interface test {
+package pass;
+
+public interface Interface {
 
 }

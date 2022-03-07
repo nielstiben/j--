@@ -919,7 +919,10 @@ public class Parser {
             return Type.CHAR;
         } else if (have(INT)) {
             return Type.INT;
-        } else {
+        } else if (have(SHORT)) {
+            return Type.SHORT;
+        }
+        else {
             reportParserError("Type sought where %s found", scanner.token()
                     .image());
             return Type.ANY;

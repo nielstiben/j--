@@ -36,6 +36,8 @@ class Type {
     /** The primitive type, int. */
     public final static Type INT = typeFor(int.class);
 
+    public final static Type SHORT = typeFor(short.class);
+
     /** The primitive type, char. */
     public final static Type CHAR = typeFor(char.class);
 
