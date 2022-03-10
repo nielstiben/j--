@@ -1549,7 +1549,10 @@ public class Parser {
 
     private JExpression literal() {
         int line = scanner.token().line();
-        if (have(INT_LITERAL)) {
+        if (have(SHORT_LITERAL)) {
+            // IMPLEMENT JLITERALSHORT
+            return new JLiteralInt(line, scanner.previousToken().image());
+        } else if (have(INT_LITERAL)) {
             return new JLiteralInt(line, scanner.previousToken().image());
         } else if (have(CHAR_LITERAL)) {
             return new JLiteralChar(line, scanner.previousToken().image());
