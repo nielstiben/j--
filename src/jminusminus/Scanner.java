@@ -68,6 +68,7 @@ class Scanner {
         reserved.put(CASE.image(), CASE);
         reserved.put(CHAR.image(), CHAR);
         reserved.put(CLASS.image(), CLASS);
+        reserved.put(CONST.image(), CONST);
         reserved.put(CONTINUE.image(), CONTINUE);
         reserved.put(DEFAULT.image(), DEFAULT);
         reserved.put(ELSE.image(), ELSE);
@@ -81,6 +82,7 @@ class Scanner {
         reserved.put(FLOAT.image(), FLOAT);
         reserved.put(DOUBLE.image(), DOUBLE);
         reserved.put(FINALLY.image(),FINALLY);
+        reserved.put(FINAL.image(), FINAL);
         reserved.put(DO.image(), DO);
         reserved.put(NEW.image(), NEW);
         reserved.put(NULL.image(), NULL);
@@ -93,11 +95,13 @@ class Scanner {
         reserved.put(SUPER.image(), SUPER);
         reserved.put(THIS.image(), THIS);
         reserved.put(THIS.image(), THROW);
-        reserved.put(THIS.image(), THROWS);
+        reserved.put(THIS.image(), THROWS);        
+        reserved.put(TRANSIENT.image(), TRANSIENT);
         reserved.put(THIS.image(), TRY);
         reserved.put(THIS.image(), CATCH);
         reserved.put(TRUE.image(), TRUE);
-        reserved.put(VOID.image(), VOID);
+        reserved.put(VOID.image(), VOID);        
+        reserved.put(VOLATILE.image(), VOLATILE);
         reserved.put(WHILE.image(), WHILE);
         reserved.put(GOTO.image(), GOTO);
         reserved.put(IMPLEMENTS.image(), IMPLEMENTS);
@@ -105,6 +109,9 @@ class Scanner {
         reserved.put(NATIVE.image(), NATIVE);
         reserved.put(SHORT.image(), SHORT);
         reserved.put(STRICTFP.image(), STRICTFP);
+        reserved.put(LONG.image(), LONG);
+        reserved.put(SWITCH.image(), SWITCH);
+        reserved.put(SYNCHRONIZED.image(), SYNCHRONIZED);
 
 
         // Prime the pump.
@@ -382,6 +389,7 @@ class Scanner {
                     digit is a '.', then the digit must be a float/double - duno how to diferentiate between them thoug 
                 **/
             }
+            
             return new TokenInfo(INT_LITERAL, buffer.toString(), line);
         default:
             if (isIdentifierStart(ch)) {

@@ -284,7 +284,7 @@ public class Parser {
      */
 
     private boolean seeBasicType() {
-        return (see(BOOLEAN) || see(CHAR) || see(INT));
+        return (see(BOOLEAN) || see(CHAR) || see(INT) || see(DOUBLE));
     }
 
     /**
@@ -919,8 +919,9 @@ public class Parser {
             return Type.CHAR;
         } else if (have(INT)) {
             return Type.INT;
-        } else if (have(SHORT)) {
-            return Type.SHORT;
+        } else if (have(DOUBLE)) {
+            // THIS BECAUSE TYPE DOUBLE DOESN'T EXIST
+            return Type.DOUBLE;
         }
         else {
             reportParserError("Type sought where %s found", scanner.token()
@@ -1549,11 +1550,11 @@ public class Parser {
 
     private JExpression literal() {
         int line = scanner.token().line();
-        if (have(SHORT_LITERAL)) {
-            // IMPLEMENT JLITERALSHORT
+        if (have(INT_LITERAL)) {
             return new JLiteralInt(line, scanner.previousToken().image());
-        } else if (have(INT_LITERAL)) {
-            return new JLiteralInt(line, scanner.previousToken().image());
+        } else if (have(DOUBLE_LITERAL)) {
+            // NEEDS TO BE IMPLEMENTED
+            return new JLiteralDouble(line, scanner.previousToken().image());
         } else if (have(CHAR_LITERAL)) {
             return new JLiteralChar(line, scanner.previousToken().image());
         } else if (have(STRING_LITERAL)) {

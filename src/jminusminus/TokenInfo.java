@@ -17,11 +17,11 @@ enum TokenKind {
     ABSTRACT("abstract"), BOOLEAN("boolean"), CHAR("char"), CLASS("class"), BREAK("break"),
     ELSE("else"), CASE("case"), CONTINUE("continue"), DEFAULT("default"), EXTENDS("extends"), IF("if"), IMPORT("import"),
     INSTANCEOF("instanceof"), INT("int"), BYTE("byte"), NEW("new"), PACKAGE("package"),
-    PRIVATE("private"), PROTECTED("protected"), PUBLIC("public"),
-    RETURN("return"), STATIC("static"), SUPER("super"), THIS("this"),
+    PRIVATE("private"), PROTECTED("protected"), PUBLIC("public"), VOLATILE("volatile"),
+    RETURN("return"), STATIC("static"), SUPER("super"), THIS("this"), TRANSIENT("transient"),
     VOID("void"), WHILE("while"),DO("do"),DOUBLE("double"),FINAL("final"),FINALLY("finally"),FLOAT("float"),FOR("for"),
     TRY("try"),CATCH("catch"), THROW("throw"),THROWS("throws"),GOTO("goto"),IMPLEMENTS("implements"),INTERFACE("interface"),
-    NATIVE("native"),STRICTFP("strictfp"), SHORT("short"),
+    NATIVE("native"),STRICTFP("strictfp"), SHORT("short"), CONST("const"), LONG("long"), SWITCH("switch"), SYNCHRONIZED("synchronized"),
 
     // Operators
     ASSIGN("="), DEC("--"), EQUAL("=="), GT(">"), INC("++"), LAND("&&"),
