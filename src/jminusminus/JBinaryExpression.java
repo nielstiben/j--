@@ -112,13 +112,11 @@ class JPlusOp extends JBinaryExpression {
                     .analyze(context);
         }
 
-        // one of them is double, type is double
         if (lhs.type() == Type.DOUBLE || rhs.type() == Type.DOUBLE) {
+            // one of them is double, so out type is double
             type = Type.DOUBLE;
-        }
-
-        // both are int, return type is int
-        if (lhs.type() == Type.INT && rhs.type() == Type.INT) {
+        } else if (lhs.type() == Type.INT && rhs.type() == Type.INT) {
+            // both are int, return type is int
             type = Type.INT;
         } else {
             // shrug we dunno.
