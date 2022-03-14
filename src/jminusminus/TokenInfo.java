@@ -30,7 +30,7 @@ enum TokenKind {
     UNARY_COMPLEMENT("~"), OR("|"), LOR("||"), XOR("^"), AND("&"),
     STAR_ASSIGN("*="), REM_ASSIGN("%="), SHIFT_LEFT_ASSIGN("<<="), SHIFT_RIGHT_ASSIGN(">>="),
     USHIFT_RIGHT_ASSIGN(">>>="), XOR_ASSIGN("^="), AND_ASSIGN("&="),
-    OR_ASSIGN("|="), GE(">="), DIVEQ("/="), NEQ("!="), MINUS_ASSIGN("-="),
+    OR_ASSIGN("|="), GE(">="), DIVEQ("/="), NEQ("!="), MINUS_ASSIGN("-="), QUESTIONMARK("?"),
 
 
     // Separators
