@@ -5,16 +5,16 @@ package jminusminus;
 import static jminusminus.CLConstants.*;
 
 /**
- * The AST node for an {@code int} literal.
+ * The AST node for an {@code double} literal.
  */
 
 class JLiteralDouble extends JExpression {
 
-    /** String representation of the int. */
+    /** String representation of the double. */
     private String text;
 
     /**
-     * Constructs an AST node for an {@code int} literal given its line number 
+     * Constructs an AST node for an {@code double} literal given its line number 
      * and string representation.
      * 
      * @param line
@@ -29,7 +29,7 @@ class JLiteralDouble extends JExpression {
     }
 
     /**
-     * Analyzing an int literal is trivial.
+     * Analyzing an double literal is trivial.
      * 
      * @param context
      *            context in which names are resolved (ignored here).
@@ -42,7 +42,7 @@ class JLiteralDouble extends JExpression {
     }
 
     /**
-     * Generating code for an int literal means generating code to push it onto
+     * Generating code for an double literal means generating code to push it onto
      * the stack.
      * 
      * @param output
