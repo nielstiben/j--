@@ -10,6 +10,8 @@ jobs:
         with:
           java-version: "11"
           distribution: "adopt"
+      - name: "make the lib/ dir"
+        run: mkdir lib
       - name: wget
         uses: wei/wget@v1
         with:
