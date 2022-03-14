@@ -119,7 +119,7 @@ class JPlusOp extends JBinaryExpression {
             // both are int, return type is int
             type = Type.INT;
         } else {
-            // shrug we dunno.
+            // typechecking fails
             type = Type.ANY;
             JAST.compilationUnit.reportSemanticError(line(),
                     "Invalid operand types for +");
