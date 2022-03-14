@@ -1084,7 +1084,7 @@ public class Parser {
         while (more) {
             if (have(LOR)) {
                 // TODO: Replace JLogicalAndOp with JLogicalOrOp
-                lhs = new JLogicalAndOp(line, lhs, conditionalAndExpression());
+                lhs = new JLogicalOrOp(line, lhs, conditionalAndExpression());
             } else {
                 more = false;
             }
