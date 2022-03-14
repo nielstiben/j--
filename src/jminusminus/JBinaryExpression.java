@@ -105,12 +105,23 @@ class JPlusOp extends JBinaryExpression {
     public JExpression analyze(Context context) {
         lhs = (JExpression) lhs.analyze(context);
         rhs = (JExpression) rhs.analyze(context);
+
+        // string concat
         if (lhs.type() == Type.STRING || rhs.type() == Type.STRING) {
             return (new JStringConcatenationOp(line, lhs, rhs))
                     .analyze(context);
-        } else if (lhs.type() == Type.INT && rhs.type() == Type.INT) {
+        }
+
+        // one of them is double, type is double
+        if (lhs.type() == Type.DOUBLE || rhs.type() == Type.DOUBLE) {
+            type = Type.DOUBLE;
+        }
+
+        // both are int, return type is int
+        if (lhs.type() == Type.INT && rhs.type() == Type.INT) {
             type = Type.INT;
         } else {
+            // shrug we dunno.
             type = Type.ANY;
             JAST.compilationUnit.reportSemanticError(line(),
                     "Invalid operand types for +");
