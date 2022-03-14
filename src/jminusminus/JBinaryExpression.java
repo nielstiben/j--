@@ -105,14 +105,14 @@ class JPlusOp extends JBinaryExpression {
     public JExpression analyze(Context context) {
         lhs = (JExpression) lhs.analyze(context);
         rhs = (JExpression) rhs.analyze(context);
+        lhs.type().mustMatchOneOf(line(), Type.INT, Type.DOUBLE, Type.STRING);
+        lhs.type().mustMatchOneOf(line(), Type.INT, Type.DOUBLE, Type.STRING);
 
-        // string concat
         if (lhs.type() == Type.STRING || rhs.type() == Type.STRING) {
+            // string concat
             return (new JStringConcatenationOp(line, lhs, rhs))
                     .analyze(context);
-        }
-
-        if (lhs.type() == Type.DOUBLE || rhs.type() == Type.DOUBLE) {
+        } else if (lhs.type() == Type.DOUBLE || rhs.type() == Type.DOUBLE) {
             // one of them is double, so out type is double
             type = Type.DOUBLE;
         } else if (lhs.type() == Type.INT && rhs.type() == Type.INT) {
