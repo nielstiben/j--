@@ -174,9 +174,13 @@ class JSubtractOp extends JBinaryExpression {
     public JExpression analyze(Context context) {
         lhs = (JExpression) lhs.analyze(context);
         rhs = (JExpression) rhs.analyze(context);
-        lhs.type().mustMatchExpected(line(), Type.INT);
-        rhs.type().mustMatchExpected(line(), Type.INT);
-        type = Type.INT;
+        lhs.type().mustMatchOneOf(line(), Type.INT, Type.DOUBLE);
+        rhs.type().mustMatchOneOf(line(), Type.INT, Type.DOUBLE);
+        if ((lhs.type() instanceof Type.DOUBLE) || (rhs.type() instanceof Type.DOUBLE)) {
+          type = Type.DOUBLE;
+        } else {
+          type = Type.INT;
+        }
         return this;
     }
 
