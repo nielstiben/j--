@@ -10,6 +10,10 @@ jobs:
         with:
           java-version: "11"
           distribution: "adopt"
+      - name: wget
+        uses: wei/wget@v1
+        with:
+          args: -O lib/junit.jar https://repo1.maven.org/maven2/junit/junit/4.13/junit-4.13.jar
       - name: Compile .jar artifacts with ant
         run: ant testScanner
 
@@ -24,4 +28,3 @@ jobs:
           distribution: "adopt"
       - name: Compile .jar artifacts with ant
         run: ant jar
-
