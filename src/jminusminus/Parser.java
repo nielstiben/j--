@@ -1002,7 +1002,7 @@ public class Parser {
     private JExpression expression() {
         return assignmentExpression();
     }
-
+    
     /**
      * Parse an assignment expression.
      *
@@ -1020,7 +1020,7 @@ public class Parser {
 
     private JExpression assignmentExpression() {
         int line = scanner.token().line();
-        JExpression lhs = conditionalAndExpression();
+        JExpression lhs = conditionalOrExpression();
         if (have(ASSIGN)) {
             return new JAssignOp(line, lhs, assignmentExpression());
         } else if (seeCompoundAssignmentExpression()) {
@@ -1084,7 +1084,7 @@ public class Parser {
         while (more) {
             if (have(LOR)) {
                 // TODO: Replace JLogicalAndOp with JLogicalOrOp
-                lhs = new JLogicalAndOp(line, lhs, conditionalAndExpression());
+                lhs = new JLogicalOrOp(line, lhs, conditionalAndExpression());
             } else {
                 more = false;
             }
