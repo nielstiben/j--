@@ -303,7 +303,7 @@ public class Parser {
             return true;
         } else {
             scanner.recordPosition();
-            if (have(BOOLEAN) || have(CHAR) || have(INT)) {
+            if (have(BOOLEAN) || have(CHAR) || have(INT) || have(DOUBLE)){
                 if (have(LBRACK) && see(RBRACK)) {
                     scanner.returnToPosition();
                     return true;
@@ -1002,7 +1002,7 @@ public class Parser {
     private JExpression expression() {
         return assignmentExpression();
     }
-    
+
     /**
      * Parse an assignment expression.
      *
@@ -1020,7 +1020,7 @@ public class Parser {
 
     private JExpression assignmentExpression() {
         int line = scanner.token().line();
-        JExpression lhs = conditionalOrExpression();
+        JExpression lhs = conditionalAndExpression();
         if (have(ASSIGN)) {
             return new JAssignOp(line, lhs, assignmentExpression());
         } else if (seeCompoundAssignmentExpression()) {
@@ -1037,13 +1037,9 @@ public class Parser {
         } else if (have(MINUS_ASSIGN)) {
             return new JMinusAssignOp(line, lhs, assignmentExpression());
         } else if (have(STAR_ASSIGN)) {
-            // TODO: Implement missing code
-            System.out.println("STAR_ASSIGN is not yet implemented");
-            return new JPlusAssignOp(line, lhs, assignmentExpression());
+            return new JStarAssignOp(line, lhs, assignmentExpression());
         }  else if (have(REM_ASSIGN)) {
-            // TODO: Implement missing code
-            System.out.println("REM_ASSIGN is not yet implemented");
-            return new JPlusAssignOp(line, lhs, assignmentExpression());
+            return new JRemAssignOp(line, lhs, assignmentExpression());
         }  else if (have(SHIFT_LEFT_ASSIGN)) {
             // TODO: Implement missing code
             System.out.println("SHIFT_LEFT_ASSIGN is not yet implemented");
@@ -1069,9 +1065,7 @@ public class Parser {
             System.out.println("AND_ASSIGN is not yet implemented");
             return new JPlusAssignOp(line, lhs, assignmentExpression());
         }  else if (have(DIVEQ)) {
-            // TODO: Implement missing code
-            System.out.println("DIVEQ is not yet implemented");
-            return new JPlusAssignOp(line, lhs, assignmentExpression());
+            return new JDivEqOp(line, lhs, assignmentExpression());
         } else {
             return lhs;
         }
@@ -1084,7 +1078,7 @@ public class Parser {
         while (more) {
             if (have(LOR)) {
                 // TODO: Replace JLogicalAndOp with JLogicalOrOp
-                lhs = new JLogicalOrOp(line, lhs, conditionalAndExpression());
+                lhs = new JLogicalAndOp(line, lhs, conditionalAndExpression());
             } else {
                 more = false;
             }
