@@ -1002,10 +1002,7 @@ public class Parser {
     private JExpression expression() {
         return assignmentExpression();
     }
-
-
     
-
     /**
      * Parse an assignment expression.
      *

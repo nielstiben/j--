@@ -195,11 +195,11 @@ class JLogicalAndOp extends JBooleanBinaryExpression {
 class JLogicalOrOp extends JBooleanBinaryExpression {
 
     /**
-     * Constructs an AST node for a logical AND expression given its line number,
+     * Constructs an AST node for a logical OR expression given its line number,
      * and lhs and rhs operands.
      *
      * @param line
-     *            line in which the logical AND expression occurs in the source
+     *            line in which the logical OR expression occurs in the source
      *            file.
      * @param lhs
      *            lhs operand.
@@ -212,12 +212,7 @@ class JLogicalOrOp extends JBooleanBinaryExpression {
     }
 
     /**
-     * Analyzing a logical AND expression involves analyzing its operands and
-     * insuring they are boolean; the result type is of course boolean.
-     *
-     * @param context
-     *            context in which names are resolved.
-     * @return the analyzed (and possibly rewritten) AST subtree.
+    Copied from the and operator - most of the logic is the same and the codegen is yet to be implementet.
      */
 
     public JExpression analyze(Context context) {
@@ -231,7 +226,7 @@ class JLogicalOrOp extends JBooleanBinaryExpression {
 
     /**
      * The semantics of j-- require that we implement short-circuiting branching
-     * in implementing the logical AND.
+     * in implementing the logical OR.
      *
      * @param output
      *            the code emitter (basically an abstraction for producing the

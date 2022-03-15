@@ -5,9 +5,5 @@ public class SimpleOr {
         if (true || true){
             
         }
-
-        if (true && true){
-            
-        }
     }
 }
