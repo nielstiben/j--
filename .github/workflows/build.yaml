@@ -42,5 +42,9 @@ jobs:
           distribution: "adopt"
       - name: Compile .jar artifacts with ant
         run: ant jar
-      - name: Simple Or
+      - name: SimpleOr
         run: bin/j-- ./tests/pass/SimpleOr.java
+      - name: AssignmentOps
+        run: bin/j-- ./tests/pass/AssignmentOps.java
+      - name: Double
+        run: bin/j-- ./tests/pass/Double.java
