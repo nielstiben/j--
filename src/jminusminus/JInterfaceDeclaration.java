@@ -5,14 +5,14 @@ package jminusminus;
 import java.util.ArrayList;
 import static jminusminus.CLConstants.*;
 
-
 class JInterfaceDeclaration extends JAST implements JTypeDecl {
-/**
- * 
- * Alot of works need to be done here since this has only been an attemp to get the interface to parse correctly 
- * - this class is a modified copy of the JClassDeclaration.java
- * 
- */
+    /**
+     * 
+     * Alot of works need to be done here since this has only been an attemp to get
+     * the interface to parse correctly
+     * - this class is a modified copy of the JClassDeclaration.java
+     * 
+     */
     /** Interface modifiers. */
     private ArrayList<String> mods;
 
@@ -34,22 +34,24 @@ class JInterfaceDeclaration extends JAST implements JTypeDecl {
     /** Whether this interface has an explicit constructor. */
     private boolean hasExplicitConstructor;
 
-
     /**
-     * Constructs an AST node for a interface declaration given the line number, list
-     * of interface modifiers, name of the interface, its super interface type, and the
+     * Constructs an AST node for a interface declaration given the line number,
+     * list
+     * of interface modifiers, name of the interface, its super interface type, and
+     * the
      * interface block.
      * 
      * @param line
-     *            line in which the interface declaration occurs in the source file.
+     *                       line in which the interface declaration occurs in the
+     *                       source file.
      * @param mods
-     *            interface modifiers.
+     *                       interface modifiers.
      * @param name
-     *            interface name.
+     *                       interface name.
      * @param superType
-     *            interface interface type.
+     *                       interface interface type.
      * @param interfaceBlock
-     *            interface block.
+     *                       interface block.
      */
 
     public JInterfaceDeclaration(int line, ArrayList<String> mods, String name,
@@ -69,9 +71,8 @@ class JInterfaceDeclaration extends JAST implements JTypeDecl {
      */
 
     public String name() {
-        return name;   
-        
-   
+        return name;
+
     }
 
     /**
@@ -94,9 +95,8 @@ class JInterfaceDeclaration extends JAST implements JTypeDecl {
         return thisType;
     }
 
-   
     public void declareThisType(Context context) {
-        //TODO: Needs to be implementet
+        // TODO: Needs to be implementet
     }
 
     /**
@@ -105,11 +105,11 @@ class JInterfaceDeclaration extends JAST implements JTypeDecl {
      * not into the bodies.
      * 
      * @param context
-     *            the parent (compilation unit) context.
+     *                the parent (compilation unit) context.
      */
 
     public void preAnalyze(Context context) {
-      //TODO: yet to be implementet
+        // TODO: yet to be implementet
     }
 
     /**
@@ -118,13 +118,13 @@ class JInterfaceDeclaration extends JAST implements JTypeDecl {
      * bodies.
      * 
      * @param context
-     *            the parent (compilation unit) context. Ignored here.
+     *                the parent (compilation unit) context. Ignored here.
      * @return the analyzed (and possibly rewritten) AST subtree.
      */
 
     public JAST analyze(Context context) {
         // Analyze all members
-        //TODO: Still needs some work.
+        // TODO: Still needs some work.
         for (JMember member : interfaceBlock) {
             ((JAST) member).analyze(this.context);
         }
@@ -136,20 +136,36 @@ class JInterfaceDeclaration extends JAST implements JTypeDecl {
      * Generates code for the interface declaration.
      * 
      * @param output
-     *            the code emitter (basically an abstraction for producing the
-     *            .interface file).
+     *               the code emitter (basically an abstraction for producing the
+     *               .interface file).
      */
 
     public void codegen(CLEmitter output) {
-        //TODO: Needs to be imnplementet
+        // The class header
+        String qualifiedName = JAST.compilationUnit.packageName() == "" ? name
+                : JAST.compilationUnit.packageName() + "/" + name;
+        output.addClass(mods, qualifiedName, superType.jvmName(), null, false);
+
+        // The implicit empty constructor?
+        if (!hasExplicitConstructor) {
+            codegenImplicitConstructor(output);
+        }
+
+        // The membersmustBe(IDENTIFIER);
+        for (JMember member : interfaceBlock) {
+            ((JAST) member).codegen(output);
+        }
+
     }
+
+    
 
     /**
      * {@inheritDoc}
      */
 
     public void writeToStdOut(PrettyPrinter p) {
-      //TODO: Needsto be implementet
+        // TODO: Needsto be implementet
     }
 
     /**
@@ -157,12 +173,21 @@ class JInterfaceDeclaration extends JAST implements JTypeDecl {
      * is not already an explicit one.)
      * 
      * @param partial
-     *            the code emitter (basically an abstraction for producing a
-     *            Java interface).
+     *                the code emitter (basically an abstraction for producing a
+     *                Java interface).
      */
 
     private void codegenPartialImplicitConstructor(CLEmitter partial) {
-        //TODO: Needs to be implementet
+       // Invoke super constructor
+       ArrayList<String> mods = new ArrayList<String>();
+       mods.add("public");
+       partial.addMethod(mods, "<init>", "()V", null, false);
+       partial.addNoArgInstruction(ALOAD_0);
+       partial.addMemberAccessInstruction(INVOKESPECIAL, superType.jvmName(),
+               "<init>", "()V");
+
+       // Return
+       partial.addNoArgInstruction(RETURN);
     }
 
     /**
@@ -170,14 +195,11 @@ class JInterfaceDeclaration extends JAST implements JTypeDecl {
      * is not already an explicit one.
      * 
      * @param output
-     *            the code emitter (basically an abstraction for producing the
-     *            .interface file).
+     *               the code emitter (basically an abstraction for producing the
+     *               .interface file).
      */
 
     private void codegenImplicitConstructor(CLEmitter output) {
-        //TODO: Needs to be implementet
+        // TODO: Needs to be implementet
     }
 }
-
- 
-
