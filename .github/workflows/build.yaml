@@ -31,7 +31,7 @@ jobs:
       - name: Compile .jar artifacts with ant
         run: ant jar
 
-  individual compile tests:
+  "individualCompileTests":
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
