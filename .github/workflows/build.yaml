@@ -48,3 +48,7 @@ jobs:
         run: bin/j-- ./tests/pass/AssignmentOps.java
       - name: Double
         run: bin/j-- ./tests/pass/Double.java
+      - name: Colon
+        run: bin/j-- ./tests/pass/Colon.java
+      - name: MinusAssign
+        run: bin/j-- ./tests/pass/MinusAssign.java
