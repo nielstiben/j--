@@ -1,5 +1,5 @@
 package pass;
 
-public interface Interface {
+public static interface Interface {
 
 }
