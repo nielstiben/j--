@@ -52,3 +52,5 @@ jobs:
         run: bin/j-- ./tests/pass/Colon.java
       - name: MinusAssign
         run: bin/j-- ./tests/pass/MinusAssign.java
+      - name: Prefix
+        run: bin/j-- ./tests/pass/Prefix.java
