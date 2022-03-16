@@ -414,8 +414,13 @@ public class Parser {
 
     private JAST typeDeclaration() {
         ArrayList<String> mods = modifiers();
+        if (have(INTERFACE)){
+            return InterfaceDeclaration(mods);
+        } else {
         return classDeclaration(mods);
+        }
     }
+    
 
     /**
      * Parse modifiers.
@@ -514,6 +519,19 @@ public class Parser {
             superClass = Type.OBJECT;
         }
         return new JClassDeclaration(line, mods, name, superClass, classBody());
+    }
+
+    private JInterfaceDeclaration InterfaceDeclaration(ArrayList<String> mods) {
+        int line = scanner.token().line();
+        mustBe(IDENTIFIER);
+        String name = scanner.previousToken().image();
+        Type superClass;
+        if (have(EXTENDS)) {
+            superClass = qualifiedIdentifier();
+        } else {
+            superClass = Type.OBJECT;
+        }
+        return new JInterfaceDeclaration(line, mods, name, superClass, classBody());
     }
 
     /**
