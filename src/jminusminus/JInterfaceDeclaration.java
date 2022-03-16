@@ -10,7 +10,7 @@ class JInterfaceDeclaration extends JAST implements JTypeDecl {
      * 
      * Alot of works need to be done here since this has only been an attemp to get
      * the interface to parse correctly
-     * - this class is a modified copy of the JClassDeclaration.java
+     * - this interface is a modified copy of the JClassDeclaration.java
      * 
      */
     /** Interface modifiers. */
@@ -141,7 +141,7 @@ class JInterfaceDeclaration extends JAST implements JTypeDecl {
      */
 
     public void codegen(CLEmitter output) {
-        // The class header
+        // The interface header
         String qualifiedName = JAST.compilationUnit.packageName() == "" ? name
                 : JAST.compilationUnit.packageName() + "/" + name;
         output.addClass(mods, qualifiedName, superType.jvmName(), null, false);
