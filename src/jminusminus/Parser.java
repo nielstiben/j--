@@ -515,6 +515,10 @@ public class Parser {
         Type superClass;
         if (have(EXTENDS)) {
             superClass = qualifiedIdentifier();
+        } else if (have(IMPLEMENTS)){
+            mustBe(IDENTIFIER);
+            //Right now implements does nothing... this is just a placeholder for now.
+            superClass = Type.OBJECT;
         } else {
             superClass = Type.OBJECT;
         }
