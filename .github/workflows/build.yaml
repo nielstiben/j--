@@ -40,18 +40,18 @@ jobs:
           distribution: "adopt"
       - name: Compile .jar artifacts with ant
         run: ant jar
-      - name: SimpleOr
-        run: bin/j-- ./tests/pass/SimpleOr.java
-      - name: AssignmentOps
-        run: bin/j-- ./tests/pass/AssignmentOps.java
-      - name: Double
-        run: bin/j-- ./tests/pass/Double.java
-      - name: Colon
-        run: bin/j-- ./tests/pass/Colon.java
-      - name: MinusAssign
-        run: bin/j-- ./tests/pass/MinusAssign.java
-      - name: Prefix
-        run: bin/j-- ./tests/pass/Prefix.java
+#      - name: SimpleOr
+#        run: bin/j-- ./tests/pass/SimpleOr.java
+#      - name: AssignmentOps
+#        run: bin/j-- ./tests/pass/AssignmentOps.java
+#      - name: Double
+#        run: bin/j-- ./tests/pass/Double.java
+#      - name: Colon
+#        run: bin/j-- ./tests/pass/Colon.java
+#      - name: MinusAssign
+#        run: bin/j-- ./tests/pass/MinusAssign.java
+#      - name: Prefix
+#        run: bin/j-- ./tests/pass/Prefix.java
 
   runCompilerTests:
     runs-on: ubuntu-latest
