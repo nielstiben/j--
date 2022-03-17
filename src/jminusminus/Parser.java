@@ -1076,35 +1076,16 @@ public class Parser {
 
     private JExpression relationalExpression() {
         int line = scanner.token().line();
-        JExpression lhs = shiftExpression();
+        JExpression lhs = additiveExpression();
         if (have(GT)) {
-            return new JGreaterThanOp(line, lhs, shiftExpression());
+            return new JGreaterThanOp(line, lhs, additiveExpression());
         } else if (have(LE)) {
-            return new JLessEqualOp(line, lhs, shiftExpression());
+            return new JLessEqualOp(line, lhs, additiveExpression());
         } else if (have(INSTANCEOF)) {
             return new JInstanceOfOp(line, lhs, referenceType());
         } else {
             return lhs;
         }
-    }
-
-    private JExpression shiftExpression() {
-        int line = scanner.token().line();
-        boolean more = true;
-        JExpression lhs = additiveExpression();
-        while (more) {
-            if (have(SHIFT_LEFT)){
-                lhs = new JShiftLeftOp(line, lhs , additiveExpression());
-            } else if (have(SHIFT_RIGHT)) {
-                lhs = new JShiftRightOp(line, lhs, additiveExpression());
-            } else if (have(USHIFT_RIGHT)) {
-                lhs = new JUShiftRightOp(line, lhs, additiveExpression());
-            } else {
-                more = false;
-            }
-        }
-
-        return lhs;
     }
 
     /**
@@ -1152,10 +1133,6 @@ public class Parser {
         while (more) {
             if (have(STAR)) {
                 lhs = new JMultiplyOp(line, lhs, unaryExpression());
-            } else if (have(DIV)) {
-                lhs = new JDivideOp(line, lhs, unaryExpression());
-            } else if (have(REM)) {
-                lhs = new JRemainderOp(line, lhs, unaryExpression());
             } else {
                 more = false;
             }

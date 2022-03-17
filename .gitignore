@@ -6,3 +6,4 @@ outputfolder/
 lib/j--.jar
 lib/spim.jar
 bin/
+*.iml
