@@ -3,5 +3,6 @@ javadoc/
 classes/
 .idea/
 outputfolder/
-lib/
+lib/j--.jar
+lib/spim.jar
 bin/
