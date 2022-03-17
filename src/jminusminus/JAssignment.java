@@ -141,6 +141,7 @@ class JPlusAssignOp extends JAssignment {
      */
 
     public JExpression analyze(Context context) {
+
         if (!(lhs instanceof JLhs)) {
             JAST.compilationUnit.reportSemanticError(line(),
                     "Illegal lhs for assignment");
@@ -149,7 +150,10 @@ class JPlusAssignOp extends JAssignment {
             lhs = (JExpression) ((JLhs) lhs).analyzeLhs(context);
         }
         rhs = (JExpression) rhs.analyze(context);
-        if (lhs.type().equals(Type.INT)) {
+
+        if (lhs.type().equals(Type.DOUBLE) || rhs.type().equals(Type.DOUBLE)) {
+            type = Type.DOUBLE;
+        } else if (lhs.type().equals(Type.INT)) {
             rhs.type().mustMatchExpected(line(), Type.INT);
             type = Type.INT;
         } else if (lhs.type().equals(Type.STRING)) {
@@ -233,12 +237,12 @@ class JMinusAssignOp extends JAssignment {
             lhs = (JExpression) ((JLhs) lhs).analyzeLhs(context);
         }
         rhs = (JExpression) rhs.analyze(context);
-        if (lhs.type().equals(Type.INT)) {
+
+        if (lhs.type().equals(Type.DOUBLE) || rhs.type().equals(Type.DOUBLE)) {
+            type = Type.DOUBLE;
+        } else if (lhs.type().equals(Type.INT)) {
             rhs.type().mustMatchExpected(line(), Type.INT);
             type = Type.INT;
-        } else if (lhs.type().equals(Type.STRING)) {
-            rhs = (new JStringConcatenationOp(line, lhs, rhs)).analyze(context);
-            type = Type.STRING;
         } else {
             JAST.compilationUnit.reportSemanticError(line(),
                     "Invalid lhs type for -=: " + lhs.type());
@@ -320,9 +324,11 @@ class JStarAssignOp extends JAssignment {
 
         rhs = (JExpression) rhs.analyze(context);
 
-        if (lhs.type().equals(Type.INT)) {
+        if (lhs.type().equals(Type.DOUBLE) || rhs.type().equals(Type.DOUBLE)) {
+            type = Type.DOUBLE;
+        } else if (lhs.type().equals(Type.INT)) {
             rhs.type().mustMatchExpected(line(), Type.INT);
-            type = Type.INT; 
+            type = Type.INT;
         } else {
             JAST.compilationUnit.reportSemanticError(line(),
                     "Invalid lhs type for *=: " + lhs.type());
@@ -404,16 +410,18 @@ class JDivEqOp extends JAssignment {
 
         rhs = (JExpression) rhs.analyze(context);
 
-        if (lhs.type().equals(Type.INT)) {
+        if (lhs.type().equals(Type.DOUBLE) || rhs.type().equals(Type.DOUBLE)) {
+            type = Type.DOUBLE;
+        } else if (lhs.type().equals(Type.INT)) {
             rhs.type().mustMatchExpected(line(), Type.INT);
-            type = Type.INT; 
+            type = Type.INT;
         } else {
             JAST.compilationUnit.reportSemanticError(line(),
                     "Invalid lhs type for /=: " + lhs.type());
         }
         return this;
     }
-
+     
     /**
      * Code generation for /= involves, generating code for loading any
      * necessary l-value onto the stack, for (unless a string concatenation)
@@ -475,10 +483,11 @@ class JRemAssignOp extends JAssignment {
         }
 
         rhs = (JExpression) rhs.analyze(context);
-
-        if (lhs.type().equals(Type.INT)) {
+        if (lhs.type().equals(Type.DOUBLE) || rhs.type().equals(Type.DOUBLE)) {
+            type = Type.DOUBLE;
+        } else if (lhs.type().equals(Type.INT)) {
             rhs.type().mustMatchExpected(line(), Type.INT);
-            type = Type.INT; 
+            type = Type.INT;
         } else {
             JAST.compilationUnit.reportSemanticError(line(),
                     "Invalid lhs type for %=: " + lhs.type());
