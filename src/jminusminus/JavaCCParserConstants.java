@@ -5,62 +5,63 @@ public interface JavaCCParserConstants {
 
   int EOF = 0;
   int SINGLE_LINE_COMMENT = 6;
-  int ABSTRACT = 7;
-  int BOOLEAN = 8;
-  int CHAR = 9;
-  int CLASS = 10;
-  int ELSE = 11;
-  int EXTENDS = 12;
-  int FALSE = 13;
-  int IF = 14;
-  int IMPORT = 15;
-  int INSTANCEOF = 16;
-  int INT = 17;
-  int NEW = 18;
-  int NULL = 19;
-  int PACKAGE = 20;
-  int PRIVATE = 21;
-  int PROTECTED = 22;
-  int PUBLIC = 23;
-  int RETURN = 24;
-  int STATIC = 25;
-  int SUPER = 26;
-  int THIS = 27;
-  int TRUE = 28;
-  int VOID = 29;
-  int WHILE = 30;
-  int PLUS = 31;
-  int ASSIGN = 32;
-  int DEC = 33;
-  int EQUAL = 34;
-  int GT = 35;
-  int INC = 36;
-  int LAND = 37;
-  int LE = 38;
-  int LNOT = 39;
-  int MINUS = 40;
-  int PLUS_ASSIGN = 41;
-  int STAR = 42;
-  int LPAREN = 43;
-  int RPAREN = 44;
-  int LCURLY = 45;
-  int RCURLY = 46;
-  int LBRACK = 47;
-  int RBRACK = 48;
-  int SEMI = 49;
-  int COMMA = 50;
-  int DOT = 51;
-  int IDENTIFIER = 52;
-  int LETTER = 53;
-  int DIGIT = 54;
-  int NON_ZERO_DIGIT = 55;
-  int INT_LITERAL = 56;
-  int CHAR_LITERAL = 57;
-  int STRING_LITERAL = 58;
-  int ESC = 59;
-  int ERROR = 60;
+  int ABSTRACT = 10;
+  int BOOLEAN = 11;
+  int CHAR = 12;
+  int CLASS = 13;
+  int ELSE = 14;
+  int EXTENDS = 15;
+  int FALSE = 16;
+  int IF = 17;
+  int IMPORT = 18;
+  int INSTANCEOF = 19;
+  int INT = 20;
+  int NEW = 21;
+  int NULL = 22;
+  int PACKAGE = 23;
+  int PRIVATE = 24;
+  int PROTECTED = 25;
+  int PUBLIC = 26;
+  int RETURN = 27;
+  int STATIC = 28;
+  int SUPER = 29;
+  int THIS = 30;
+  int TRUE = 31;
+  int VOID = 32;
+  int WHILE = 33;
+  int PLUS = 34;
+  int ASSIGN = 35;
+  int DEC = 36;
+  int EQUAL = 37;
+  int GT = 38;
+  int INC = 39;
+  int LAND = 40;
+  int LE = 41;
+  int LNOT = 42;
+  int MINUS = 43;
+  int PLUS_ASSIGN = 44;
+  int STAR = 45;
+  int LPAREN = 46;
+  int RPAREN = 47;
+  int LCURLY = 48;
+  int RCURLY = 49;
+  int LBRACK = 50;
+  int RBRACK = 51;
+  int SEMI = 52;
+  int COMMA = 53;
+  int DOT = 54;
+  int IDENTIFIER = 55;
+  int LETTER = 56;
+  int DIGIT = 57;
+  int NON_ZERO_DIGIT = 58;
+  int INT_LITERAL = 59;
+  int CHAR_LITERAL = 60;
+  int STRING_LITERAL = 61;
+  int ESC = 62;
+  int ERROR = 63;
 
   int DEFAULT = 0;
+  int MULTI_LINE_COMMENT = 1;
 
   String[] tokenImage = {
     "<EOF>",
@@ -70,6 +71,9 @@ public interface JavaCCParserConstants {
     "\"\\r\"",
     "\"\\f\"",
     "<SINGLE_LINE_COMMENT>",
+    "\"/*\"",
+    "\"*/\"",
+    "<token of kind 9>",
     "\"abstract\"",
     "\"boolean\"",
     "\"char\"",
