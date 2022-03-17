@@ -7,6 +7,12 @@ public class Prefix {
         a++;
         b--;
         ++a;
-        --b;
+       --b;
+       double x = 1.1;
+       double y = 1.1;
+        ++x;
+        x++;
+        --y;
+        y--;
     }
 }
