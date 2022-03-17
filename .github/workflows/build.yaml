@@ -79,4 +79,4 @@ jobs:
       - name: Compile .jar artifacts with ant
         run: ant jar
       - name: Run Compiler Tests (automatic front-end)
-        run: ant runCompilerTests
+        run: ant runCompilerTestsJavaCC
