@@ -105,12 +105,21 @@ class JPlusOp extends JBinaryExpression {
     public JExpression analyze(Context context) {
         lhs = (JExpression) lhs.analyze(context);
         rhs = (JExpression) rhs.analyze(context);
+        lhs.type().mustMatchOneOf(line(), Type.INT, Type.DOUBLE, Type.STRING);
+        lhs.type().mustMatchOneOf(line(), Type.INT, Type.DOUBLE, Type.STRING);
+
         if (lhs.type() == Type.STRING || rhs.type() == Type.STRING) {
+            // string concat
             return (new JStringConcatenationOp(line, lhs, rhs))
                     .analyze(context);
+        } else if (lhs.type() == Type.DOUBLE || rhs.type() == Type.DOUBLE) {
+            // one of them is double, so out type is double
+            type = Type.DOUBLE;
         } else if (lhs.type() == Type.INT && rhs.type() == Type.INT) {
+            // both are int, return type is int
             type = Type.INT;
         } else {
+            // typechecking fails
             type = Type.ANY;
             JAST.compilationUnit.reportSemanticError(line(),
                     "Invalid operand types for +");
@@ -174,9 +183,13 @@ class JSubtractOp extends JBinaryExpression {
     public JExpression analyze(Context context) {
         lhs = (JExpression) lhs.analyze(context);
         rhs = (JExpression) rhs.analyze(context);
-        lhs.type().mustMatchExpected(line(), Type.INT);
-        rhs.type().mustMatchExpected(line(), Type.INT);
-        type = Type.INT;
+        lhs.type().mustMatchOneOf(line(), Type.INT, Type.DOUBLE);
+        rhs.type().mustMatchOneOf(line(), Type.INT, Type.DOUBLE);
+        if ((lhs.type() == Type.DOUBLE) || (rhs.type() == Type.DOUBLE)) {
+          type = Type.DOUBLE;
+        } else {
+          type = Type.INT;
+        }
         return this;
     }
 
@@ -232,9 +245,19 @@ class JMultiplyOp extends JBinaryExpression {
     public JExpression analyze(Context context) {
         lhs = (JExpression) lhs.analyze(context);
         rhs = (JExpression) rhs.analyze(context);
-        lhs.type().mustMatchExpected(line(), Type.INT);
-        rhs.type().mustMatchExpected(line(), Type.INT);
-        type = Type.INT;
+
+        if (lhs.type() == Type.DOUBLE || rhs.type() == Type.DOUBLE) {
+            // one of them is double, so out type is double
+            type = Type.DOUBLE;
+        } else if (lhs.type() == Type.INT && rhs.type() == Type.INT) {
+            // both are int, return type is int
+            type = Type.INT;
+        } else {
+            // shrug we dunno.
+            type = Type.ANY;
+            JAST.compilationUnit.reportSemanticError(line(),
+                    "Invalid operand types for +");
+        }
         return this;
     }
 

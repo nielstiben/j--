@@ -7,6 +7,5 @@ public class Double {
         double b = a - 2.23;
         double c = a + 3.43;
         c = c*c;
-        c = c/c;
     }
 }
