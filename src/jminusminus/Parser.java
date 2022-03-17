@@ -1009,8 +1009,55 @@ public class Parser {
         JExpression lhs = conditionalAndExpression();
         if (have(ASSIGN)) {
             return new JAssignOp(line, lhs, assignmentExpression());
-        } else if (have(PLUS_ASSIGN)) {
+        } else if (seeCompoundAssignmentExpression()) {
+            return compoundAssignmentExpression(lhs);
+        } else {
+            return lhs;
+        }
+    }
+
+    private boolean seeCompoundAssignmentExpression() {
+        return see(PLUS_ASSIGN) | see(MINUS_ASSIGN) | see(STAR_ASSIGN) | see(REM_ASSIGN) | see(SHIFT_LEFT_ASSIGN) |
+                see(SHIFT_RIGHT_ASSIGN) | see(USHIFT_RIGHT_ASSIGN) | see(OR_ASSIGN) | see(XOR_ASSIGN) | see(AND_ASSIGN) |
+                see(DIVEQ);
+    }
+
+    private JExpression compoundAssignmentExpression(JExpression lhs) {
+        int line = scanner.token().line();
+        if (have(PLUS_ASSIGN)) {
             return new JPlusAssignOp(line, lhs, assignmentExpression());
+        } else if (have(MINUS_ASSIGN)) {
+            return new JMinusAssignOp(line, lhs, assignmentExpression());
+        } else if (have(STAR_ASSIGN)) {
+            return new JStarAssignOp(line, lhs, assignmentExpression());
+        }  else if (have(REM_ASSIGN)) {
+            return new JRemAssignOp(line, lhs, assignmentExpression());
+        }  else if (have(SHIFT_LEFT_ASSIGN)) {
+            // TODO: Implement missing code
+            System.out.println("SHIFT_LEFT_ASSIGN is not yet implemented");
+            return new JPlusAssignOp(line, lhs, assignmentExpression());
+        }  else if (have(SHIFT_RIGHT_ASSIGN)) {
+            // TODO: Implement missing code
+            System.out.println("SHIFT_RIGHT_ASSIGN is not yet implemented");
+            return new JPlusAssignOp(line, lhs, assignmentExpression());
+        }  else if (have(USHIFT_RIGHT_ASSIGN)) {
+            // TODO: Implement missing code
+            System.out.println("USHIFT_RIGHT_ASSIGN is not yet implemented");
+            return new JPlusAssignOp(line, lhs, assignmentExpression());
+        }  else if (have(OR_ASSIGN)) {
+            // TODO: Implement missing code
+            System.out.println("OR_ASSIGN is not yet implemented");
+            return new JPlusAssignOp(line, lhs, assignmentExpression());
+        }  else if (have(XOR_ASSIGN)) {
+            // TODO: Implement missing code
+            System.out.println("XOR_ASSIGN is not yet implemented");
+            return new JPlusAssignOp(line, lhs, assignmentExpression());
+        }  else if (have(AND_ASSIGN)) {
+            // TODO: Implement missing code
+            System.out.println("AND_ASSIGN is not yet implemented");
+            return new JPlusAssignOp(line, lhs, assignmentExpression());
+        }  else if (have(DIVEQ)) {
+            return new JDivEqOp(line, lhs, assignmentExpression());
         } else {
             return lhs;
         }
