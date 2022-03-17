@@ -6,7 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
-import java.security.cert.CertPathValidatorException.Reason;
 import java.util.Hashtable;
 
 import static jminusminus.TokenKind.*;
@@ -69,6 +68,7 @@ class Scanner {
         reserved.put(CASE.image(), CASE);
         reserved.put(CHAR.image(), CHAR);
         reserved.put(CLASS.image(), CLASS);
+        reserved.put(CONST.image(), CONST);
         reserved.put(CONTINUE.image(), CONTINUE);
         reserved.put(DEFAULT.image(), DEFAULT);
         reserved.put(ELSE.image(), ELSE);
@@ -82,6 +82,7 @@ class Scanner {
         reserved.put(FLOAT.image(), FLOAT);
         reserved.put(DOUBLE.image(), DOUBLE);
         reserved.put(FINALLY.image(),FINALLY);
+        reserved.put(FINAL.image(), FINAL);
         reserved.put(DO.image(), DO);
         reserved.put(NEW.image(), NEW);
         reserved.put(NULL.image(), NULL);
@@ -95,18 +96,23 @@ class Scanner {
         reserved.put(SUPER.image(), SUPER);
         reserved.put(THIS.image(), THIS);
         reserved.put(THIS.image(), THROW);
-        reserved.put(THIS.image(), THROWS);
+        reserved.put(THIS.image(), THROWS);        
+        reserved.put(TRANSIENT.image(), TRANSIENT);
         reserved.put(THIS.image(), TRY);
         reserved.put(THIS.image(), CATCH);
         reserved.put(TRUE.image(), TRUE);
-        reserved.put(VOID.image(), VOID);
+        reserved.put(VOID.image(), VOID);        
+        reserved.put(VOLATILE.image(), VOLATILE);
         reserved.put(WHILE.image(), WHILE);
         reserved.put(GOTO.image(), GOTO);
         reserved.put(IMPLEMENTS.image(), IMPLEMENTS);
-        reserved.put(INTERFACE.image(), IMPLEMENTS);
+        reserved.put(INTERFACE.image(), INTERFACE);
         reserved.put(NATIVE.image(), NATIVE);
         reserved.put(SHORT.image(), SHORT);
         reserved.put(STRICTFP.image(), STRICTFP);
+        reserved.put(LONG.image(), LONG);
+        reserved.put(SWITCH.image(), SWITCH);
+        reserved.put(SYNCHRONIZED.image(), SYNCHRONIZED);
 
 
         // Prime the pump.
@@ -201,7 +207,7 @@ class Scanner {
             nextCh();
             if (ch == '=') {
                 nextCh();
-                return new TokenInfo(MODULO_ASSIGN, line);
+                return new TokenInfo(REM_ASSIGN, line);
             } else {
                 return new TokenInfo(REM, line);
             }
@@ -224,8 +230,7 @@ class Scanner {
             } else if (ch == '=') {
                 nextCh();
                 return new TokenInfo(MINUS_ASSIGN, line);
-            }
-            else {
+            } else {
                 return new TokenInfo(MINUS, line);
             }
         case '&':
@@ -235,21 +240,26 @@ class Scanner {
                 return new TokenInfo(LAND, line);
             } else if (ch == '=') {
                 nextCh();
-                return new TokenInfo(AND_EQUALS_ASSIGN, line);
+                return new TokenInfo(AND_ASSIGN, line);
             } else {
                 return new TokenInfo(AND, line);
             }
         case '|':
             nextCh();
             if (ch == '=') {
-                return new TokenInfo(OR_EQUALS_ASSIGN, line);
+                nextCh();
+                return new TokenInfo(OR_ASSIGN, line);
+            } else if (ch == '|') {
+                nextCh();
+                return new TokenInfo(LOR, line);
             } else {
                 return new TokenInfo(OR, line);
             }
         case '^':
             nextCh();
             if (ch == '=') {
-                return new TokenInfo(XOR_EQUALS_ASSIGN, line);
+                nextCh();
+                return new TokenInfo(XOR_ASSIGN, line);
             } else {
                 return new TokenInfo(XOR, line);
             }
@@ -267,7 +277,7 @@ class Scanner {
                     }
                 } else if (ch == '='){
                     nextCh();
-                    return new TokenInfo(SHIFT_RIGHT, line);
+                    return new TokenInfo(SHIFT_RIGHT_ASSIGN, line);
                 }
                 else {
                     return new TokenInfo(SHIFT_RIGHT, line);
@@ -347,7 +357,11 @@ class Scanner {
             nextCh();
             return new TokenInfo(DOT, line);
         case ':':
+            nextCh();
             return new TokenInfo(COLON, line);
+        case '?':
+            nextCh();
+            return new TokenInfo(QUESTIONMARK, line);
         case EOFCH:
             return new TokenInfo(EOF, line);
         case '0':
@@ -380,6 +394,7 @@ class Scanner {
                     digit is a '.', then the digit must be a float/double - duno how to diferentiate between them thoug 
                 **/
             }
+            
             return new TokenInfo(INT_LITERAL, buffer.toString(), line);
         default:
             if (isIdentifierStart(ch)) {

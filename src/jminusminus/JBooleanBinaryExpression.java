@@ -191,3 +191,53 @@ class JLogicalAndOp extends JBooleanBinaryExpression {
         }
     }
 }
+
+class JLogicalOrOp extends JBooleanBinaryExpression {
+
+    /**
+     * Constructs an AST node for a logical OR expression given its line number,
+     * and lhs and rhs operands.
+     *
+     * @param line
+     *            line in which the logical OR expression occurs in the source
+     *            file.
+     * @param lhs
+     *            lhs operand.
+     * @param rhs
+     *            rhs operand.
+     */
+
+    public JLogicalOrOp(int line, JExpression lhs, JExpression rhs) {
+        super(line, "||", lhs, rhs);
+    }
+
+    /**
+    Copied from the and operator - most of the logic is the same and the codegen is yet to be implementet.
+     */
+
+    public JExpression analyze(Context context) {
+        lhs = (JExpression) lhs.analyze(context);
+        rhs = (JExpression) rhs.analyze(context);
+        lhs.type().mustMatchExpected(line(), Type.BOOLEAN);
+        rhs.type().mustMatchExpected(line(), Type.BOOLEAN);
+        type = Type.BOOLEAN;
+        return this;
+    }
+
+    /**
+     * The semantics of j-- require that we implement short-circuiting branching
+     * in implementing the logical OR.
+     *
+     * @param output
+     *            the code emitter (basically an abstraction for producing the
+     *            .class file).
+     * @param targetLabel
+     *            target for generated branch instruction.
+     * @param onTrue
+     *            should we branch on true?
+     */
+
+    public void codegen(CLEmitter output, String targetLabel, boolean onTrue) {
+        
+    }
+}

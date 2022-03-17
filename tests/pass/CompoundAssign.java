@@ -1,8 +1,23 @@
 package pass;
 
-public class Assign {
+public class CompoundAssign {
+    public int incrementAssign(int toAssign, int multiplyBy) {
+        toAssign += multiplyBy;
+        return toAssign;
+    }
+
+    public int decrementAssign(int toAssign, int multiplyBy) {
+        toAssign -= multiplyBy;
+        return toAssign;
+    }
+
     public int multiplyAssign(int toAssign, int multiplyBy) {
         toAssign *= multiplyBy;
+        return toAssign;
+    }
+
+    public int divideAssign(int toAssign, int multiplyBy) {
+        toAssign /= multiplyBy;
         return toAssign;
     }
 
@@ -26,7 +41,7 @@ public class Assign {
         return toAssign;
     }
 
-    public int exorEqualsAssign(int toAssign, int shiftBy) {
+    public int exOrEqualsAssign(int toAssign, int shiftBy) {
         toAssign ^= shiftBy;
         return toAssign;
     }

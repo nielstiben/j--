@@ -1,7 +1,11 @@
-interface test {
+package pass;
+
+interface Test {
 
 }
 
-public class impl_test implements test {
-    
+public class Implements implements Test {
+    public static void main(String[] args) {
+        
+    }
 }
