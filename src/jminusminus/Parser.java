@@ -1110,6 +1110,12 @@ public class Parser {
                 lhs = new JSubtractOp(line, lhs, multiplicativeExpression());
             } else if (have(PLUS)) {
                 lhs = new JPlusOp(line, lhs, multiplicativeExpression());
+            } else if (have(STAR)){
+                lhs = new JMultiplyOp(line, lhs, multiplicativeExpression());
+            } else if (have(DIV)){
+                lhs = new JDivideOp(line, lhs, multiplicativeExpression());
+            } else if (have(REM)){
+                lhs = new JRemainderOp(line, lhs, multiplicativeExpression());
             } else {
                 more = false;
             }
