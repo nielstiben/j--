@@ -249,7 +249,7 @@ class JClassDeclaration extends JAST implements JTypeDecl {
             codegenImplicitConstructor(output);
         }
 
-        // The membersmustBe(IDENTIFIER);
+        // The members
         for (JMember member : classBlock) {
             ((JAST) member).codegen(output);
         }

@@ -36,9 +36,6 @@ class Type {
     /** The primitive type, int. */
     public final static Type INT = typeFor(int.class);
 
-    /** The primitive type, int. */
-    public final static Type DOUBLE = typeFor(double.class);
-
     /** The primitive type, char. */
     public final static Type CHAR = typeFor(char.class);
 
