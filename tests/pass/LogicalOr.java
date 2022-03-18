@@ -1,4 +1,4 @@
-package customPass;
+
 
 public class LogicalOr {
     public static void main(String[] args) {
