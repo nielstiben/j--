@@ -403,7 +403,11 @@ public class Parser {
 
     private JAST typeDeclaration() {
         ArrayList<String> mods = modifiers();
+        if(have(INTERFACE)){
+            return interfaceDeclaration(mods);
+        } else {
         return classDeclaration(mods);
+        }
     }
 
     /**
@@ -475,7 +479,7 @@ public class Parser {
     }
 
     /**
-     * Parse a class declaration.
+     * Parse a class declaration.return inter
      * 
      * <pre>
      *   classDeclaration ::= CLASS IDENTIFIER 
@@ -499,10 +503,27 @@ public class Parser {
         Type superClass;
         if (have(EXTENDS)) {
             superClass = qualifiedIdentifier();
+        } else if (have(IMPLEMENTS)){
+            mustBe(IDENTIFIER);
+            //For now, this is just parsable the line below has to be changed eventually
+            superClass = Type.OBJECT;
         } else {
             superClass = Type.OBJECT;
         }
         return new JClassDeclaration(line, mods, name, superClass, classBody());
+    }
+
+    private JInterfaceDeclaration interfaceDeclaration(ArrayList<String> mods) {
+        int line = scanner.token().line();
+        mustBe(IDENTIFIER);
+        String name = scanner.previousToken().image();
+        Type superClass;
+        if (have(EXTENDS)) {
+            superClass = qualifiedIdentifier();
+        } else {
+            superClass = Type.OBJECT;
+        }
+        return new JInterfaceDeclaration(line, mods, name, superClass, classBody());
     }
 
     /**
