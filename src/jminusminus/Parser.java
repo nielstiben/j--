@@ -678,10 +678,14 @@ public class Parser {
             JStatement statement = statement();
             return new JWhileStatement(line, test, statement);
         } else if (have(FOR)){
-            //TODO: Needs to be implementet - line below is just a placeholder
-            JExpression test = parExpression();
+            mustBe(LPAREN);
+            JVariableDeclaration forInit = localVariableDeclarationStatement(); //spiller 100
+            JExpression expres = relationalExpression();
+            mustBe(SEMI);
+            JStatement forUpdate = statementExpression();
+            mustBe(RPAREN);
             JStatement statement = statement();
-            return new JWhileStatement(line, test, statement);
+            return new JForStatement(line, statement, forInit, forUpdate, expres);
         } else if (have(RETURN)) {
             if (have(SEMI)) {
                 return new JReturnStatement(line, null);
@@ -1158,6 +1162,8 @@ public class Parser {
         JExpression lhs = additiveExpression();
         if (have(GT)) {
             return new JGreaterThanOp(line, lhs, additiveExpression());
+        } else if (have(LT)){
+            return new JLessThanOp(line, lhs, additiveExpression());
         } else if (have(LE)) {
             return new JLessEqualOp(line, lhs, additiveExpression());
         } else if (have(INSTANCEOF)) {

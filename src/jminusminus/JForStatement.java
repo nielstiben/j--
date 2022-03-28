@@ -4,25 +4,18 @@ package jminusminus;
 
 import static jminusminus.CLConstants.*;
 
-import java.time.chrono.JapaneseChronology;
-
 /**
  * The AST node for a for-statement.
  */
 
-class JForloop extends JStatement {
-
-    /** Test expression. */
-    private JExpression condition;
+class JForStatement extends JStatement {
 
     /** The body. */
     private JStatement body;
+    private JVariableDeclaration forInit;
+    private JStatement forUpdate;
+    private JExpression expres;
 
-    private JAssignment assignement;
-
-    private JExpression expression;
-
-    private JUnaryExpression unaryExpression;
 
     /**
      * Constructs an AST node for a for-statement given its line number, the
@@ -40,12 +33,12 @@ class JForloop extends JStatement {
      *            
      */
 
-    public JForloop(int line, JAssignment assignment, JExpression expression, JUnaryExpression unaryExpression, JStatement body) {
+    public JForStatement(int line, JStatement body, JVariableDeclaration forInit, JStatement forUpdate, JExpression expres) {
         super(line);
-        this.assignement = assignment;
-        this.expression = expression;
-        this.unaryExpression = unaryExpression;
         this.body = body;
+        this.forInit = forInit;
+        this.forUpdate = forUpdate;
+        this.expres = expres;
     }
 
     /**
@@ -57,14 +50,14 @@ class JForloop extends JStatement {
      * @return the analyzed (and possibly rewritten) AST subtree.
      */
 
-    public JForloop analyze(Context context) {
+    public JForStatement analyze(Context context) {
         //TODO : Needs to be implementet- this has been taken from whileloops
         body = (JStatement) body.analyze(context);
         return this;
     }
 
     /**
-     * Generates code for the for loop.
+     * Generates code for the for loo<JWildExpressionp.
      * 
      * @param output
      *            the code emitter (basically an abstraction for producing the
@@ -80,7 +73,7 @@ class JForloop extends JStatement {
         // Branch out of the loop on the test condition
         // being false
         output.addLabel(test);
-        condition.codegen(output, out, false);
+       
 
         // Codegen body
         body.codegen(output);
@@ -96,21 +89,33 @@ class JForloop extends JStatement {
      * {@inheritDoc}
      */
 
-    public void writeToStdOut(PrettyPrinter p) {
-        p.printf("<JWhileStatement line=\"%d\">\n", line());
-        p.indentRight();
-        p.printf("<TestExpression>\n");
-        p.indentRight();
-        condition.writeToStdOut(p);
-        p.indentLeft();
-        p.printf("</TestExpression>\n");
-        p.printf("<Body>\n");
-        p.indentRight();
-        body.writeToStdOut(p);
-        p.indentLeft();
-        p.printf("</Body>\n");
-        p.indentLeft();
-        p.printf("</JWhileStatement>\n");
-    }
 
+
+/*
+    private JStatement body;
+    private JVariableDeclaration forInit;
+    private JStatement forUpdate;
+    private JExpression expres;
+*/
+
+    public void writeToStdOut(PrettyPrinter p) {
+        p.printf("<ForStatement line=\"%d\">\n", line());
+        p.printf("<forInit>\n");
+        forInit.writeToStdOut(p);
+        p.printf("</forInit>\n");
+        p.print("<expres>");
+        p.println();
+        expres.writeToStdOut(p);
+        p.print("</expres>");
+        p.println();
+        p.print("<forUpdate>");
+        p.println();
+        forUpdate.writeToStdOut(p);
+        p.print("</forUpdate>");
+        p.println();
+        p.printf("<Body>\n");
+        body.writeToStdOut(p);
+        p.printf("</Body>\n");
+        p.printf("</ForStatement>\n");
+    }
 }
