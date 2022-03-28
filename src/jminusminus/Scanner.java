@@ -301,8 +301,7 @@ class Scanner {
                     return new TokenInfo(SHIFT_LEFT, line);
                 }
             } else {
-                reportScannerError("Operator < is not supported in j--.");
-                return getNextToken();
+                return new TokenInfo(LT,line);
             }
         case '\'':
             buffer = new StringBuffer();
