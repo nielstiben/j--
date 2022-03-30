@@ -655,8 +655,10 @@ public class Parser {
      * 
      * <pre>
      *   statement ::= block
+     *               | TRY statement FormalParameter Statement
      *               | IF parExpression statement [ELSE statement]
      *               | WHILE parExpression statement 
+     *               | FOR variableDeclaration Expression Statement [Statement]
      *               | RETURN [expression] SEMI
      *               | SEMI 
      *               | statementExpression SEMI
@@ -669,7 +671,17 @@ public class Parser {
         int line = scanner.token().line();
         if (see(LCURLY)) {
             return block();
-        } else if (have(IF)) {
+            
+        } else if (have(TRY)){
+            // TryCatch is right now loose in the sense that the exception can be any Formal Parameter.. 
+            JStatement statement = statement();
+            mustBe(CATCH);
+            mustBe(LPAREN);
+            JFormalParameter cParameter = formalParameter();
+            mustBe(RPAREN);
+            JStatement statement2 = statement();
+            return new JTryCatch(line, statement, statement2, cParameter);
+        }else if (have(IF)) {
             JExpression test = parExpression();
             JStatement consequent = statement();
             JStatement alternate = have(ELSE) ? statement() : null;
@@ -678,7 +690,6 @@ public class Parser {
             JExpression test = parExpression();
             JStatement statement = statement();
             return new JWhileStatement(line, test, statement);
-
             /**
              * Okay.. so the code below is kinda funny
              * 
@@ -693,7 +704,6 @@ public class Parser {
              *  
              *  feel free to come op with a better solution :)
              */
-
         } else if (have(FOR)) {
             mustBe(LPAREN);
             Boolean ifEach = false;
@@ -778,9 +788,11 @@ public class Parser {
         String name = scanner.previousToken().image();
         return new JFormalParameter(line, name, type);
     }
+    
 
     /**
-     * Parse a parenthesized expression.
+     * Parse a parenthesized expression.atch line="3">
+              <Tr
      * 
      * <pre>
      *   parExpression ::= LPAREN expression RPAREN
