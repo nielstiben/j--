@@ -149,29 +149,54 @@ SKIP:{ "/*": MULTI_LINE_COMMENT }
 // Reserved words
 TOKEN: {
   <ABSTRACT: "abstract">
-| <BOOLEAN: "boolean">
-| <CHAR: "char">
-| <CLASS: "class">
-| <ELSE: "else">
-| <EXTENDS: "extends">
-| <FALSE: "false">
-| <IF: "if">
-| <IMPORT: "import">
-| <INSTANCEOF: "instanceof">
-| <INT: "int">
-| <NEW: "new">
-| <NULL: "null">
-| <PACKAGE: "package">
-| <PRIVATE: "private">
-| <PROTECTED: "protected">
-| <PUBLIC: "public">
-| <RETURN: "return">
-| <STATIC: "static">
-| <SUPER: "super">
-| <THIS: "this">
-| <TRUE: "true">
-| <VOID: "void">
-| <WHILE: "while">
+  | <ASSERT: "assert">
+  | <BOOLEAN: "boolean">
+  | <BREAK: "break">
+  | <BYTE: "byte">
+  | <CASE: "case">
+  | <CATCH: "catch">
+  | <CHAR: "char">
+  | <CLASS: "class">
+  | <CONTINUE: "continue">
+  | <DO: "do">
+  | <DOUBLE: "double">
+  | <ELSE: "else">
+  | <EXTENDS: "extends">
+  | <FALSE: "false">
+  | <FINAL: "final">
+  | <FINALLY: "finally">
+  | <FLOAT: "float">
+  | <FOR: "for">
+  | <IF: "if">
+  | <IMPLEMENTS: "implements">
+  | <IMPORT: "import">
+  | <INSTANCEOF: "instanceof">
+  | <INT: "int">
+  | <INTERFACE: "interface">
+  | <LONG: "long">
+  | <NATIVE: "native">
+  | <NEW: "new">
+  | <NULL: "null">
+  | <PACKAGE: "package">
+  | <PRIVATE: "private">
+  | <PROTECTED: "protected">
+  | <PUBLIC: "public">
+  | <RETURN: "return">
+  | <SHORT: "short">
+  | <STATIC: "static">
+  | <STRICTFP: "strictfp">
+  | <SUPER: "super">
+  | <SWITCH: "switch">
+  | <SYNCHRONIZED: "synchronized">
+  | <THIS: "this">
+  | <TRUE: "true">
+  | <THROW: "throw">
+  | <THROWS: "throws">
+  | <TRANSIENT: "transient">
+  | <TRY: "try">
+  | <VOID: "void">
+  | <VOLATILE: "volatile">
+  | <WHILE: "while">
 }
 
 // Operators (these could be combined with the reserved words)
