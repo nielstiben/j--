@@ -5,62 +5,88 @@ public interface JavaCCParserConstants {
 
   int EOF = 0;
   int SINGLE_LINE_COMMENT = 6;
-  int ABSTRACT = 7;
-  int BOOLEAN = 8;
-  int CHAR = 9;
-  int CLASS = 10;
-  int ELSE = 11;
-  int EXTENDS = 12;
-  int FALSE = 13;
-  int IF = 14;
-  int IMPORT = 15;
-  int INSTANCEOF = 16;
-  int INT = 17;
-  int NEW = 18;
-  int NULL = 19;
-  int PACKAGE = 20;
-  int PRIVATE = 21;
-  int PROTECTED = 22;
-  int PUBLIC = 23;
-  int RETURN = 24;
-  int STATIC = 25;
-  int SUPER = 26;
-  int THIS = 27;
-  int TRUE = 28;
-  int VOID = 29;
-  int WHILE = 30;
-  int PLUS = 31;
-  int ASSIGN = 32;
-  int DEC = 33;
-  int EQUAL = 34;
-  int GT = 35;
-  int INC = 36;
-  int LAND = 37;
-  int LE = 38;
-  int LNOT = 39;
-  int MINUS = 40;
-  int PLUS_ASSIGN = 41;
-  int STAR = 42;
-  int LPAREN = 43;
-  int RPAREN = 44;
-  int LCURLY = 45;
-  int RCURLY = 46;
-  int LBRACK = 47;
-  int RBRACK = 48;
-  int SEMI = 49;
-  int COMMA = 50;
-  int DOT = 51;
-  int IDENTIFIER = 52;
-  int LETTER = 53;
-  int DIGIT = 54;
-  int NON_ZERO_DIGIT = 55;
-  int INT_LITERAL = 56;
-  int CHAR_LITERAL = 57;
-  int STRING_LITERAL = 58;
-  int ESC = 59;
-  int ERROR = 60;
+  int ABSTRACT = 10;
+  int ASSERT = 11;
+  int BOOLEAN = 12;
+  int BREAK = 13;
+  int BYTE = 14;
+  int CASE = 15;
+  int CATCH = 16;
+  int CHAR = 17;
+  int CLASS = 18;
+  int CONTINUE = 19;
+  int DO = 20;
+  int DOUBLE = 21;
+  int ELSE = 22;
+  int EXTENDS = 23;
+  int FALSE = 24;
+  int FINAL = 25;
+  int FINALLY = 26;
+  int FLOAT = 27;
+  int FOR = 28;
+  int IF = 29;
+  int IMPLEMENTS = 30;
+  int IMPORT = 31;
+  int INSTANCEOF = 32;
+  int INT = 33;
+  int INTERFACE = 34;
+  int LONG = 35;
+  int NATIVE = 36;
+  int NEW = 37;
+  int NULL = 38;
+  int PACKAGE = 39;
+  int PRIVATE = 40;
+  int PROTECTED = 41;
+  int PUBLIC = 42;
+  int RETURN = 43;
+  int SHORT = 44;
+  int STATIC = 45;
+  int STRICTFP = 46;
+  int SUPER = 47;
+  int SWITCH = 48;
+  int SYNCHRONIZED = 49;
+  int THIS = 50;
+  int TRUE = 51;
+  int THROW = 52;
+  int THROWS = 53;
+  int TRANSIENT = 54;
+  int TRY = 55;
+  int VOID = 56;
+  int VOLATILE = 57;
+  int WHILE = 58;
+  int PLUS = 59;
+  int ASSIGN = 60;
+  int DEC = 61;
+  int EQUAL = 62;
+  int GT = 63;
+  int INC = 64;
+  int LAND = 65;
+  int LE = 66;
+  int LNOT = 67;
+  int MINUS = 68;
+  int PLUS_ASSIGN = 69;
+  int STAR = 70;
+  int LPAREN = 71;
+  int RPAREN = 72;
+  int LCURLY = 73;
+  int RCURLY = 74;
+  int LBRACK = 75;
+  int RBRACK = 76;
+  int SEMI = 77;
+  int COMMA = 78;
+  int DOT = 79;
+  int IDENTIFIER = 80;
+  int LETTER = 81;
+  int DIGIT = 82;
+  int NON_ZERO_DIGIT = 83;
+  int INT_LITERAL = 84;
+  int CHAR_LITERAL = 85;
+  int STRING_LITERAL = 86;
+  int ESC = 87;
+  int ERROR = 88;
 
   int DEFAULT = 0;
+  int MULTI_LINE_COMMENT = 1;
 
   String[] tokenImage = {
     "<EOF>",
@@ -70,17 +96,36 @@ public interface JavaCCParserConstants {
     "\"\\r\"",
     "\"\\f\"",
     "<SINGLE_LINE_COMMENT>",
+    "\"/*\"",
+    "\"*/\"",
+    "<token of kind 9>",
     "\"abstract\"",
+    "\"assert\"",
     "\"boolean\"",
+    "\"break\"",
+    "\"byte\"",
+    "\"case\"",
+    "\"catch\"",
     "\"char\"",
     "\"class\"",
+    "\"continue\"",
+    "\"do\"",
+    "\"double\"",
     "\"else\"",
     "\"extends\"",
     "\"false\"",
+    "\"final\"",
+    "\"finally\"",
+    "\"float\"",
+    "\"for\"",
     "\"if\"",
+    "\"implements\"",
     "\"import\"",
     "\"instanceof\"",
     "\"int\"",
+    "\"interface\"",
+    "\"long\"",
+    "\"native\"",
     "\"new\"",
     "\"null\"",
     "\"package\"",
@@ -88,11 +133,20 @@ public interface JavaCCParserConstants {
     "\"protected\"",
     "\"public\"",
     "\"return\"",
+    "\"short\"",
     "\"static\"",
+    "\"strictfp\"",
     "\"super\"",
+    "\"switch\"",
+    "\"synchronized\"",
     "\"this\"",
     "\"true\"",
+    "\"throw\"",
+    "\"throws\"",
+    "\"transient\"",
+    "\"try\"",
     "\"void\"",
+    "\"volatile\"",
     "\"while\"",
     "\"+\"",
     "\"=\"",
