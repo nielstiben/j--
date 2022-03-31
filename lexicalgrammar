@@ -63,9 +63,10 @@ SYNCHRONIZE ::= "synchronize"
 
 
 // Operators
-ASSIGN      ::= "="
+ASSIGN     			::= "="
 EQUAL       		::= "=="
 GT          		::= ">"
+LT          		::= "<"
 INC         		::= "++"
 DEC         		::= "--"
 LAND        		::= "&&"

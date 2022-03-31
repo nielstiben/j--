@@ -180,23 +180,6 @@ class JLogicalNotOp extends JUnaryExpression {
 
 }
 
-class JUnaryComplementOp extends JUnaryExpression {
-    public JUnaryComplementOp(int line, JExpression arg){
-        super(line, "~", arg);
-    }
-
-    public JExpression analyze(Context context) {
-        arg = (JExpression) arg.analyze(context);
-        arg.type().mustMatchExpected(line(), Type.INT);
-        type = Type.INT;
-        return this;
-    }
-
-    public void codegen(CLEmitter output) {
-        arg.codegen(output);
-        output.addNoArgInstruction(INEG);
-    }
-}
 /**
  * The AST node for an expr--.
  */
@@ -233,13 +216,8 @@ class JPostDecrementOp extends JUnaryExpression {
             type = Type.ANY;
         } else {
             arg = (JExpression) arg.analyze(context);
-            arg.type().mustMatchOneOf(line(), Type.INT, Type.DOUBLE);
-        if (arg.type() == Type.DOUBLE){
-            type = Type.DOUBLE;
-        } else if (arg.type() == Type.INT){
+            arg.type().mustMatchExpected(line(), Type.INT);
             type = Type.INT;
-        }  
-            
         }
         return this;
     }
@@ -321,13 +299,8 @@ class JPreIncrementOp extends JUnaryExpression {
             type = Type.ANY;
         } else {
             arg = (JExpression) arg.analyze(context);
-            arg.type().mustMatchOneOf(line(), Type.INT, Type.DOUBLE);
-        if (arg.type() == Type.DOUBLE){
-            type = Type.DOUBLE;
-        } else if (arg.type() == Type.INT){
+            arg.type().mustMatchExpected(line(), Type.INT);
             type = Type.INT;
-        }  
-            
         }
         return this;
     }
@@ -372,10 +345,6 @@ class JPreIncrementOp extends JUnaryExpression {
     }
 
 }
-/**
- * The AST node for a expr++ expression.
- */
-
 
 class JPostIncrementOp extends JUnaryExpression {
 

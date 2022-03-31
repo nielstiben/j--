@@ -134,7 +134,7 @@ class JLogicalAndOp extends JBooleanBinaryExpression {
     /**
      * Constructs an AST node for a logical AND expression given its line number,
      * and lhs and rhs operands.
-     *
+     * 
      * @param line
      *            line in which the logical AND expression occurs in the source
      *            file.
@@ -151,7 +151,7 @@ class JLogicalAndOp extends JBooleanBinaryExpression {
     /**
      * Analyzing a logical AND expression involves analyzing its operands and
      * insuring they are boolean; the result type is of course boolean.
-     *
+     * 
      * @param context
      *            context in which names are resolved.
      * @return the analyzed (and possibly rewritten) AST subtree.
@@ -169,7 +169,7 @@ class JLogicalAndOp extends JBooleanBinaryExpression {
     /**
      * The semantics of j-- require that we implement short-circuiting branching
      * in implementing the logical AND.
-     *
+     * 
      * @param output
      *            the code emitter (basically an abstraction for producing the
      *            .class file).
@@ -180,16 +180,17 @@ class JLogicalAndOp extends JBooleanBinaryExpression {
      */
 
     public void codegen(CLEmitter output, String targetLabel, boolean onTrue) {
-        if (onTrue) { // Whole expression yields true
-            String falseLabel = output.createLabel();       // Create jump label
-            lhs.codegen(output, falseLabel, false);  // LHS is NOT false
-            rhs.codegen(output, targetLabel, true);  // Branch
-            output.addLabel(falseLabel);                    // Jump into conditional code class
-        } else { // Whole expression yields false
+        if (onTrue) {
+            String falseLabel = output.createLabel();
+            lhs.codegen(output, falseLabel, false);
+            rhs.codegen(output, targetLabel, true);
+            output.addLabel(falseLabel);
+        } else {
             lhs.codegen(output, targetLabel, false);
             rhs.codegen(output, targetLabel, false);
         }
     }
+
 }
 
 class JLogicalOrOp extends JBooleanBinaryExpression {

@@ -1,4 +1,4 @@
-package pass;
+
 
 public class Prefix {
     public static void main(String[] args) {
@@ -7,12 +7,6 @@ public class Prefix {
         a++;
         b--;
         ++a;
-       --b;
-       double x = 1.1;
-       double y = 1.1;
-        ++x;
-        x++;
-        --y;
-        y--;
+        --b;
     }
 }

@@ -5,21 +5,27 @@ package jminusminus;
 import java.util.ArrayList;
 import static jminusminus.CLConstants.*;
 
+/**
+ * A interface declaration has a list of modifiers, a name, a super interface and a
+ * interface block; it distinguishes between instance fields and static (interface)
+ * fields for initialization, and it defines a type. It also introduces its own
+ * (interface) context.
+ *
+ * 
+ * This class is corruntly only made for parsing - alot needs to be implementet and it is currently just a copy
+ *  of the "classDeclaration class" beaware of this when doingfurther work! If 
+ * @see ClassContext
+ */
+
 class JInterfaceDeclaration extends JAST implements JTypeDecl {
-    /**
-     * 
-     * Alot of works need to be done here since this has only been an attemp to get
-     * the interface to parse correctly
-     * - this interface is a modified copy of the JClassDeclaration.java
-     * 
-     */
-    /** Interface modifiers. */
+
+    /** interface modifiers. */
     private ArrayList<String> mods;
 
-    /** Interface name. */
+    /** interface name. */
     private String name;
 
-    /** Interface block. */
+    /** interface block. */
     private ArrayList<JMember> interfaceBlock;
 
     /** Super interface type. */
@@ -35,23 +41,20 @@ class JInterfaceDeclaration extends JAST implements JTypeDecl {
     private boolean hasExplicitConstructor;
 
     /**
-     * Constructs an AST node for a interface declaration given the line number,
-     * list
-     * of interface modifiers, name of the interface, its super interface type, and
-     * the
+     * Constructs an AST node for a interface declaration given the line number, list
+     * of interface modifiers, name of the interface, its super interface type, and the
      * interface block.
      * 
      * @param line
-     *                       line in which the interface declaration occurs in the
-     *                       source file.
+     *            line in which the interface declaration occurs in the source file.
      * @param mods
-     *                       interface modifiers.
+     *            interface modifiers.
      * @param name
-     *                       interface name.
+     *            interface name.
      * @param superType
-     *                       interface interface type.
+     *            super interface type.
      * @param interfaceBlock
-     *                       interface block.
+     *            interface block.
      */
 
     public JInterfaceDeclaration(int line, ArrayList<String> mods, String name,
@@ -72,11 +75,10 @@ class JInterfaceDeclaration extends JAST implements JTypeDecl {
 
     public String name() {
         return name;
-
     }
 
     /**
-     * Returns the interface super interface type.
+     * Returns the interface' super interface type.
      * 
      * @return the super interface type.
      */
@@ -95,8 +97,28 @@ class JInterfaceDeclaration extends JAST implements JTypeDecl {
         return thisType;
     }
 
+    /**
+     * Returns the initializations for instance fields (now expressed as 
+     * assignment statements).
+     * 
+     * @return the field declarations having initializations.
+     */
+
+    /**
+     * Declares this interface in the parent (compilation unit) context.
+     * 
+     * @param context
+     *            the parent (compilation unit) context.
+     */
+
     public void declareThisType(Context context) {
-        // TODO: Needs to be implementet
+        String qualifiedName = JAST.compilationUnit.packageName() == "" ? name
+                : JAST.compilationUnit.packageName() + "/" + name;
+        CLEmitter partial = new CLEmitter(false);
+        partial.addClass(mods, qualifiedName, Type.OBJECT.jvmName(), null,
+                false); // Object for superClass, just for now
+        thisType = Type.typeFor(partial.toClass());
+        context.addType(line, thisType);
     }
 
     /**
@@ -105,11 +127,55 @@ class JInterfaceDeclaration extends JAST implements JTypeDecl {
      * not into the bodies.
      * 
      * @param context
-     *                the parent (compilation unit) context.
+     *            the parent (compilation unit) context.
      */
 
     public void preAnalyze(Context context) {
-        // TODO: yet to be implementet
+        // Construct a interface context
+        this.context = new ClassContext(this, context);
+
+        // Resolve superinterface
+        superType = superType.resolve(this.context);
+
+        // Creating a partial interface in memory can result in a
+        // java.lang.VerifyError if the semantics below are
+        // violated, so we can't defer these checks to analyze()
+        thisType.checkAccess(line, superType);
+        if (superType.isFinal()) {
+            JAST.compilationUnit.reportSemanticError(line,
+                    "Cannot extend a final type: %s", superType.toString());
+        }
+
+        // Create the (partial) interface
+        CLEmitter partial = new CLEmitter(false);
+
+        // Add the interface header to the partial class
+        String qualifiedName = JAST.compilationUnit.packageName() == "" ? name
+                : JAST.compilationUnit.packageName() + "/" + name;
+        partial.addClass(mods, qualifiedName, superType.jvmName(), null, false);
+
+        // Pre-analyze the members and add them to the partial
+        // interface
+        for (JMember member : interfaceBlock) {
+            member.preAnalyze(this.context, partial);
+            if (member instanceof JConstructorDeclaration
+                    && ((JConstructorDeclaration) member).params.size() == 0) {
+                hasExplicitConstructor = true;
+            }
+        }
+
+        // Add the implicit empty constructor?
+        if (!hasExplicitConstructor) {
+            codegenPartialImplicitConstructor(partial);
+        }
+
+        // Get the interface rep for the (partial) interface and make it
+        // the
+        // representation for this type
+        Type id = this.context.lookupType(name);
+        if (id != null && !JAST.compilationUnit.errorHasOccurred()) {
+            id.setClassRep(partial.toClass());
+        }
     }
 
     /**
@@ -118,17 +184,28 @@ class JInterfaceDeclaration extends JAST implements JTypeDecl {
      * bodies.
      * 
      * @param context
-     *                the parent (compilation unit) context. Ignored here.
+     *            the parent (compilation unit) context. Ignored here.
      * @return the analyzed (and possibly rewritten) AST subtree.
      */
 
     public JAST analyze(Context context) {
         // Analyze all members
-        // TODO: Still needs some work.
         for (JMember member : interfaceBlock) {
             ((JAST) member).analyze(this.context);
         }
 
+        // Finally, ensure that a non-abstract interface has
+        // no abstract methods.
+        if (!thisType.isAbstract() && thisType.abstractMethods().size() > 0) {
+            String methods = "";
+            for (Method method : thisType.abstractMethods()) {
+                methods += "\n" + method;
+            }
+            JAST.compilationUnit.reportSemanticError(line,
+                    "interface must be declared abstract since it defines "
+                            + "the following abstract methods: %s", methods);
+
+        }
         return this;
     }
 
@@ -136,8 +213,8 @@ class JInterfaceDeclaration extends JAST implements JTypeDecl {
      * Generates code for the interface declaration.
      * 
      * @param output
-     *               the code emitter (basically an abstraction for producing the
-     *               .interface file).
+     *            the code emitter (basically an abstraction for producing the
+     *            .interface file).
      */
 
     public void codegen(CLEmitter output) {
@@ -151,21 +228,45 @@ class JInterfaceDeclaration extends JAST implements JTypeDecl {
             codegenImplicitConstructor(output);
         }
 
-        // The membersmustBe(IDENTIFIER);
+        // The members
         for (JMember member : interfaceBlock) {
             ((JAST) member).codegen(output);
         }
 
+        
     }
-
-    
 
     /**
      * {@inheritDoc}
      */
 
     public void writeToStdOut(PrettyPrinter p) {
-        // TODO: Needsto be implementet
+        p.printf("<JInterfaceDeclaration line=\"%d\" name=\"%s\""
+                + " super=\"%s\">\n", line(), name, superType.toString());
+        p.indentRight();
+        if (context != null) {
+            context.writeToStdOut(p);
+        }
+        if (mods != null) {
+            p.println("<Modifiers>");
+            p.indentRight();
+            for (String mod : mods) {
+                p.printf("<Modifier name=\"%s\"/>\n", mod);
+            }
+            p.indentLeft();
+            p.println("</Modifiers>");
+        }
+        if (interfaceBlock != null) {
+            p.println("<interfaceBlock>");
+            p.indentRight();
+            for (JMember member : interfaceBlock) {
+                ((JAST) member).writeToStdOut(p);
+            }
+            p.indentLeft();
+            p.println("</interfaceBlock>");
+        }
+        p.indentLeft();
+        p.println("</JInterfaceDeclaration>");
     }
 
     /**
@@ -173,21 +274,21 @@ class JInterfaceDeclaration extends JAST implements JTypeDecl {
      * is not already an explicit one.)
      * 
      * @param partial
-     *                the code emitter (basically an abstraction for producing a
-     *                Java interface).
+     *            the code emitter (basically an abstraction for producing a
+     *            Java interface).
      */
 
     private void codegenPartialImplicitConstructor(CLEmitter partial) {
-       // Invoke super constructor
-       ArrayList<String> mods = new ArrayList<String>();
-       mods.add("public");
-       partial.addMethod(mods, "<init>", "()V", null, false);
-       partial.addNoArgInstruction(ALOAD_0);
-       partial.addMemberAccessInstruction(INVOKESPECIAL, superType.jvmName(),
-               "<init>", "()V");
+        // Invoke super constructor
+        ArrayList<String> mods = new ArrayList<String>();
+        mods.add("public");
+        partial.addMethod(mods, "<init>", "()V", null, false);
+        partial.addNoArgInstruction(ALOAD_0);
+        partial.addMemberAccessInstruction(INVOKESPECIAL, superType.jvmName(),
+                "<init>", "()V");
 
-       // Return
-       partial.addNoArgInstruction(RETURN);
+        // Return
+        partial.addNoArgInstruction(RETURN);
     }
 
     /**
@@ -195,11 +296,44 @@ class JInterfaceDeclaration extends JAST implements JTypeDecl {
      * is not already an explicit one.
      * 
      * @param output
-     *               the code emitter (basically an abstraction for producing the
-     *               .interface file).
+     *            the code emitter (basically an abstraction for producing the
+     *            .interface file).
      */
 
     private void codegenImplicitConstructor(CLEmitter output) {
-        // TODO: Needs to be implementet
+        // Invoke super constructor
+        ArrayList<String> mods = new ArrayList<String>();
+        mods.add("public");
+        output.addMethod(mods, "<init>", "()V", null, false);
+        output.addNoArgInstruction(ALOAD_0);
+        output.addMemberAccessInstruction(INVOKESPECIAL, superType.jvmName(),
+                "<init>", "()V");
+
+        
+
+        // Return
+        output.addNoArgInstruction(RETURN);
     }
+
+    /**
+     * Generates code for interface initialization, in j-- this means static field
+     * initializations.
+     * 
+     * @param output
+     *            the code emitter (basically an abstraction for producing the
+     *            .interface file).
+     */
+
+    private void codegenClassInit(CLEmitter output) {
+        ArrayList<String> mods = new ArrayList<String>();
+        mods.add("public");
+        mods.add("static");
+        output.addMethod(mods, "<clinit>", "()V", null, false);
+
+      
+
+        // Return
+        output.addNoArgInstruction(RETURN);
+    }
+
 }

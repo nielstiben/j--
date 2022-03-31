@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
+
 import java.util.Hashtable;
 
 import static jminusminus.TokenKind.*;
@@ -72,18 +73,18 @@ class Scanner {
         reserved.put(CONTINUE.image(), CONTINUE);
         reserved.put(DEFAULT.image(), DEFAULT);
         reserved.put(ELSE.image(), ELSE);
-        reserved.put(EXTENDS.image(), EXTENDS);
-        reserved.put(FALSE.image(), FALSE);
-        reserved.put(IF.image(), IF);
-        reserved.put(IMPORT.image(), IMPORT);
-        reserved.put(INSTANCEOF.image(), INSTANCEOF);
         reserved.put(FOR.image(),FOR);
-        reserved.put(INT.image(), INT);
         reserved.put(FLOAT.image(), FLOAT);
         reserved.put(DOUBLE.image(), DOUBLE);
         reserved.put(FINALLY.image(),FINALLY);
         reserved.put(FINAL.image(), FINAL);
         reserved.put(DO.image(), DO);
+        reserved.put(EXTENDS.image(), EXTENDS);
+        reserved.put(FALSE.image(), FALSE);
+        reserved.put(IF.image(), IF);
+        reserved.put(IMPORT.image(), IMPORT);
+        reserved.put(INSTANCEOF.image(), INSTANCEOF);
+        reserved.put(INT.image(), INT);
         reserved.put(NEW.image(), NEW);
         reserved.put(NULL.image(), NULL);
         reserved.put(PACKAGE.image(), PACKAGE);
@@ -92,18 +93,17 @@ class Scanner {
         reserved.put(PUBLIC.image(), PUBLIC);
         reserved.put(RETURN.image(), RETURN);
         reserved.put(STATIC.image(), STATIC);
-        reserved.put(STATIC.image(), SWITCH);
         reserved.put(SUPER.image(), SUPER);
         reserved.put(THIS.image(), THIS);
-        reserved.put(THIS.image(), THROW);
-        reserved.put(THIS.image(), THROWS);        
-        reserved.put(TRANSIENT.image(), TRANSIENT);
-        reserved.put(THIS.image(), TRY);
-        reserved.put(THIS.image(), CATCH);
         reserved.put(TRUE.image(), TRUE);
+        reserved.put(WHILE.image(), WHILE);
+        reserved.put(THROW.image(), THROW);
+        reserved.put(THROWS.image(), THROWS);        
+        reserved.put(TRANSIENT.image(), TRANSIENT);
+        reserved.put(TRY.image(), TRY);
+        reserved.put(CATCH.image(), CATCH);
         reserved.put(VOID.image(), VOID);        
         reserved.put(VOLATILE.image(), VOLATILE);
-        reserved.put(WHILE.image(), WHILE);
         reserved.put(GOTO.image(), GOTO);
         reserved.put(IMPLEMENTS.image(), IMPLEMENTS);
         reserved.put(INTERFACE.image(), INTERFACE);
@@ -113,7 +113,6 @@ class Scanner {
         reserved.put(LONG.image(), LONG);
         reserved.put(SWITCH.image(), SWITCH);
         reserved.put(SYNCHRONIZED.image(), SYNCHRONIZED);
-
 
         // Prime the pump.
         nextCh();
@@ -302,8 +301,7 @@ class Scanner {
                     return new TokenInfo(SHIFT_LEFT, line);
                 }
             } else {
-                reportScannerError("Operator < is not supported in j--.");
-                return getNextToken();
+                return new TokenInfo(LT,line);
             }
         case '\'':
             buffer = new StringBuffer();
@@ -365,9 +363,11 @@ class Scanner {
         case EOFCH:
             return new TokenInfo(EOF, line);
         case '0':
+        /** 
             // Handle only simple decimal integers for now.
             nextCh();
             return new TokenInfo(INT_LITERAL, "0", line);
+            */
         case '1':
         case '2':
         case '3':

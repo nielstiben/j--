@@ -1,4 +1,4 @@
-package pass;
+
 
 
 public class AssignmentOperators {

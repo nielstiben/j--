@@ -1,4 +1,5 @@
-package pass;
+
+package customPass;
 
 public class Double {
     public static void main(String[] args) {
@@ -6,6 +7,5 @@ public class Double {
         double b = a - 2.23;
         double c = a + 3.43;
         c = c*c;
-        c = c/c;
     }
 }

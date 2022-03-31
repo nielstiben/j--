@@ -3,50 +3,40 @@
 
 compilationUnit ::= [PACKAGE qualifiedIdentifier SEMI]
                     {IMPORT  qualifiedIdentifier SEMI}
-                    {typeDeclaration} EOF
+                    {typeDeclaration} EOF 
 
 qualifiedIdentifier ::= IDENTIFIER {DOT IDENTIFIER}
 
 typeDeclaration ::= modifiers classDeclaration
 
-modifiers ::= {PUBLIC | PROTECTED | PRIVATE | STATIC | ABSTRACT | FINAL}
-classDeclaration ::= CLASS IDENTIFIER
-                       [EXTENDS qualifiedIdentifier]
+modifiers ::= {PUBLIC | PROTECTED | PRIVATE | STATIC | ABSTRACT}
+
+classDeclaration ::= CLASS IDENTIFIER 
+                       [EXTENDS qualifiedIdentifier] 
                        classBody
 
 classBody ::= LCURLY {modifiers memberDecl} RCURLY
 
 memberDecl ::= IDENTIFIER            // constructor
                  formalParameters block
-             | (VOID | type) IDENTIFIER [THROWS IDENTIFIER]// method
+             | (VOID | type) IDENTIFIER  // method
                  formalParameters
                  (block | SEMI)
              | type variableDeclarators SEMI // field
 
-block ::= LCURLY {blockStatement} RCURLY
+block ::= LCURLY {blockStatement} RCURLY 
+
 blockStatement ::= localVariableDeclarationStatement
                  | statement
 
-switchBlock ::= LCURLY {switchBlockStatement} RCURLY
-switchBlockStatement ::= switchLabel blockStatement
-switchLabel ::= CASE constantExpression COLON
-                 | DEFAULT SEMI
-
 statement ::= block
             | IF parExpression statement [ELSE statement]
-            | WHILE parExpression statement
-            | SWITCH parExpression switchBlock
+            | WHILE parExpression statement 
             | RETURN [expression] SEMI
-            | FOR parExpression statement
-            | DO block
-            | THROW expression SEMI
-            | TRY block CATCH block [FINALLY block]
-            | CONTINUE SEMI
-            | BREAK SEMI
-            | SEMI
+            | SEMI 
             | statementExpression SEMI
 
-formalParameters ::= LPAREN
+formalParameters ::= LPAREN 
                        [formalParameter {COMMA formalParameter}]
                      RPAREN
 
@@ -59,19 +49,19 @@ localVariableDeclarationStatement ::= type variableDeclarators SEMI
 variableDeclarators ::= variableDeclarator {COMMA variableDeclarator}
 
 variableDeclarator ::= IDENTIFIER [ASSIGN variableInitializer]
-
+                    
 variableInitializer ::= arrayInitializer | expression
 
-arrayInitializer ::= LCURLY
+arrayInitializer ::= LCURLY 
                        [variableInitializer
                          {COMMA variableInitializer} [COMMA]]
-                     RCURLY
+                     RCURLY 
 
 arguments ::= LPAREN [expression {COMMA expression}] RPAREN
 
 type ::= referenceType | basicType
 
-basicType ::= BOOLEAN | CHAR | SHORT | INT | BYTE | FLOAT | DOUBLE 
+basicType ::= BOOLEAN | CHAR | INT 
 
 referenceType ::= basicType LBRACK RBRACK {LBRACK RBRACK}
                 | qualifiedIdentifier {LBRACK RBRACK}
@@ -81,61 +71,34 @@ statementExpression ::= expression // but must have side-effect, eg i++
 expression ::= assignmentExpression
 
 assignmentExpression ::= conditionalAndExpression  // must be a valid lhs
-                           [(ASSIGN | compoundAssignmentExpression) assignmentExpression]
+                           [(ASSIGN | PLUS_ASSIGN) assignmentExpression]
 
-compoundAssignmentExpression ::= PLUS_ASSIGN
-                               | MINUS_ASSIGN
-                               | STAR_ASSIGN
-                               | REM_ASSIGN
-                               | SHIFT_LEFT_ASSIGN
-                               | SHIFT_RIGHT_ASSIGN
-                               | USHIFT_RIGHT_ASSIGN
-                               | OR_ASSIGN
-                               | XOR_ASSIGN
-                               | AND_ASSIGN
-                               | DIVEQ
-
-conditionalOrExpression ::= conditionalAndExpression // level 11
-                               {LOR conditionalAndExpression}
-
-conditionalAndExpression ::= inclusiveOrExpression // level 10
-                               {LAND inclusiveOrExpression}
-
-inclusiveOrExpression ::= exclusiveOrExpression // level 9
-                               {OR exclusiveOrExpression}
-
-exclusiveOrExpression ::= andExpression // level 8
-                               {XOR andExpression}
-
-andExpression ::= equalityExpression // level 7
-                               {AND equalityExpression}
+conditionalAndExpression ::= equalityExpression // level 10
+                               {LAND equalityExpression}
 
 equalityExpression ::= relationalExpression  // level 6
-                         {(EQUAL | NEQ | DIVEQ) relationalExpression}
+                         {EQUAL relationalExpression}
 
-relationalExpression ::= shiftExpression       // level 5
-                           [(GT | LE) shiftExpression
+relationalExpression ::= additiveExpression       // level 5
+                           [(GT | LE) additiveExpression
                            | INSTANCEOF referenceType]
-
-shiftExpression ::= additiveExpression  // level 4
-                    {(SHIFT_LEFT | SHIFT_RIGHT | USHIFT_RIGHT) additiveExpression}
 
 additiveExpression ::= multiplicativeExpression // level 3
                          {(PLUS | MINUS) multiplicativeExpression}
 
 multiplicativeExpression ::= unaryExpression       // level 2
-                               {(STAR | DIV | REM) unaryExpression}
+                               {STAR unaryExpression}
 
 unaryExpression ::= INC unaryExpression  // level 1
                   | MINUS unaryExpression
                   | simpleUnaryExpression
 
-simpleUnaryExpression ::= (LNOT | UNARY_COMPLEMENT) unaryExpression
+simpleUnaryExpression ::= LNOT unaryExpression
                         | LPAREN basicType RPAREN unaryExpression //casted
-                        | LPAREN // casted
+                        | LPAREN // casted               
                             referenceType
                           RPAREN simpleUnaryExpression
-                        | postfixExpression
+                        | postfixExpression 
 
 postfixExpression ::= primary {selector} {DEC}
 
@@ -144,22 +107,21 @@ selector ::= DOT qualifiedIdentifier [arguments]
 
 primary ::= parExpression
           | THIS [arguments]
-          | SUPER ( arguments
-                  | DOT IDENTIFIER [arguments]
+          | SUPER ( arguments 
+                  | DOT IDENTIFIER [arguments] 
                   )
           | literal
           | NEW creator
           | qualifiedIdentifier [arguments]
 
-creator ::= (basicType | qualifiedIdentifier)
+creator ::= (basicType | qualifiedIdentifier) 
               ( arguments
               | LBRACK RBRACK {LBRACK RBRACK} [arrayInitializer]
               | newArrayDeclarator
               )
 
-newArrayDeclarator ::= LBRACK expression RBRACK
+newArrayDeclarator ::= LBRACK expression RBRACK 
                          {LBRACK expression RBRACK} {LBRACK RBRACK}
 
-literal ::= SHORT_LITERAL | INT_LITERAL | CHAR_LITERAL | STRING_LITERAL | FLOAT_LITERAL | DOUBLE_LITERAL 
-          | BYTE_LITERAL
+literal ::= INT_LITERAL | CHAR_LITERAL | STRING_LITERAL
           | TRUE        | FALSE        | NULL

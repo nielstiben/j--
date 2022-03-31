@@ -1,8 +1,8 @@
-package pass;
+package customPass;
 
-public class SimpleOr {
+public class LogicalOr {
     public static void main(String[] args) {
-        if (true || true){
+        if (true && true){
             
         }
     }

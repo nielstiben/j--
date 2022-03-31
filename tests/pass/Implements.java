@@ -1,4 +1,4 @@
-package pass;
+
 
 interface Test {
 
