@@ -667,20 +667,26 @@ public class Parser {
      * @return an AST for a statement.
      */
 
+
     private JStatement statement() {
         int line = scanner.token().line();
         if (see(LCURLY)) {
             return block();
-            
         } else if (have(TRY)){
-            // TryCatch is right now loose in the sense that the exception can be any Formal Parameter.. 
+            // TryCatch is right now loose in the sense that the exception can be any Formal Parameter.
+            ArrayList<JStatement> catchBodies = new ArrayList<>();
+            ArrayList<JFormalParameter> cParameters = new ArrayList<>();
             JStatement statement = statement();
-            mustBe(CATCH);
-            mustBe(LPAREN);
-            JFormalParameter cParameter = formalParameter();
-            mustBe(RPAREN);
-            JStatement statement2 = statement();
-            return new JTryCatch(line, statement, statement2, cParameter);
+            while (have(CATCH)){
+                mustBe(LPAREN);
+                JFormalParameter cParameter = formalParameter();
+                cParameters.add(cParameter);
+                mustBe(RPAREN);
+                JStatement catchBody = statement();
+                catchBodies.add(catchBody);
+            }            
+            return new JTryCatch(line, statement, catchBodies, cParameters);
+
         }else if (have(IF)) {
             JExpression test = parExpression();
             JStatement consequent = statement();

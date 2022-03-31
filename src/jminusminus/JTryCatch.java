@@ -4,6 +4,8 @@ package jminusminus;
 
 import static jminusminus.CLConstants.*;
 
+import java.util.ArrayList;
+
 /**
  * The AST node for a for-statement.
  */
@@ -12,8 +14,8 @@ class JTryCatch extends JStatement {
 
     /** The body. */
     private JStatement tryBody;
-    private JStatement catchBody;
-    private JFormalParameter cParameter;
+    private ArrayList<JStatement> catchBodies;
+    private ArrayList <JFormalParameter> cParameters;
     
 
 
@@ -33,11 +35,11 @@ class JTryCatch extends JStatement {
      *            
      */
 
-    public JTryCatch(int line, JStatement tryBody, JStatement catchBody, JFormalParameter cParameter ) {
+    public JTryCatch(int line, JStatement tryBody, ArrayList<JStatement> catchBodies, ArrayList<JFormalParameter> cParameters ) {
         super(line);
         this.tryBody = tryBody;
-        this.catchBody = catchBody;
-        this.cParameter = cParameter;
+        this.catchBodies = catchBodies;
+        this.cParameters = cParameters;
     }
 
     /**
@@ -50,8 +52,8 @@ class JTryCatch extends JStatement {
      */
 
     public JTryCatch analyze(Context context) {
-        tryBody = (JStatement) tryBody.analyze(context);
-        catchBody = (JStatement) catchBody.analyze(context);
+        //tryBody = (JStatement) tryBody.analyze(context);
+       // catchBody = (JStatement) catchBody.analyze(context);
         return this;
     }
 
@@ -104,11 +106,15 @@ class JTryCatch extends JStatement {
         p.printf("</TryBody>\n");
         p.print("<CatchParameter>");
         p.println();
-        cParameter.writeToStdOut(p);
+        for (JFormalParameter cParameter : cParameters) {
+            cParameter.writeToStdOut(p);    
+        }  
         p.print("</CatchParameter>");
         p.println();
         p.printf("<CatchBody>\n");
-        catchBody.writeToStdOut(p);
+        for (JStatement catchBody : catchBodies) {
+            catchBody.writeToStdOut(p);    
+        }
         p.printf("</Catch>\n");
         p.printf("</TryCatch>\n");
     }
