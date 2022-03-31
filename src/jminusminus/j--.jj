@@ -139,13 +139,11 @@ PARSER_END(JavaCCParser)
 SKIP: {" "|"\t"|"\n"|"\r"|"\f"}
 
 // Single line comment -- ignored
-SKIP: {<SINGLE_LINE_COMMENT: "//" (~["\n","\r"])* ("\n"|"\r"|"\r\n")>}
-
-// Multi line comment -- ignored
-SKIP:{ "/*": MULTI_LINE_COMMENT }
-<MULTI_LINE_COMMENT> SKIP : { "*/" { SwitchTo( DEFAULT ); } }
-<MULTI_LINE_COMMENT> SKIP : { < ~[] > }
-
+//SKIP: {<SINGLE_LINE_COMMENT: "##" (~["\n","\r"])* ("\n"|"\r"|"\r\n")>}
+SKIP: {<SINGLE_LINE_COMMENT: "##" (~["\n","\r"])* ("\n"|"\r"|"\r\n")>}
+//SKIP:{ "/*": MULTI_LINE_COMMENT }
+//<MULTI_LINE_COMMENT> SKIP : { "*/" { SwitchTo( DEFAULT ); } }
+//<MULTI_LINE_COMMENT> SKIP : { < ~[] > }
 // Reserved words
 TOKEN: {
   <ABSTRACT: "abstract">
@@ -187,7 +185,31 @@ TOKEN: {
 | <LNOT: "!">
 | <MINUS: "-">
 | <PLUS_ASSIGN: "+=">
+| <MIN_ASSIGN: "-=">
 | <STAR: "*">
+| <QUESTION: "?">
+| <UNARY_COMPLEMENT: "~">
+| <NEQ: "!=">
+| <DIV: "/">
+| <DIV_ASSIGN: "/=">
+| <STAR_ASSIGN: "*=">
+| <REM: "%">
+| <REM_ASSIGN: "%=">
+| <SHIFT_RIGHT: ">>">
+| <SHIFT_RIGHT_ASSIGN: ">>=">
+| <USHIFT_RIGHT: ">>>">
+| <USHIFT_RIGHT_ASSIGN: ">>>=">
+| <GTE: ">=">
+| <SHIFT_LEFT: "<<">
+| <SHIFT_LEFT_ASSIGN: "<<=">
+| <LT: "<">
+| <XOR: "^">
+| <XOR_ASSIGN: "^=">
+| <OR: "|">
+| <OR_ASSIGN: "|=">
+| <LOR: "||">
+| <AND: "&">
+| <AND_ASSIGN: "&=">
 }
 
 // Separators (these could be combined with the reserved words)
@@ -201,6 +223,7 @@ TOKEN: {
 | <SEMI: ";">
 | <COMMA: ",">
 | <DOT: ".">
+| <COLON: ":">
 }
 
 // Identifiers
@@ -1149,7 +1172,24 @@ private JExpression assignmentExpression(): {
             
             <PLUS_ASSIGN>
             rhs = assignmentExpression()
-            { lhs = new JPlusAssignOp(line, lhs, rhs); }
+            { lhs = new JPlusAssignOp(line, lhs, rhs); } |
+
+            <STAR_ASSIGN>
+            rhs = assignmentExpression()
+            { lhs = new JStarAssignOp(line, lhs, rhs); } |
+
+            <DIV_ASSIGN>
+            rhs = assignmentExpression()
+            { lhs = new JSlashAssignOp(line, lhs, rhs); } |
+
+            <REM_ASSIGN>
+            rhs = assignmentExpression()
+            { lhs = new JRemAssignOp(line, lhs, rhs); }
+
+            // Must be valid lhs
+            {
+                reportParserError("Invalid assignment operator");
+            }
         ]
     }
     catch (ParseException e) {
