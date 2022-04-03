@@ -5,87 +5,63 @@ public interface JavaCCParserConstants {
 
   int EOF = 0;
   int SINGLE_LINE_COMMENT = 6;
-  int ABSTRACT = 7;
-  int BOOLEAN = 8;
-  int CHAR = 9;
-  int CLASS = 10;
-  int ELSE = 11;
-  int EXTENDS = 12;
-  int FALSE = 13;
-  int IF = 14;
-  int IMPORT = 15;
-  int INSTANCEOF = 16;
-  int INT = 17;
-  int NEW = 18;
-  int NULL = 19;
-  int PACKAGE = 20;
-  int PRIVATE = 21;
-  int PROTECTED = 22;
-  int PUBLIC = 23;
-  int RETURN = 24;
-  int STATIC = 25;
-  int SUPER = 26;
-  int THIS = 27;
-  int TRUE = 28;
-  int VOID = 29;
-  int WHILE = 30;
-  int PLUS = 31;
-  int ASSIGN = 32;
-  int DEC = 33;
-  int EQUAL = 34;
-  int GT = 35;
-  int INC = 36;
-  int LAND = 37;
-  int LE = 38;
-  int LNOT = 39;
-  int MINUS = 40;
-  int PLUS_ASSIGN = 41;
-  int MIN_ASSIGN = 42;
-  int STAR = 43;
-  int QUESTION = 44;
-  int UNARY_COMPLEMENT = 45;
-  int NEQ = 46;
-  int DIV = 47;
-  int DIV_ASSIGN = 48;
-  int STAR_ASSIGN = 49;
-  int REM = 50;
-  int REM_ASSIGN = 51;
-  int SHIFT_RIGHT = 52;
-  int SHIFT_RIGHT_ASSIGN = 53;
-  int USHIFT_RIGHT = 54;
-  int USHIFT_RIGHT_ASSIGN = 55;
-  int GTE = 56;
-  int SHIFT_LEFT = 57;
-  int SHIFT_LEFT_ASSIGN = 58;
-  int LT = 59;
-  int XOR = 60;
-  int XOR_ASSIGN = 61;
-  int OR = 62;
-  int OR_ASSIGN = 63;
-  int LOR = 64;
-  int AND = 65;
-  int AND_ASSIGN = 66;
-  int LPAREN = 67;
-  int RPAREN = 68;
-  int LCURLY = 69;
-  int RCURLY = 70;
-  int LBRACK = 71;
-  int RBRACK = 72;
-  int SEMI = 73;
-  int COMMA = 74;
-  int DOT = 75;
-  int COLON = 76;
-  int IDENTIFIER = 77;
-  int LETTER = 78;
-  int DIGIT = 79;
-  int NON_ZERO_DIGIT = 80;
-  int INT_LITERAL = 81;
-  int CHAR_LITERAL = 82;
-  int STRING_LITERAL = 83;
-  int ESC = 84;
-  int ERROR = 85;
+  int ABSTRACT = 10;
+  int BOOLEAN = 11;
+  int CHAR = 12;
+  int CLASS = 13;
+  int ELSE = 14;
+  int EXTENDS = 15;
+  int FALSE = 16;
+  int IF = 17;
+  int IMPORT = 18;
+  int INSTANCEOF = 19;
+  int INT = 20;
+  int NEW = 21;
+  int NULL = 22;
+  int PACKAGE = 23;
+  int PRIVATE = 24;
+  int PROTECTED = 25;
+  int PUBLIC = 26;
+  int RETURN = 27;
+  int STATIC = 28;
+  int SUPER = 29;
+  int THIS = 30;
+  int TRUE = 31;
+  int VOID = 32;
+  int WHILE = 33;
+  int PLUS = 34;
+  int ASSIGN = 35;
+  int DEC = 36;
+  int EQUAL = 37;
+  int GT = 38;
+  int INC = 39;
+  int LAND = 40;
+  int LE = 41;
+  int LNOT = 42;
+  int MINUS = 43;
+  int PLUS_ASSIGN = 44;
+  int STAR = 45;
+  int LPAREN = 46;
+  int RPAREN = 47;
+  int LCURLY = 48;
+  int RCURLY = 49;
+  int LBRACK = 50;
+  int RBRACK = 51;
+  int SEMI = 52;
+  int COMMA = 53;
+  int DOT = 54;
+  int IDENTIFIER = 55;
+  int LETTER = 56;
+  int DIGIT = 57;
+  int NON_ZERO_DIGIT = 58;
+  int INT_LITERAL = 59;
+  int CHAR_LITERAL = 60;
+  int STRING_LITERAL = 61;
+  int ESC = 62;
+  int ERROR = 63;
 
   int DEFAULT = 0;
+  int MULTI_LINE_COMMENT = 1;
 
   String[] tokenImage = {
     "<EOF>",
@@ -95,6 +71,9 @@ public interface JavaCCParserConstants {
     "\"\\r\"",
     "\"\\f\"",
     "<SINGLE_LINE_COMMENT>",
+    "\"/*\"",
+    "\"*/\"",
+    "<token of kind 9>",
     "\"abstract\"",
     "\"boolean\"",
     "\"char\"",
@@ -130,31 +109,7 @@ public interface JavaCCParserConstants {
     "\"!\"",
     "\"-\"",
     "\"+=\"",
-    "\"-=\"",
     "\"*\"",
-    "\"?\"",
-    "\"~\"",
-    "\"!=\"",
-    "\"/\"",
-    "\"/=\"",
-    "\"*=\"",
-    "\"%\"",
-    "\"%=\"",
-    "\">>\"",
-    "\">>=\"",
-    "\">>>\"",
-    "\">>>=\"",
-    "\">=\"",
-    "\"<<\"",
-    "\"<<=\"",
-    "\"<\"",
-    "\"^\"",
-    "\"^=\"",
-    "\"|\"",
-    "\"|=\"",
-    "\"||\"",
-    "\"&\"",
-    "\"&=\"",
     "\"(\"",
     "\")\"",
     "\"{\"",
@@ -164,7 +119,6 @@ public interface JavaCCParserConstants {
     "\";\"",
     "\",\"",
     "\".\"",
-    "\":\"",
     "<IDENTIFIER>",
     "<LETTER>",
     "<DIGIT>",
