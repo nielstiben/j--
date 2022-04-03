@@ -65,25 +65,50 @@ public interface JavaCCParserConstants {
   int LNOT = 67;
   int MINUS = 68;
   int PLUS_ASSIGN = 69;
-  int STAR = 70;
-  int LPAREN = 71;
-  int RPAREN = 72;
-  int LCURLY = 73;
-  int RCURLY = 74;
-  int LBRACK = 75;
-  int RBRACK = 76;
-  int SEMI = 77;
-  int COMMA = 78;
-  int DOT = 79;
-  int IDENTIFIER = 80;
-  int LETTER = 81;
-  int DIGIT = 82;
-  int NON_ZERO_DIGIT = 83;
-  int INT_LITERAL = 84;
-  int CHAR_LITERAL = 85;
-  int STRING_LITERAL = 86;
-  int ESC = 87;
-  int ERROR = 88;
+  int MIN_ASSIGN = 70;
+  int STAR = 71;
+  int QUESTION = 72;
+  int UNARY_COMPLEMENT = 73;
+  int NEQ = 74;
+  int DIV = 75;
+  int DIV_ASSIGN = 76;
+  int STAR_ASSIGN = 77;
+  int REM = 78;
+  int REM_ASSIGN = 79;
+  int SHIFT_RIGHT = 80;
+  int SHIFT_RIGHT_ASSIGN = 81;
+  int USHIFT_RIGHT = 82;
+  int USHIFT_RIGHT_ASSIGN = 83;
+  int GTE = 84;
+  int SHIFT_LEFT = 85;
+  int SHIFT_LEFT_ASSIGN = 86;
+  int LT = 87;
+  int XOR = 88;
+  int XOR_ASSIGN = 89;
+  int OR = 90;
+  int OR_ASSIGN = 91;
+  int LOR = 92;
+  int AND = 93;
+  int AND_ASSIGN = 94;
+  int LPAREN = 95;
+  int RPAREN = 96;
+  int LCURLY = 97;
+  int RCURLY = 98;
+  int LBRACK = 99;
+  int RBRACK = 100;
+  int SEMI = 101;
+  int COMMA = 102;
+  int DOT = 103;
+  int IDENTIFIER = 104;
+  int LETTER = 105;
+  int DIGIT = 106;
+  int NON_ZERO_DIGIT = 107;
+  int DOUBLE_LITERAL = 108;
+  int INT_LITERAL = 109;
+  int CHAR_LITERAL = 110;
+  int STRING_LITERAL = 111;
+  int ESC = 112;
+  int ERROR = 113;
 
   int DEFAULT = 0;
   int MULTI_LINE_COMMENT = 1;
@@ -159,7 +184,31 @@ public interface JavaCCParserConstants {
     "\"!\"",
     "\"-\"",
     "\"+=\"",
+    "\"-=\"",
     "\"*\"",
+    "\"?\"",
+    "\"~\"",
+    "\"!=\"",
+    "\"/\"",
+    "\"/=\"",
+    "\"*=\"",
+    "\"%\"",
+    "\"%=\"",
+    "\">>\"",
+    "\">>=\"",
+    "\">>>\"",
+    "\">>>=\"",
+    "\">=\"",
+    "\"<<\"",
+    "\"<<=\"",
+    "\"<\"",
+    "\"^\"",
+    "\"^=\"",
+    "\"|\"",
+    "\"|=\"",
+    "\"||\"",
+    "\"&\"",
+    "\"&=\"",
     "\"(\"",
     "\")\"",
     "\"{\"",
@@ -173,6 +222,7 @@ public interface JavaCCParserConstants {
     "<LETTER>",
     "<DIGIT>",
     "<NON_ZERO_DIGIT>",
+    "<DOUBLE_LITERAL>",
     "<INT_LITERAL>",
     "<CHAR_LITERAL>",
     "<STRING_LITERAL>",

@@ -212,7 +212,31 @@ TOKEN: {
 | <LNOT: "!">
 | <MINUS: "-">
 | <PLUS_ASSIGN: "+=">
+| <MIN_ASSIGN: "-=">
 | <STAR: "*">
+| <QUESTION: "?">
+| <UNARY_COMPLEMENT: "~">
+| <NEQ: "!=">
+| <DIV: "/">
+| <DIV_ASSIGN: "/=">
+| <STAR_ASSIGN: "*=">
+| <REM: "%">
+| <REM_ASSIGN: "%=">
+| <SHIFT_RIGHT: ">>">
+| <SHIFT_RIGHT_ASSIGN: ">>=">
+| <USHIFT_RIGHT: ">>>">
+| <USHIFT_RIGHT_ASSIGN: ">>>=">
+| <GTE: ">=">
+| <SHIFT_LEFT: "<<">
+| <SHIFT_LEFT_ASSIGN: "<<=">
+| <LT: "<">
+| <XOR: "^">
+| <XOR_ASSIGN: "^=">
+| <OR: "|">
+| <OR_ASSIGN: "|=">
+| <LOR: "||">
+| <AND: "&">
+| <AND_ASSIGN: "&=">
 }
 
 // Separators (these could be combined with the reserved words)
@@ -238,8 +262,8 @@ TOKEN: {
 
 // Literals
 TOKEN: {
-  <INT_LITERAL: ("0" | <NON_ZERO_DIGIT> (<DIGIT>)*) >
-| <DOUBLE_LITERAL: ("0" | <NON_ZERO_DIGIT> (<DIGIT>)*) >
+  <DOUBLE_LITERAL: ("0" | <NON_ZERO_DIGIT> (<DIGIT>)*) "." (<DIGIT>)* >
+| <INT_LITERAL: ("0" | <NON_ZERO_DIGIT> (<DIGIT>)*) >
 | <CHAR_LITERAL: "'" (<ESC> | ~["'","\\","\n","\r"]) "'" >
 | <STRING_LITERAL: "\"" (<ESC> | ~["\"","\\","\n","\r"])* "\"" >
 | <#ESC: "\\" ["n","t","b","r","f","\\","'","\""] >
