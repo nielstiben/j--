@@ -1176,7 +1176,7 @@ private JExpression expression(): {
  *
  * <pre>
  *   assignmentExpression ::=
- *       conditionalAndExpression                // level 13
+ *       conditionalOrExpression                // level 13
  *           [( ASSIGN       // must be valid lhs
  *            | PLUS_ASSIGN
  *            )
@@ -1192,7 +1192,7 @@ private JExpression assignmentExpression(): {
 }
 {
     try {
-        lhs = conditionalAndExpression() { line = lhs.line(); }
+        lhs = conditionalOrExpression() { line = lhs.line(); }
         [
             <ASSIGN>
             rhs = assignmentExpression()
@@ -1202,6 +1202,36 @@ private JExpression assignmentExpression(): {
             rhs = assignmentExpression()
             { lhs = new JPlusAssignOp(line, lhs, rhs); }
         ]
+    }
+    catch (ParseException e) {
+        recoverFromError(new int[] { SEMI, EOF }, e);
+    }
+    { return lhs; }
+}
+
+/**
+ * Parse a conditional-and expression.
+ *
+ * <pre>
+ *   conditionalOrExpression ::= conditionalAndExpression        // level 11
+ *                                  {LOR conditionalAndExpression}
+ * </pre>
+ *
+ * @return an AST for a conditionalExpression.
+ */
+
+private JExpression conditionalOrExpression(): {
+    int line = 0;
+    JExpression lhs = null, rhs = null;
+}
+{
+    try {
+        lhs = conditionalAndExpression() { line = lhs.line(); }
+        (
+            <LOR>
+            rhs = conditionalAndExpression()
+            { lhs = new JLogicalOrOp(line, lhs, rhs); }
+        )*
     }
     catch (ParseException e) {
         recoverFromError(new int[] { SEMI, EOF }, e);
