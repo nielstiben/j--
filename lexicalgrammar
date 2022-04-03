@@ -7,6 +7,8 @@
 // Single line comment -- ignored
 "//" {~("\n"|"\r")} ("\n"|"\r"["\n"])
 
+""
+
 // Reserved words
 ABSTRACT    ::= "abstract"
 BOOLEAN     ::= "boolean"
@@ -66,7 +68,6 @@ SYNCHRONIZE ::= "synchronize"
 ASSIGN     			::= "="
 EQUAL       		::= "=="
 GT          		::= ">"
-LT          		::= "<"
 INC         		::= "++"
 DEC         		::= "--"
 LAND        		::= "&&"

@@ -24,7 +24,7 @@ enum TokenKind {
     NATIVE("native"),STRICTFP("strictfp"), SHORT("short"), CONST("const"), LONG("long"), SWITCH("switch"), SYNCHRONIZED("synchronized"),
 
     // Operators
-    ASSIGN("="), DEC("--"), EQUAL("=="), GT(">"), INC("++"), LT("<"), LAND("&&"),
+    ASSIGN("="), DEC("--"), EQUAL("=="), GT(">"), INC("++"), LAND("&&"),
     LE("<="), LNOT("!"), MINUS("-"), PLUS("+"), PLUS_ASSIGN("+="), STAR("*"),
     DIV("/"), REM("%"), SHIFT_LEFT("<<"), SHIFT_RIGHT(">>"), USHIFT_RIGHT(">>>"),
     UNARY_COMPLEMENT("~"), OR("|"), LOR("||"), XOR("^"), AND("&"),
