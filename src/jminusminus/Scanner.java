@@ -301,8 +301,7 @@ class Scanner {
                     return new TokenInfo(SHIFT_LEFT, line);
                 }
             } else {
-                reportScannerError("Operator < is not supported in j--.");
-                return getNextToken();
+                return new TokenInfo(LT,line);
             }
         case '\'':
             buffer = new StringBuffer();
@@ -364,9 +363,11 @@ class Scanner {
         case EOFCH:
             return new TokenInfo(EOF, line);
         case '0':
+        /** 
             // Handle only simple decimal integers for now.
             nextCh();
             return new TokenInfo(INT_LITERAL, "0", line);
+            */
         case '1':
         case '2':
         case '3':
