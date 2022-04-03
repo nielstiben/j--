@@ -51,7 +51,16 @@ class JLiteralDouble extends JExpression {
      */
 
     public void codegen(CLEmitter output) {
-
+        double i = Double.parseDouble(text);
+        if(i == 0.0){
+            output.addNoArgInstruction(DCONST_0);
+        }
+        else if(i == 1.0){
+            output.addNoArgInstruction(DCONST_1);
+        }
+        else{
+            output.addLDCInstruction(i);
+        }
     }
 
     /**

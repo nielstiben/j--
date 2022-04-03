@@ -1063,7 +1063,8 @@ private Type basicType(): {
     try {
         <BOOLEAN> { type = Type.BOOLEAN; } |
         <CHAR> { type = Type.CHAR; } |
-        <INT> { type = Type.INT; }
+        <INT> { type = Type.INT; } |
+        <DOUBLE> { type = Type.DOUBLE; }
     }
     catch (ParseException e) {
         recoverFromError(new int[] { SEMI, EOF }, e);
