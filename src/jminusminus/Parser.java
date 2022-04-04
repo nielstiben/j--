@@ -749,6 +749,15 @@ public class Parser {
             }
         } else if (have(SEMI)) {
             return new JEmptyStatement(line);
+            // THROW DOES NOT WORK
+        } else if (have(THROW)) {
+            if (have(NEW)) {
+                JExpression throwParam = creator();
+                return new JThrow(line, throwParam);
+            } else {
+                return localVariableDeclarationStatement();
+            }
+             
         } else { // Must be a statementExpression
             JStatement statement = statementExpression();
             mustBe(SEMI);
@@ -1454,6 +1463,8 @@ public class Parser {
                 }
             }
         } else if (have(NEW)) {
+
+
             return creator();
         } else if (see(IDENTIFIER)) {
             TypeName id = qualifiedIdentifier();
