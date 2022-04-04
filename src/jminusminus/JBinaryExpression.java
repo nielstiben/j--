@@ -81,7 +81,7 @@ class JPlusOp extends JBinaryExpression {
      * @param line
      *            line in which the addition expression occurs in the source
      *            file.
-     * @param lhs
+     * @param lhsJ
      *            the lhs operand.
      * @param rhs
      *            the rhs operand.
@@ -309,6 +309,55 @@ class JDivideOp extends JBinaryExpression {
         output.addNoArgInstruction(IDIV);
     }
 }
+
+
+
+
+
+class JTernaryOp extends JBinaryExpression {
+    private JExpression rhs2;
+    public JTernaryOp(int line, JExpression lhs, JExpression rhs, JExpression rhs2) {
+        super(line, "?", lhs, rhs);
+        this.rhs2 = rhs2;
+    }
+
+    public JExpression analyze(Context context) {
+        
+        return this;
+    }
+
+    public void codegen(CLEmitter output) {
+       
+    }
+
+
+    public void writeToStdOut(PrettyPrinter p) {
+        p.printf("<JBinaryExpression line=\"%d\" type=\"%s\" "
+                + "operator=\"%s\">\n", line(), ((type == null) ? "" : type
+                .toString()), Util.escapeSpecialXMLChars(operator));
+        p.indentRight();
+        p.printf("<Lhs>\n");
+        p.indentRight();
+        lhs.writeToStdOut(p);
+        p.indentLeft();
+        p.printf("</Lhs>\n");
+        p.printf("<Rhs>\n");
+        p.indentRight();
+        rhs.writeToStdOut(p);
+        p.indentLeft();
+        p.printf("</Rhs>\n");
+        p.indentLeft();
+        p.printf("<Rhs2>\n");
+        p.indentRight();
+        rhs2.writeToStdOut(p);
+        p.indentLeft();
+        p.printf("</Rhs2>\n");
+        p.indentLeft();
+        p.printf("</JBinaryExpression>\n");
+    }
+
+}
+
 
 class JRemainderOp extends JBinaryExpression {
     public JRemainderOp(int line, JExpression lhs, JExpression rhs) {
