@@ -677,6 +677,7 @@ public class Parser {
             ArrayList<JStatement> catchBodies = new ArrayList<>();
             ArrayList<JFormalParameter> cParameters = new ArrayList<>();
             JStatement statement = statement();
+            JStatement finalBody = null;
             while (have(CATCH)){
                 mustBe(LPAREN);
                 JFormalParameter cParameter = formalParameter();
@@ -684,8 +685,11 @@ public class Parser {
                 mustBe(RPAREN);
                 JStatement catchBody = statement();
                 catchBodies.add(catchBody);
+            }
+            if (have(FINALLY)){
+                finalBody = statement();
             }            
-            return new JTryCatch(line, statement, catchBodies, cParameters);
+            return new JTryCatch(line, statement, catchBodies, cParameters,finalBody);
 
         }else if (have(IF)) {
             JExpression test = parExpression();
