@@ -322,12 +322,17 @@ class JTernaryOp extends JBinaryExpression {
     }
 
     public JExpression analyze(Context context) {
-        
+        lhs = (JExpression) lhs.analyze(context);
+        rhs = (JExpression) rhs.analyze(context);
+        rhs2 = (JExpression) rhs2.analyze(context);
         return this;
     }
 
     public void codegen(CLEmitter output) {
-       
+        lhs.codegen(output);
+        rhs.codegen(output);
+        rhs2.codegen(output);
+        output.addNoArgInstruction(IREM);
     }
 
 

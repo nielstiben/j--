@@ -1100,19 +1100,8 @@ public class Parser {
 
     private JExpression assignmentExpression() {
         int line = scanner.token().line();
-        JExpression lhs = conditionalAndExpression();
+        JExpression lhs = conditionalExpression();
         if (have(ASSIGN)) {
-            /*
-            if (have(LPAREN)){
-                JExpression test = conditionalAndExpression();
-                mustBe(RPAREN);
-                mustBe(QUESTIONMARK);
-                JExpression ifTrue = expression();
-                mustBe(COLON);
-                JExpression ifFalse = expression();
-                return new JTernaryOp(line, test, ifTrue, ifFalse);
-            }
-            */
             return new JAssignOp(line, lhs, assignmentExpression());
         } else if (seeCompoundAssignmentExpression()) {
             return compoundAssignmentExpression(lhs);
@@ -1180,7 +1169,7 @@ public class Parser {
      * @return an AST for a conditionalExpression.
      */
 
-    private JExpression conditionalAndExpression() {
+    private JExpression conditionalExpression() {
         int line = scanner.token().line();
         boolean more = true;
         JExpression lhs = equalityExpression();
@@ -1189,7 +1178,12 @@ public class Parser {
                 lhs = new JLogicalAndOp(line, lhs, equalityExpression());
             } else if (have(LOR)) {
                 lhs = new JLogicalOrOp(line, lhs, equalityExpression());
-            } else {
+            } else if (have(QUESTIONMARK)){
+                JExpression rhs = equalityExpression(); 
+                mustBe(COLON);
+                JExpression rhs2 = equalityExpression();
+                lhs = new JTernaryOp(line, lhs, rhs, rhs2);
+            }else {
                 more = false;
             }
         }
