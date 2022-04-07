@@ -11,7 +11,7 @@ import static jminusminus.CLConstants.*;
 class JLiteralException extends JExpression {
 
     /** String representation of the . */
-    private String text;
+    private JExpression expr;
 
     /**
      * Constructs an AST node for a {@code exception} literal given its line number 
@@ -19,13 +19,13 @@ class JLiteralException extends JExpression {
      * 
      * @param line
      *            line in which the literal occurs in the source file.
-     * @param text
+     * @param expr
      *            string representation of the literal.
      */
 
-    public JLiteralException(int line, String text) {
+    public JLiteralException(int line, JExpression expr) {
         super(line);
-        this.text = text;
+        this.expr = expr;
     }
 
     /**
@@ -59,9 +59,15 @@ class JLiteralException extends JExpression {
      */
 
     public void writeToStdOut(PrettyPrinter p) {
-        p.printf("<JLiteralException line=\"%d\" type=\"%s\" " + "value=\"%s\"/>\n",
-                line(), ((type == null) ? "" : type.toString()), Util
-                        .escapeSpecialXMLChars(text));
+        if (expr != null) {
+            p.printf("<JReturnStatement line=\"%d\">\n", line());
+            p.indentRight();
+            expr.writeToStdOut(p);
+            p.indentLeft();
+            p.printf("</JReturnStatement>\n");
+        } else {
+            p.printf("<JReturnStatement line=\"%d\"/>\n", line());
+        }
     }
 
 }

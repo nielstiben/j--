@@ -597,6 +597,7 @@ public class Parser {
                 type = type();
                 if (seeIdentLParen()) {
                     // Non void method
+
                     mustBe(IDENTIFIER);
                     String name = scanner.previousToken().image();
                     ArrayList<JFormalParameter> params = formalParameters();
@@ -743,6 +744,9 @@ public class Parser {
                 JStatement statement = statement();
                 return new JForStatement(line, statement, forInit, forUpdate, expres);
             }
+        } else if (have(THROW)){
+            JExpression expr = expression();
+            return new JLiteralException(line, expr);
         } else if (have(RETURN)) {
             if (have(SEMI)) {
                 return new JReturnStatement(line, null);
@@ -1059,6 +1063,7 @@ public class Parser {
         if (       expr instanceof JAssignment 
                 || expr instanceof JPreIncrementOp 
                 || expr instanceof JTernaryOp
+                || expr instanceof JLiteralException
                 || expr instanceof JPostDecrementOp
                 || expr instanceof JPreDecrementOp
                 || expr instanceof JPostIncrementOp
@@ -1590,8 +1595,6 @@ public class Parser {
             return new JLiteralFalse(line);
         } else if (have(NULL)) {
             return new JLiteralNull(line);
-        } else if (have(EXCEPTION_LITERAL)||have(THROW)){
-            return new JLiteralException(line, scanner.previousToken().image());
         } else {
             reportParserError("Literal sought where %s found", scanner.token()
                     .image());
