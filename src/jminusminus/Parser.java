@@ -572,15 +572,15 @@ public class Parser {
 
     private JMember memberDecl(ArrayList<String> mods) {
         int line = scanner.token().line();
+        ArrayList<Type> exceptions = new ArrayList<>();
         JMember memberDecl = null;
-        
         if (seeIdentLParen()) {
             // A constructor
             mustBe(IDENTIFIER);
             String name = scanner.previousToken().image();
             ArrayList<JFormalParameter> params = formalParameters();
             JBlock body = block();
-            memberDecl = new JConstructorDeclaration(line, mods, name, params,
+            memberDecl = new JConstructorDeclaration(line, mods, name, params, exceptions,
                     body);
         } else {
             Type type = null;
@@ -590,20 +590,21 @@ public class Parser {
                 mustBe(IDENTIFIER);
                 String name = scanner.previousToken().image();
                 ArrayList<JFormalParameter> params = formalParameters();
+                getExceptions(line, exceptions);
                 JBlock body = have(SEMI) ? null : block();
                 memberDecl = new JMethodDeclaration(line, mods, name, type,
-                        params, body);
+                        params, exceptions, body);
             } else {
                 type = type();
                 if (seeIdentLParen()) {
                     // Non void method
-
                     mustBe(IDENTIFIER);
                     String name = scanner.previousToken().image();
                     ArrayList<JFormalParameter> params = formalParameters();
+                    getExceptions(line, exceptions);
                     JBlock body = have(SEMI) ? null : block();
                     memberDecl = new JMethodDeclaration(line, mods, name, type,
-                            params, body);
+                            params, exceptions, body);
                 } else {
                     // Field
                     memberDecl = new JFieldDeclaration(line, mods,
@@ -613,6 +614,15 @@ public class Parser {
             }
         }
         return memberDecl;
+    }
+
+    private void getExceptions(int line, ArrayList<Type> exceptions) {
+        if (have(THROWS)){
+            exceptions.add(type());
+            while(have(COMMA)){
+                    exceptions.add(type());
+            }
+        }
     }
 
     /**
