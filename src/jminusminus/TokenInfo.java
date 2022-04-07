@@ -43,7 +43,7 @@ enum TokenKind {
     // Literals
     NULL("null"), FALSE("false"), TRUE("true"), SHORT_LITERAL("SHORT_LITERAL"),
     INT_LITERAL("<INT_LITERAL>"), CHAR_LITERAL("<CHAR_LITERAL>"),DOUBLE_LITERAL("<DOUBLE_LITERAL>"),FLOAT_LITERAL("<FLOAT LITERAL>"),
-    STRING_LITERAL("<STRING_LITERAL>");
+    STRING_LITERAL("<STRING_LITERAL>") ,EXCEPTION_LITERAL("<EXCEPTION_LITERAL>");
 
     /** The token's string representation. */
     private String image;

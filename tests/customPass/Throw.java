@@ -1,7 +1,8 @@
 public class Throw {
 
     public static void main() {
-     //   Object i = new Object();
+        String u;
+        int x;
         throw p;
         Obejct o;
         try {
