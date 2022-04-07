@@ -571,6 +571,14 @@ private JMember memberDecl(ArrayList<String> mods): {
 }
 {
     try {
+         (
+            body = block()
+
+            {line =token.beginLine;}
+            {
+                memberDecl = new JBlockInner(line, body, mods);
+            }
+        )|
         LOOKAHEAD(<IDENTIFIER> <LPAREN>)
         (
             <IDENTIFIER>
@@ -603,6 +611,8 @@ private JMember memberDecl(ArrayList<String> mods): {
                                                     type, params, body);
             }
         ) |
+        // initializer block
+
         (
             type = type() { line = token.beginLine; }
             variableDeclarators = variableDeclarators(type)
