@@ -99,16 +99,17 @@ public interface JavaCCParserConstants {
   int SEMI = 101;
   int COMMA = 102;
   int DOT = 103;
-  int IDENTIFIER = 104;
-  int LETTER = 105;
-  int DIGIT = 106;
-  int NON_ZERO_DIGIT = 107;
-  int DOUBLE_LITERAL = 108;
-  int INT_LITERAL = 109;
-  int CHAR_LITERAL = 110;
-  int STRING_LITERAL = 111;
-  int ESC = 112;
-  int ERROR = 113;
+  int COLON = 104;
+  int IDENTIFIER = 105;
+  int LETTER = 106;
+  int DIGIT = 107;
+  int NON_ZERO_DIGIT = 108;
+  int DOUBLE_LITERAL = 109;
+  int INT_LITERAL = 110;
+  int CHAR_LITERAL = 111;
+  int STRING_LITERAL = 112;
+  int ESC = 113;
+  int ERROR = 114;
 
   int DEFAULT = 0;
   int MULTI_LINE_COMMENT = 1;
@@ -218,6 +219,7 @@ public interface JavaCCParserConstants {
     "\";\"",
     "\",\"",
     "\".\"",
+    "\":\"",
     "<IDENTIFIER>",
     "<LETTER>",
     "<DIGIT>",
