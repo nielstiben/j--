@@ -301,10 +301,13 @@ public class Parser {
 
     private boolean seeReferenceType() {
         if (see(IDENTIFIER)) {
-            return true;
+            return true;    
         } else {
             scanner.recordPosition();
-            if (have(BOOLEAN) || have(CHAR)  || have(DOUBLE) || have(INT)) {
+            if (have(BOOLEAN) 
+            || have(CHAR)  
+            || have(DOUBLE) 
+            || have(INT)) {
                 if (have(LBRACK) && see(RBRACK)) {
                     scanner.returnToPosition();
                     return true;
@@ -570,6 +573,7 @@ public class Parser {
     private JMember memberDecl(ArrayList<String> mods) {
         int line = scanner.token().line();
         JMember memberDecl = null;
+        
         if (seeIdentLParen()) {
             // A constructor
             mustBe(IDENTIFIER);
@@ -1051,7 +1055,10 @@ public class Parser {
     private JStatement statementExpression() {
         int line = scanner.token().line();
         JExpression expr = expression();
-        if (expr instanceof JAssignment || expr instanceof JPreIncrementOp || expr instanceof JTernaryOp
+        
+        if (       expr instanceof JAssignment 
+                || expr instanceof JPreIncrementOp 
+                || expr instanceof JTernaryOp
                 || expr instanceof JPostDecrementOp
                 || expr instanceof JPreDecrementOp
                 || expr instanceof JPostIncrementOp
@@ -1179,9 +1186,9 @@ public class Parser {
             } else if (have(LOR)) {
                 lhs = new JLogicalOrOp(line, lhs, equalityExpression());
             } else if (have(QUESTIONMARK)){
-                JExpression rhs = equalityExpression(); 
+                JExpression rhs = conditionalExpression(); 
                 mustBe(COLON);
-                JExpression rhs2 = equalityExpression();
+                JExpression rhs2 = conditionalExpression(); 
                 lhs = new JTernaryOp(line, lhs, rhs, rhs2);
             }else {
                 more = false;
@@ -1583,6 +1590,8 @@ public class Parser {
             return new JLiteralFalse(line);
         } else if (have(NULL)) {
             return new JLiteralNull(line);
+        } else if (have(EXCEPTION_LITERAL)||have(THROW)){
+            return new JLiteralException(line, scanner.previousToken().image());
         } else {
             reportParserError("Literal sought where %s found", scanner.token()
                     .image());

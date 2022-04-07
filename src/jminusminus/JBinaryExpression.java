@@ -4,6 +4,8 @@ package jminusminus;
 
 import static jminusminus.CLConstants.*;
 
+import java.util.ArrayList;
+
 /**
  * This abstract base class is the AST node for a binary expression.
  * A binary expression has an operator and two operands: a lhs and a rhs.
@@ -316,15 +318,24 @@ class JDivideOp extends JBinaryExpression {
 
 class JTernaryOp extends JBinaryExpression {
     private JExpression rhs2;
-    public JTernaryOp(int line, JExpression lhs, JExpression rhs, JExpression rhs2) {
+    public JTernaryOp(int line, JExpression lhs, JExpression rhs, JExpression rh2) {
         super(line, "?", lhs, rhs);
-        this.rhs2 = rhs2;
+        this.rhs2 = rh2;
     }
 
     public JExpression analyze(Context context) {
         lhs = (JExpression) lhs.analyze(context);
         rhs = (JExpression) rhs.analyze(context);
         rhs2 = (JExpression) rhs2.analyze(context);
+        
+        if (rhs.type == rhs2.type){
+            type = rhs.type;
+        } else {
+            // shrug we dunno.
+            type = Type.ANY;
+            JAST.compilationUnit.reportSemanticError(line(),
+                    "Invalid operand types for %");
+        }
         return this;
     }
 
