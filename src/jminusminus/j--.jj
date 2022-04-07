@@ -1296,7 +1296,7 @@ private JExpression conditionalAndExpression(): {
  *
  * <pre>
  *   equalityExpression ::= relationalExpression         // level 6
- *                            {EQUAL relationalExpression}
+ *                            {(EQUAL | NEQ) relationalExpression}
  * </pre>
  *
  * @return an AST for an equalityExpression.
@@ -1309,11 +1309,15 @@ private JExpression equalityExpression(): {
 {
     try {
         lhs = relationalExpression() { line = lhs.line(); }
-        (
+        [
             <EQUAL>
             rhs = relationalExpression()
-            { lhs = new JEqualOp(line, lhs, rhs); }
-        )*
+            { lhs = new JEqualOp(line, lhs, rhs); } |
+
+            <NEQ>
+            rhs = relationalExpression()
+            { lhs = new JNotEqualOp(line, lhs, rhs); }
+        ]
     }
     catch (ParseException e) {
         recoverFromError(new int[] { SEMI, EOF }, e);

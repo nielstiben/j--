@@ -77,7 +77,7 @@ conditionalAndExpression ::= equalityExpression // level 10
                                {LAND equalityExpression}
 
 equalityExpression ::= relationalExpression  // level 6
-                         {EQUAL relationalExpression}
+                         {(EQUAL | NEQ) relationalExpression}
 
 relationalExpression ::= additiveExpression       // level 5
                            [(LT | GT | LE | GE) additiveExpression
