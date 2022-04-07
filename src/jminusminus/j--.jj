@@ -250,6 +250,7 @@ TOKEN: {
 | <SEMI: ";">
 | <COMMA: ",">
 | <DOT: ".">
+| <COLON: ":">
 }
 
 // Identifiers
@@ -684,6 +685,7 @@ private JStatement blockStatement(): {
     { return statement; }
 }
 
+
 /**
  * Parse a statement.
  *
@@ -707,6 +709,9 @@ private JStatement statement(): {
     JStatement alternate  = null;
     JStatement body       = null;
     JExpression expr      = null;
+    JVariableDeclaration forInit = null;
+    JStatement forUpdate  = null;
+    JExpression expres    = null;
 }
 {
     try {
@@ -730,6 +735,33 @@ private JStatement statement(): {
         test = parExpression()
         body = statement()
         { statement = new JWhileStatement(line, test, body); } |
+
+        /**
+        * Below, we try to parse a for loop. We use LOOKAHEAD to see which type of for loop we are dealing with.
+        * The first LOOKAHEAD is for a classic for loop, the second LOOKAHEAD is for a for-each loop.
+        */
+
+        // FOR loop
+        LOOKAHEAD(<FOR> <LPAREN> localVariableDeclarationStatement() relationalExpression() <SEMI> statementExpression() <RPAREN>)
+        <FOR> { line = token.beginLine; }               // for
+        <LPAREN>                                        // (
+        forInit = localVariableDeclarationStatement()   // int i = 0;
+        expres = relationalExpression()                 // i < 10
+        <SEMI>                                          // ;
+        forUpdate = statementExpression()               // i++
+        <RPAREN>                                        // )
+        statement = statement()                          // {}
+        { statement = new JForStatement(line, statement, forInit, forUpdate, expres); } |
+
+        // FOR-EACH loop
+        LOOKAHEAD(<FOR> <LPAREN> colonLocalVariableDeclarationStatement() relationalExpression() <RPAREN>)
+        <FOR> { line = token.beginLine; }                   // for
+        <LPAREN>                                            // (
+        forInit = colonLocalVariableDeclarationStatement()  // int i :
+        expres = relationalExpression()                     // i < 10
+        <RPAREN>                                            // )
+        statement = statement()                             // {}
+        { statement = new JForEachStatement(line, statement, forInit, expres); } |
 
         <RETURN> { line = token.beginLine; }
         [
@@ -865,6 +897,25 @@ private JVariableDeclaration localVariableDeclarationStatement(): {
         recoverFromError(new int[] { SEMI, EOF }, e);
     }
     { return new JVariableDeclaration(line, mods, vdecls); }
+}
+
+private JVariableDeclaration colonLocalVariableDeclarationStatement(): {
+    int line = 0;
+    Type type = null;
+    ArrayList<JVariableDeclarator> vdecls = null;
+    ArrayList<String> mods = new ArrayList<String>();
+}
+{
+    try{
+        type = type() { line = token.beginLine; }
+        vdecls = variableDeclarators(type)
+        <COLON>
+
+    } catch (ParseException e) {
+              recoverFromError(new int[] { SEMI, EOF }, e);
+    }
+    {return new JVariableDeclaration(line, mods, vdecls);}
+
 }
 
 /**
@@ -1306,7 +1357,7 @@ private JExpression conditionalAndExpression(): {
  *
  * <pre>
  *   equalityExpression ::= relationalExpression         // level 6
- *                            {EQUAL relationalExpression}
+ *                            {(EQUAL | NEQ) relationalExpression}
  * </pre>
  *
  * @return an AST for an equalityExpression.
@@ -1319,11 +1370,15 @@ private JExpression equalityExpression(): {
 {
     try {
         lhs = relationalExpression() { line = lhs.line(); }
-        (
+        [
             <EQUAL>
             rhs = relationalExpression()
-            { lhs = new JEqualOp(line, lhs, rhs); }
-        )*
+            { lhs = new JEqualOp(line, lhs, rhs); } |
+
+            <NEQ>
+            rhs = relationalExpression()
+            { lhs = new JNotEqualOp(line, lhs, rhs); }
+        ]
     }
     catch (ParseException e) {
         recoverFromError(new int[] { SEMI, EOF }, e);
@@ -1352,6 +1407,10 @@ private JExpression relationalExpression(): {
     try {
         lhs = additiveExpression() { line = lhs.line(); }
         [
+            <LT>
+            rhs = additiveExpression()
+            { lhs = new JLessThanOp(line, lhs, rhs); } |
+
             <GT>
             rhs = additiveExpression()
             { lhs = new JGreaterThanOp(line, lhs, rhs); } |
@@ -1359,6 +1418,10 @@ private JExpression relationalExpression(): {
             <LE>
             rhs = additiveExpression()
             { lhs = new JLessEqualOp(line, lhs, rhs); } |
+
+            <GTE>
+            rhs = additiveExpression()
+            { lhs = new JGreaterEqualOp(line, lhs, rhs); } |
 
             <INSTANCEOF>
             type = referenceType()

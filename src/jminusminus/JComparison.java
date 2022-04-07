@@ -180,3 +180,44 @@ class JLessThanOp extends JComparison {
     }
 
 }
+
+class JGreaterEqualOp extends JComparison {
+
+    /**
+     * Constructs an AST node for a greater-than-or-equal-to expression given its
+     * line number, and the lhs and rhs operands.
+     *
+     * @param line
+     *            line in which the greater-than-or-equal-to expression occurs in
+     *            the source file.
+     * @param lhs
+     *            lhs operand.
+     * @param rhs
+     *            rhs operand.
+     */
+
+    public JGreaterEqualOp(int line, JExpression lhs, JExpression rhs) {
+        super(line, ">=", lhs, rhs);
+    }
+
+    /**
+     * Branching code generation for &gt;= operation.
+     *
+     * @param output
+     *            the code emitter (basically an abstraction for producing the
+     *            .class file).
+     * @param targetLabel
+     *            target for generated branch instruction.
+     * @param onTrue
+     *            should we branch on true?
+     */
+
+    public void codegen(CLEmitter output, String targetLabel, boolean onTrue) {
+        lhs.codegen(output);
+        rhs.codegen(output);
+
+        output.addBranchInstruction(onTrue ? IF_ICMPGE : IF_ICMPLE,
+                targetLabel);
+    }
+
+}
