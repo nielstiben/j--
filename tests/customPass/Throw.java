@@ -4,7 +4,7 @@ public class Throw {
         String u;
         int x;
         throw p;
-        Obejct o;
+        Object o;
         try {
 
         } catch (Exception e) {
