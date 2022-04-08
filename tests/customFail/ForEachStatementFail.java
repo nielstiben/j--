@@ -7,10 +7,6 @@ class ForEachStatementFail {
 
         }
 
-        for (int nr: nr) {
-
-        }
-
 
         for (int nr: ints) {
             -{}-
