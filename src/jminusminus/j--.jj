@@ -1375,7 +1375,7 @@ private JExpression assignmentExpression(): {
 }
 {
     try {
-        lhs = conditionalOrExpression() { line = lhs.line(); }
+        lhs = conditionalExpression() { line = lhs.line(); }
         [
             <ASSIGN>
             rhs = assignmentExpression()
@@ -1407,6 +1407,28 @@ private JExpression assignmentExpression(): {
     }
     { return lhs; }
 }
+
+private JExpression conditionalExpression(): {
+    int line = 0;
+    JExpression test = null, consequent = null, alternate = null;
+}
+{
+    try {
+        test = conditionalOrExpression() { line = test.line(); }
+        (
+            LOOKAHEAD(<QUESTION>)
+            <QUESTION>
+            consequent = assignmentExpression()
+            <COLON>
+            alternate = conditionalExpression()
+            { test = new JElvisExpression(line, test, consequent, alternate); }
+        )*
+    } catch ( ParseException e ) {
+        recoverFromError( new int[] { SEMI, EOF }, e );
+    }
+    { return test; }
+}
+
 
 /**
  * Parse a conditional-and expression.
