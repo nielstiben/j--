@@ -529,11 +529,12 @@ private JInterfaceDeclaration interfaceDeclaration( ArrayList<String> mods ): {
  * @return an AST for a classDeclaration.
  */
 
-private JClassDeclaration classDeclaration(ArrayList<String> mods): {
+private JClassDeclaration classDeclaration( ArrayList<String> mods ): {
     int line = 0;
     String name = "";
     Type superClass = Type.OBJECT;
     ArrayList<JMember> classBody = null;
+    ArrayList<Type> abstractions = null;
 }
 {
     try {
@@ -542,13 +543,23 @@ private JClassDeclaration classDeclaration(ArrayList<String> mods): {
         [
             <EXTENDS> superClass = qualifiedIdentifier()
         ]
+        [
+        	<IMPLEMENTS>
+        	{abstractions = new ArrayList<Type>();
+        	abstractions.add(qualifiedIdentifier());}
+        	(
+        	<COMMA>
+        	{abstractions.add(qualifiedIdentifier());}
+        	)*
+        ]
         classBody = classBody()
     }
-    catch (ParseException e) {
-        recoverFromError(new int[] { SEMI, EOF }, e);
+    catch ( ParseException e ) {
+        recoverFromError( new int[] { SEMI, EOF }, e );
     }
     {
-        return new JClassDeclaration(line, mods, name, superClass, classBody);
+        return new JClassDeclaration( line, mods,
+            name, superClass, abstractions, classBody );
     }
 }
 

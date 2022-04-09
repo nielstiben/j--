@@ -28,6 +28,9 @@ class JClassDeclaration extends JAST implements JTypeDecl {
     /** Super class type. */
     private Type superType;
 
+    /** Super abstraction type. */
+    private ArrayList<Type> abstractions;
+
     /** This class type. */
     private Type thisType;
 
@@ -61,11 +64,12 @@ class JClassDeclaration extends JAST implements JTypeDecl {
      */
 
     public JClassDeclaration(int line, ArrayList<String> mods, String name,
-            Type superType, ArrayList<JMember> classBlock) {
+            Type superType, ArrayList<Type> abstractions, ArrayList<JMember> classBlock) {
         super(line);
         this.mods = mods;
         this.name = name;
         this.superType = superType;
+        this.abstractions = abstractions;
         this.classBlock = classBlock;
         hasExplicitConstructor = false;
         instanceFieldInitializations = new ArrayList<JFieldDeclaration>();
@@ -155,13 +159,18 @@ class JClassDeclaration extends JAST implements JTypeDecl {
                     "Cannot extend a final type: %s", superType.toString());
         }
 
+        ArrayList<String> abstractionNames = new ArrayList<>();
+        for( Type e :  this.abstractions) {
+            abstractionNames.add(e.jvmName());
+        }
+
         // Create the (partial) class
         CLEmitter partial = new CLEmitter(false);
 
         // Add the class header to the partial class
         String qualifiedName = JAST.compilationUnit.packageName() == "" ? name
                 : JAST.compilationUnit.packageName() + "/" + name;
-        partial.addClass(mods, qualifiedName, superType.jvmName(), null, false);
+        partial.addClass(mods, qualifiedName, superType.jvmName(), abstractionNames, false);
 
         // Pre-analyze the members and add them to the partial
         // class
@@ -265,8 +274,12 @@ class JClassDeclaration extends JAST implements JTypeDecl {
      */
 
     public void writeToStdOut(PrettyPrinter p) {
+        String abstractionsString = "null";
+        if (abstractions != null) {
+            abstractionsString = abstractions.toString();
+        }
         p.printf("<JClassDeclaration line=\"%d\" name=\"%s\""
-                + " super=\"%s\">\n", line(), name, superType.toString());
+                + " super=\"%s\", implements=\"%s\">\n", line(), name, superType.toString(), abstractions);
         p.indentRight();
         if (context != null) {
             context.writeToStdOut(p);
