@@ -459,7 +459,12 @@
             </test>
         </junit>
     </target>
-
+    <target name="magic">
+        <exec executable="ant"><arg value="clean"/></exec>
+        <exec executable="ant"><arg value="javacc"/></exec>
+        <exec executable="ant"><arg value="compileJavaCC"/></exec>
+        <exec executable="ant"><arg value="jar"/></exec>
+    </target>
     <!-- clean: Removes generated files and folders. -->
     <target name="clean">
         <echo message="Removing generated files and folders..."/>
