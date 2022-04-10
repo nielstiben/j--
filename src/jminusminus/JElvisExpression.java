@@ -24,6 +24,8 @@ class JElvisExpression extends JExpression {
 
     public JExpression analyze(Context context) {
         test = test.analyze(context);
+        consequent = consequent.analyze(context);
+        alternate = alternate.analyze(context);
         test.type().mustMatchExpected(line(), Type.BOOLEAN);
         if (!consequent.type().equals(alternate.type())) {
             JAST.compilationUnit.reportSemanticError(line(), "consequent and alternate must be of same type.");
