@@ -1,14 +1,14 @@
 package pass;
 
 
-interface Test {
 
-}
-interface Test2 {
-
-}
-public class Implements implements Test, Test2 {
+public class Implements implements Interface {
     public static void main(String[] args) {
+
+    }
+
+    @Override
+    public void eatBananasAndStayHealthy(int bananas) {
 
     }
 }
