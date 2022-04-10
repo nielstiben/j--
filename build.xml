@@ -310,6 +310,13 @@
         </junit>
     </target>
 
+    <target name="magic">
+        <exec executable="ant"><arg value="clean"/></exec>
+        <exec executable="ant"><arg value="javacc"/></exec>
+        <exec executable="ant"><arg value="compileJavaCC"/></exec>
+        <exec executable="ant"><arg value="jar"/></exec>
+    </target>
+
     <!--
     testJavaCCScanner: Tests JavaCC scanner by running it on all tests
     under tests/pass directory.

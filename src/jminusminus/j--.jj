@@ -379,16 +379,24 @@ private TypeName qualifiedIdentifier(): {
 private JAST typeDeclaration(): {
     ArrayList<String> mods = null;
     JAST classDeclaration = null;
+    JAST interfaceDeclaration = null;
 }
 {
+	mods = modifiers()
     try {
-        mods = modifiers()
-        classDeclaration = classDeclaration(mods)
+        classDeclaration = classDeclaration( mods ) |
+        interfaceDeclaration = interfaceDeclaration( mods )
     }
-    catch (ParseException e) {
-        recoverFromError(new int[] { SEMI, EOF }, e);
+    catch ( ParseException e ) {
+        recoverFromError( new int[] { SEMI, EOF }, e );
     }
-    { return classDeclaration; }
+    {
+    	if (classDeclaration != null){
+    		return classDeclaration;
+    	}else {
+    		return interfaceDeclaration;
+    	}
+    }
 }
 
 /**
@@ -470,7 +478,35 @@ private ArrayList<String> modifiers(): {
     }
     { return mods; }
 }
+/**
+* Parse a interface declaration.
+*/
+private JInterfaceDeclaration interfaceDeclaration( ArrayList<String> mods ): {
+    int line = 0;
+    String name = "";
+    Type superInterface = null;
+    ArrayList<JMember> interfaceBody = null;
+}
+{
+    try {
 
+        <INTERFACE> { line = token.beginLine; }
+        <IDENTIFIER> { name = token.image; }
+        [
+            <EXTENDS>
+            {superInterface =qualifiedIdentifier();}
+        ]
+        interfaceBody = interfaceBody()
+
+    }
+    catch ( ParseException e ) {
+        recoverFromError( new int[] { SEMI, EOF }, e );
+    }
+    {
+        return new JInterfaceDeclaration( line, mods, name, superInterface, interfaceBody );
+    }
+
+}
 /**
  * Parse a class declaration. A class which doesn't explicitly extend another
  * (super) class implicitly extends the superclass java.lang.Object.
@@ -509,7 +545,29 @@ private JClassDeclaration classDeclaration(ArrayList<String> mods): {
         return new JClassDeclaration(line, mods, name, superClass, classBody);
     }
 }
+/**
+* Parse a interface body.
 
+*/
+private ArrayList<JMember> interfaceBody(): {
+    ArrayList<String> mods = null;
+    JMember aMember = null;
+    ArrayList<JMember> members = new ArrayList<JMember>();
+}
+{
+    try {
+        <LCURLY>
+        (
+            mods = modifiers()
+            aMember = interfaceMemberDecl( mods ) { members.add( aMember ); }
+        )*
+        <RCURLY>
+    }
+    catch ( ParseException e ) {
+        recoverFromError( new int[] { SEMI, EOF }, e );
+    }
+    { return members; }
+}
 /**
  * Parse a class body.
  *
@@ -541,7 +599,53 @@ private ArrayList<JMember> classBody(): {
     }
     { return members; }
 }
+/**
+* Parse a member declaration of an interface.
+*/
+private JMember interfaceMemberDecl( ArrayList<String>  mods ): {
+    int line = 0;
+    Type type = null;
+    String name = "";
+    ArrayList<JFormalParameter> params = null;
+    ArrayList<JVariableDeclarator> variableDeclarators = null;
+    JMember memberDecl = null;
+}
+{
+    try {
 
+
+        LOOKAHEAD( ( <VOID> | type() ) <IDENTIFIER> <LPAREN> )
+        (
+            (
+                <VOID> { type = Type.VOID; } |
+                type = type()
+            )
+            { line = token.beginLine; }
+            <IDENTIFIER> { name = token.image; }
+            params = formalParameters()
+            <SEMI>
+
+            {
+                memberDecl =
+                   new JMethodDeclaration( line, mods, name,
+                                           type, params, null );
+            }
+        ) |
+        (
+            type = type() { line = token.beginLine; }
+            variableDeclarators = variableDeclarators( type )
+            <SEMI>
+            {
+                memberDecl = new JFieldDeclaration( line, mods,
+                    variableDeclarators );
+            }
+        )
+    }
+    catch ( ParseException e ) {
+        recoverFromError( new int[] { SEMI, EOF }, e );
+    }
+    { return memberDecl; }
+}
 /**
  * Parse a member declaration.
  *
