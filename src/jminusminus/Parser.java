@@ -741,7 +741,7 @@ public class Parser {
             scanner.returnToPosition();
             if(ifEach){
                 JVariableDeclaration forInit = colonLocalVariableDeclarationStatement();
-                JExpression expres = relationalExpression();
+                JExpression expres = expression();
                 mustBe(RPAREN);
                 JStatement statement = statement();
                 return new JForEachStatement(line, statement, forInit, expres);
