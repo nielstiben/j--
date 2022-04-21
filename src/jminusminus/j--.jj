@@ -869,14 +869,16 @@ private JStatement statement(): {
         */
 
         // FOR loop
-        LOOKAHEAD(<FOR> <LPAREN> localVariableDeclarationStatement() relationalExpression() <SEMI> statementExpression() <RPAREN>)
+        LOOKAHEAD(<FOR> <LPAREN> localVariableDeclarationStatement() relationalExpression() <SEMI>)
         <FOR> { line = token.beginLine; }               // for
         <LPAREN>                                        // (
         forInit = localVariableDeclarationStatement()   // int i = 0;
         expres = relationalExpression()                 // i < 10
         <SEMI>                                          // ;
-        forUpdate = statementExpression()               // i++
-        <RPAREN>                                        // )
+        [                                                   // <Optional>
+            forUpdate = statementExpression()               // i++
+        ]                                                   // </Optional>
+        <RPAREN>                                         // )
         statement = statement()                          // {}
         { statement = new JForStatement(line, statement, forInit, forUpdate, expres); } |
 
