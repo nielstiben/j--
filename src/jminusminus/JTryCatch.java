@@ -36,7 +36,7 @@ class JTryCatch extends JStatement {
     /**
      * Analysis involves analyzing the test, checking its type and analyzing the
      * body statement.
-     * 
+     *
      * @param context
      *            context in which names are resolved.
      * @return the analyzed (and possibly rewritten) AST subtree.
@@ -44,23 +44,25 @@ class JTryCatch extends JStatement {
 
     public JTryCatch analyze(Context context) {
         tryBody = (JBlock) tryBody.analyze(context);
-        for (int i = 0; i < cParameters.size(); i++) {
-            JFormalParameter param = cParameters.get(i);
-            // check if parameter is of type Object
-            param.type().mustMatchExpected(line, Type.OBJECT);
-            cParameters.set(i, (JFormalParameter) cParameters.get(i).analyze(context));
-        }
-        for (int i = 0; i < catchBodies.size(); i++) {
-            catchBodies.set(i, (JBlock) catchBodies.get(i).analyze(context));
+        if (catchBodies != null) {
+            for (int i = 0; i < cParameters.size(); i++) {
+                JFormalParameter param = cParameters.get(i);
+                cParameters.set(i, (JFormalParameter) cParameters.get(i).analyze(context));
+            }
+            for (int i = 0; i < catchBodies.size(); i++) {
+                catchBodies.set(i, (JBlock) catchBodies.get(i).analyze(context));
 
+            }
         }
-        finallyBody = (JBlock) finallyBody.analyze(context);
+        if (finallyBody != null) {
+            finallyBody = (JBlock) finallyBody.analyze(context);
+        }
         return this;
     }
 
     /**
      * Generates code for the for loo<JWildExpressionp.
-     * 
+     *
      * @param output
      *            the code emitter (basically an abstraction for producing the
      *            .class file).
@@ -75,7 +77,7 @@ class JTryCatch extends JStatement {
         // Branch out of the loop on the test condition
         // being false
         output.addLabel(test);
-       
+
 
         // Codegen body
         tryBody.codegen(output);
