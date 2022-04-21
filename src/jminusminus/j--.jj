@@ -816,6 +816,10 @@ private JStatement statement(): {
     JStatement consequent = null;
     JStatement alternate  = null;
     JStatement body       = null;
+    JBlock tryBody         = null;
+    ArrayList<JFormalParameter> catchExceptions = null;
+    ArrayList<JBlock> catchBlocks = null;
+    JBlock finallyBlock = null;
     JExpression expr      = null;
     JVariableDeclaration forInit = null;
     JStatement forUpdate  = null;
@@ -824,7 +828,33 @@ private JStatement statement(): {
 {
     try {
         statement = block() |
-
+        <TRY> { line = token.beginLine; }
+        tryBody = block()
+        (<CATCH> {
+        catchExceptions = new ArrayList();
+        catchBlocks = new ArrayList();
+        }
+        <LPAREN>
+        {catchExceptions.add(formalParameter());}
+        <RPAREN>
+        {catchBlocks.add(block());}
+            (
+                <CATCH>
+                <LPAREN>
+                {catchExceptions.add(formalParameter());}
+                <RPAREN>
+                {catchBlocks.add(block());}
+            )*
+            [
+                <FINALLY> {
+                finallyBlock = block();
+                }
+            ] |
+            <FINALLY> {
+            finallyBlock = block();
+            }
+        )
+        {statement = new JTryCatch(line, tryBody, catchBlocks, catchExceptions, finallyBlock);}|
         <IF> { line = token.beginLine; }
         test = parExpression()
         consequent = statement()

@@ -674,18 +674,22 @@ public class Parser {
             return block();
         } else if (have(TRY)){
             // TryCatch is right now loose in the sense that the exception can be any Formal Parameter.
-            ArrayList<JStatement> catchBodies = new ArrayList<>();
+            ArrayList<JBlock> catchBodies = new ArrayList<>();
             ArrayList<JFormalParameter> cParameters = new ArrayList<>();
-            JStatement statement = statement();
+            JBlock statement = block();
+            JBlock finallyBody = null;
             while (have(CATCH)){
                 mustBe(LPAREN);
                 JFormalParameter cParameter = formalParameter();
                 cParameters.add(cParameter);
                 mustBe(RPAREN);
-                JStatement catchBody = statement();
+                JBlock catchBody = block();
                 catchBodies.add(catchBody);
-            }            
-            return new JTryCatch(line, statement, catchBodies, cParameters);
+            }
+            if (have(FINALLY)){
+                finallyBody = block();
+            }
+            return new JTryCatch(line, statement, catchBodies, cParameters, finallyBody);
 
         }else if (have(IF)) {
             JExpression test = parExpression();
