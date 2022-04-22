@@ -225,8 +225,11 @@ class JMultiplyOp extends JBinaryExpression {
      * @param line
      *            line in which the multiplication expression occurs in the
      *            source file.
-     * @param lhs
-     *            the lhs operand.
+     * @param lhsif (!lhs.type().mustMatchExpected(line(), Type.BOOLEAN)){
+            type = Type.ANY;
+            JAST.compilationUnit.reportSemanticError(line(),
+            "Invalid operand types for %");
+        }
      * @param rhs
      *            the rhs operand.
      */
@@ -327,15 +330,16 @@ class JTernaryOp extends JBinaryExpression {
         lhs = (JExpression) lhs.analyze(context);
         rhs = (JExpression) rhs.analyze(context);
         rhs2 = (JExpression) rhs2.analyze(context);
+        lhs.type().mustMatchExpected(line(), Type.BOOLEAN);
         
         if (rhs.type == rhs2.type){
             type = rhs.type;
         } else {
-            // shrug we dunno.
             type = Type.ANY;
             JAST.compilationUnit.reportSemanticError(line(),
-                    "Invalid operand types for %");
+                    "Invalid operand types for ?");
         }
+
         return this;
     }
 
