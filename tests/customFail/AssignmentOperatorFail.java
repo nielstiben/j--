@@ -1,11 +1,30 @@
 class AssignmentOperatorFail {
 public static void main(String[]args){
-        int a = 19;
-        a = "ads";
+        int    intA = 19;
+        double doubleB = 19.0;
+        String stringC = "lol";
 
-        double b = 19;
-        b = "ssss";
+        String e;
 
-        a = b;
+        intA = "string";
+        doubleB = "string";
+        intA = doubleB;
+
+        e = stringC -= intA;
+        e = stringC -= doubleB;
+        e = stringC -= stringC;
+
+        e = stringC /= intA;
+        e = stringC /= doubleB;
+        e = stringC /= stringC;
+
+        e = stringC *= intA;
+        e = stringC *= doubleB;
+        e = stringC *= stringC;
+
+       // e = stringC %= intA;
+        e = stringC %= doubleB;
+        //e = stringC %= stringC;
+
         }
 }
