@@ -143,6 +143,8 @@ class JInterfaceDeclaration extends JAST implements JTypeDecl {
             }
         }
 
+
+
         // Creating a partial interface in memory can result in a
         // java.lang.VerifyError if the semantics below are
         // violated, so we can't defer these checks to analyze()

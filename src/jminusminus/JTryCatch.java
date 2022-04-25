@@ -2,9 +2,9 @@
 
 package jminusminus;
 
-import static jminusminus.CLConstants.*;
-
 import java.util.ArrayList;
+
+import static jminusminus.CLConstants.GOTO;
 
 /**
  * The AST node for a for-statement.
@@ -13,33 +13,24 @@ import java.util.ArrayList;
 class JTryCatch extends JStatement {
 
     /** The body. */
-    private JStatement tryBody;
-    private ArrayList<JStatement> catchBodies;
+    private JBlock tryBody;
+    private ArrayList<JBlock> catchBodies;
     private ArrayList <JFormalParameter> cParameters;
-    
+    private JBlock finallyBody;
 
 
-    /**
-     * Constructs an AST node for a for-statement given its line number, the
-     * test expression, and the body.
-     * 
-     * @param line
-     *            line in which the for-statement occurs in the source file.
-     * @param condition
-     * 
-     * @param assignment
-     * 
-     * @param comparison
-     *            test expression.
-     * @param body
-     *            
-     */
 
-    public JTryCatch(int line, JStatement tryBody, ArrayList<JStatement> catchBodies, ArrayList<JFormalParameter> cParameters ) {
+
+    public JTryCatch(int line, JBlock tryBody,
+                     ArrayList<JBlock> catchBodies,
+                     ArrayList<JFormalParameter> cParameters,
+                     JBlock finallyBody) {
         super(line);
         this.tryBody = tryBody;
         this.catchBodies = catchBodies;
         this.cParameters = cParameters;
+        this.finallyBody = finallyBody;
+
     }
 
     /**
@@ -52,8 +43,18 @@ class JTryCatch extends JStatement {
      */
 
     public JTryCatch analyze(Context context) {
-        //tryBody = (JStatement) tryBody.analyze(context);
-       // catchBody = (JStatement) catchBody.analyze(context);
+        tryBody = (JBlock) tryBody.analyze(context);
+        for (int i = 0; i < cParameters.size(); i++) {
+            JFormalParameter param = cParameters.get(i);
+            // check if parameter is of type Object
+            param.type().mustMatchExpected(line, Type.OBJECT);
+            cParameters.set(i, (JFormalParameter) cParameters.get(i).analyze(context));
+        }
+        for (int i = 0; i < catchBodies.size(); i++) {
+            catchBodies.set(i, (JBlock) catchBodies.get(i).analyze(context));
+
+        }
+        finallyBody = (JBlock) finallyBody.analyze(context);
         return this;
     }
 
@@ -106,16 +107,23 @@ class JTryCatch extends JStatement {
         p.printf("</TryBody>\n");
         p.print("<CatchParameter>");
         p.println();
-        for (JFormalParameter cParameter : cParameters) {
-            cParameter.writeToStdOut(p);    
-        }  
-        p.print("</CatchParameter>");
-        p.println();
-        p.printf("<CatchBody>\n");
-        for (JStatement catchBody : catchBodies) {
-            catchBody.writeToStdOut(p);    
+        if (cParameters != null) {
+            for (JFormalParameter cParameter : cParameters) {
+                cParameter.writeToStdOut(p);
+            }
+            p.print("</CatchParameter>");
+            p.println();
+            p.printf("<CatchBody>\n");
+            for (JStatement catchBody : catchBodies) {
+                catchBody.writeToStdOut(p);
+            }
         }
         p.printf("</Catch>\n");
+        if (finallyBody != null) {
+            p.printf("<FinallyBody>\n");
+            finallyBody.writeToStdOut(p);
+            p.printf("</FinallyBody>\n");
+        }
         p.printf("</TryCatch>\n");
     }
 }
