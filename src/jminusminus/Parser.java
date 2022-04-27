@@ -430,12 +430,13 @@ public class Parser {
 
     private ArrayList<String> modifiers() {
         ArrayList<String> mods = new ArrayList<String>();
-        boolean scannedPUBLIC = false;
+        boolean scannedPUBLIC = false; 
         boolean scannedPROTECTED = false;
         boolean scannedPRIVATE = false;
         boolean scannedSTATIC = false;
         boolean scannedABSTRACT = false;
         boolean more = true;
+        scanner.recordPosition();
         while (more)
             if (have(PUBLIC)) {
                 mods.add("public");
@@ -465,11 +466,16 @@ public class Parser {
                 }
                 scannedPRIVATE = true;
             } else if (have(STATIC)) {
+                if (!have(LCURLY)){
                 mods.add("static");
                 if (scannedSTATIC) {
                     reportParserError("Repeated modifier: static");
                 }
                 scannedSTATIC = true;
+            } else {
+                more = false;
+                scanner.returnToPosition();
+            }
             } else if (have(ABSTRACT)) {
                 mods.add("abstract");
                 if (scannedABSTRACT) {
@@ -552,6 +558,16 @@ public class Parser {
         return members;
     }
 
+    private ArrayList<JStatement> InterfaceBody() {
+        ArrayList<JStatement> members = new ArrayList<JStatement>();
+        mustBe(LCURLY);
+        while (!see(RCURLY) && !see(EOF)) {
+            members.add(statement());
+        }
+        mustBe(RCURLY);
+        return members;
+    }
+
     /**
      * Parse a member declaration.
      * 
@@ -559,6 +575,7 @@ public class Parser {
      *   memberDecl ::= IDENTIFIER            // constructor
      *                    formalParameters
      *                    block
+
      *                | (VOID | type) IDENTIFIER  // method
      *                    formalParameters
      *                    (block | SEMI)
@@ -574,6 +591,9 @@ public class Parser {
         int line = scanner.token().line();
         ArrayList<Type> exceptions = new ArrayList<>();
         JMember memberDecl = null;
+
+    
+
         if (seeIdentLParen()) {
             // A constructor
             mustBe(IDENTIFIER);
@@ -584,7 +604,12 @@ public class Parser {
                     body);
         } else {
             Type type = null;
-            if (have(VOID)) {
+
+            if (have(STATIC)){
+                JBlock body = block();
+                memberDecl = new JStaticBlock(line, body);
+
+            } else if (have(VOID)) {
                 // void method
                 type = Type.VOID;
                 mustBe(IDENTIFIER);
@@ -605,11 +630,15 @@ public class Parser {
                     JBlock body = have(SEMI) ? null : block();
                     memberDecl = new JMethodDeclaration(line, mods, name, type,
                             params, exceptions, body);
-                } else {
-                    // Field
+                }  else {
+
+                   
+
                     memberDecl = new JFieldDeclaration(line, mods,
                             variableDeclarators(type));
                     mustBe(SEMI);
+
+                    
                 }
             }
         }
@@ -638,6 +667,7 @@ public class Parser {
     private JBlock block() {
         int line = scanner.token().line();
         ArrayList<JStatement> statements = new ArrayList<JStatement>();
+        
         mustBe(LCURLY);
         while (!see(RCURLY) && !see(EOF)) {
             statements.add(blockStatement());
@@ -687,8 +717,7 @@ public class Parser {
         int line = scanner.token().line();
         if (see(LCURLY)) {
             return block();
-        } else if (have(TRY)){
-            // TryCatch is right now loose in the sense that the exception can be any Formal Parameter.
+        }else if (have(TRY)){
             ArrayList<JStatement> catchBodies = new ArrayList<>();
             ArrayList<JFormalParameter> cParameters = new ArrayList<>();
             JStatement statement = statement();
@@ -705,7 +734,6 @@ public class Parser {
                 finalBody = statement();
             }            
             return new JTryCatch(line, statement, catchBodies, cParameters,finalBody);
-
         }else if (have(IF)) {
             JExpression test = parExpression();
             JStatement consequent = statement();
@@ -715,20 +743,6 @@ public class Parser {
             JExpression test = parExpression();
             JStatement statement = statement();
             return new JWhileStatement(line, test, statement);
-            /**
-             * Okay.. so the code below is kinda funny
-             * 
-             * If we have FOR - we continue
-             *      after for we look for LPARAM
-             *          then we record scannar pos
-             *              jump forward two times
-             *                  if we find COLON we know it is a foreach
-             *                      we set ifEach true and we regain the recorded scanner pos
-             *  if its a foreach loop, a special method is used to avoid the missing semi, and replaces it with a need for a colon
-             *  if not then everything proceeds as normal.
-             *  
-             *  feel free to come op with a better solution :)
-             */
         } else if (have(FOR)) {
             mustBe(LPAREN);
             Boolean ifEach = false;
@@ -791,7 +805,7 @@ public class Parser {
         ArrayList<JFormalParameter> parameters = new ArrayList<JFormalParameter>();
         mustBe(LPAREN);
         if (have(RPAREN))
-            return parameters; // ()
+            return parameters;
         do {
             parameters.add(formalParameter());
         } while (have(COMMA));
