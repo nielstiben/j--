@@ -533,7 +533,7 @@ public class Parser {
         } else {
             superClass = Type.OBJECT;
         }
-        return new JInterfaceDeclaration(line, mods, name, superClass, classBody());
+        return new JInterfaceDeclaration(line, mods, name, superClass, InterfaceBody());
     }
 
     /**
@@ -558,11 +558,11 @@ public class Parser {
         return members;
     }
 
-    private ArrayList<JStatement> InterfaceBody() {
-        ArrayList<JStatement> members = new ArrayList<JStatement>();
+    private ArrayList<JMember> InterfaceBody() {
+        ArrayList<JMember> members = new ArrayList<JMember>();
         mustBe(LCURLY);
         while (!see(RCURLY) && !see(EOF)) {
-            members.add(statement());
+            members.add(interfaceMemberDecl(modifiers()));
         }
         mustBe(RCURLY);
         return members;
@@ -587,13 +587,55 @@ public class Parser {
      * @return an AST for a memberDecl.
      */
 
+
+    private JMember interfaceMemberDecl(ArrayList<String> mods) {
+        int line = scanner.token().line();
+        ArrayList<Type> exceptions = new ArrayList<>();
+        JMember memberDecl = null;
+            Type type = null;
+             if (have(VOID)) {
+                // void method
+                type = Type.VOID;
+                mustBe(IDENTIFIER);
+                String name = scanner.previousToken().image();
+                ArrayList<JFormalParameter> params = formalParameters();
+                getExceptions(line, exceptions);
+                JBlock body = have(SEMI) ? null : block();
+                memberDecl = new JInterfaceMethodDeclaration(line, mods, name, type,
+                        params, exceptions, body);
+            } else {
+                type = type();
+                if (seeIdentLParen()) {
+                    // Non void method
+                    mustBe(IDENTIFIER);
+                    String name = scanner.previousToken().image();
+                    ArrayList<JFormalParameter> params = formalParameters();
+                    getExceptions(line, exceptions);
+                    JBlock body = have(SEMI) ? null : block();
+                    memberDecl = new JInterfaceMethodDeclaration(line, mods, name, type,
+                            params, exceptions, body);
+                }  else {
+                    memberDecl = new JFieldDeclaration(line, mods,
+                            variableDeclarators(type));
+                    mustBe(SEMI);
+                }
+            }
+        return memberDecl;
+    }
+
+    private void getExceptions(int line, ArrayList<Type> exceptions) {
+        if (have(THROWS)){
+            exceptions.add(type());
+            while(have(COMMA)){
+                    exceptions.add(type());
+            }
+        }
+    }
+
     private JMember memberDecl(ArrayList<String> mods) {
         int line = scanner.token().line();
         ArrayList<Type> exceptions = new ArrayList<>();
         JMember memberDecl = null;
-
-    
-
         if (seeIdentLParen()) {
             // A constructor
             mustBe(IDENTIFIER);
@@ -604,11 +646,9 @@ public class Parser {
                     body);
         } else {
             Type type = null;
-
             if (have(STATIC)){
                 JBlock body = block();
                 memberDecl = new JStaticBlock(line, body);
-
             } else if (have(VOID)) {
                 // void method
                 type = Type.VOID;
@@ -631,13 +671,9 @@ public class Parser {
                     memberDecl = new JMethodDeclaration(line, mods, name, type,
                             params, exceptions, body);
                 }  else {
-
-                   
-
                     memberDecl = new JFieldDeclaration(line, mods,
                             variableDeclarators(type));
                     mustBe(SEMI);
-
                     
                 }
             }
@@ -645,14 +681,6 @@ public class Parser {
         return memberDecl;
     }
 
-    private void getExceptions(int line, ArrayList<Type> exceptions) {
-        if (have(THROWS)){
-            exceptions.add(type());
-            while(have(COMMA)){
-                    exceptions.add(type());
-            }
-        }
-    }
 
     /**
      * Parse a block.
