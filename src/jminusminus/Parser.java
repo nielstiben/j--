@@ -644,11 +644,16 @@ public class Parser {
             JBlock body = block();
             memberDecl = new JConstructorDeclaration(line, mods, name, params, exceptions,
                     body);
+                    scanner.recordPosition();
         } else {
             Type type = null;
             if (have(STATIC)){
                 JBlock body = block();
                 memberDecl = new JStaticBlock(line, body);
+            } else if (have(LCURLY)) {
+                scanner.returnToPosition();
+                JBlock body = block();
+                memberDecl = new JBlockInner(line, body, mods);
             } else if (have(VOID)) {
                 // void method
                 type = Type.VOID;
