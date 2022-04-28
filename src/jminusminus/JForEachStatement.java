@@ -52,6 +52,7 @@ class JForEachStatement extends JStatement {
         forInit.analyze(context);
         expres.analyze(context);
         body = (JStatement) body.analyze(context);
+
         return this;
     }
 

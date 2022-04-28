@@ -244,6 +244,7 @@ class JMinusAssignOp extends JAssignment {
             rhs.type().mustMatchExpected(line(), Type.INT);
             type = Type.INT;
         } else {
+            type = Type.ANY;
             JAST.compilationUnit.reportSemanticError(line(),
                     "Invalid lhs type for -=: " + lhs.type());
         }
@@ -323,13 +324,13 @@ class JStarAssignOp extends JAssignment {
         }
 
         rhs = (JExpression) rhs.analyze(context);
-
         if (lhs.type().equals(Type.DOUBLE) || rhs.type().equals(Type.DOUBLE)) {
             type = Type.DOUBLE;
         } else if (lhs.type().equals(Type.INT)) {
             rhs.type().mustMatchExpected(line(), Type.INT);
             type = Type.INT;
         } else {
+            type = Type.ANY;
             JAST.compilationUnit.reportSemanticError(line(),
                     "Invalid lhs type for *=: " + lhs.type());
         }
@@ -416,6 +417,7 @@ class JDivEqOp extends JAssignment {
             rhs.type().mustMatchExpected(line(), Type.INT);
             type = Type.INT;
         } else {
+            type = Type.ANY;
             JAST.compilationUnit.reportSemanticError(line(),
                     "Invalid lhs type for /=: " + lhs.type());
         }
@@ -489,6 +491,7 @@ class JRemAssignOp extends JAssignment {
             rhs.type().mustMatchExpected(line(), Type.INT);
             type = Type.INT;
         } else {
+            type = Type.ANY;
             JAST.compilationUnit.reportSemanticError(line(),
                     "Invalid lhs type for %=: " + lhs.type());
         }

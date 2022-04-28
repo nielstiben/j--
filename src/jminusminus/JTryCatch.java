@@ -16,6 +16,7 @@ class JTryCatch extends JStatement {
     private JStatement tryBody;
     private ArrayList<JStatement> catchBodies;
     private ArrayList <JFormalParameter> cParameters;
+    private JStatement finalBody;
     
 
 
@@ -35,11 +36,12 @@ class JTryCatch extends JStatement {
      *            
      */
 
-    public JTryCatch(int line, JStatement tryBody, ArrayList<JStatement> catchBodies, ArrayList<JFormalParameter> cParameters ) {
+    public JTryCatch(int line, JStatement tryBody, ArrayList<JStatement> catchBodies, ArrayList<JFormalParameter> cParameters, JStatement finalBody) {
         super(line);
         this.tryBody = tryBody;
         this.catchBodies = catchBodies;
         this.cParameters = cParameters;
+        this.finalBody = finalBody;
     }
 
     /**
@@ -105,7 +107,7 @@ class JTryCatch extends JStatement {
         tryBody.writeToStdOut(p);
         p.printf("</TryBody>\n");
         p.print("<CatchParameter>");
-        p.println();
+            
         for (JFormalParameter cParameter : cParameters) {
             cParameter.writeToStdOut(p);    
         }  
@@ -116,6 +118,15 @@ class JTryCatch extends JStatement {
             catchBody.writeToStdOut(p);    
         }
         p.printf("</Catch>\n");
+        
+        if (finalBody != null){
+            p.printf("<Finally>");
+            p.println();
+            finalBody.writeToStdOut(p);
+            p.printf("</Finally>");
+            p.println();
+        }
+        
         p.printf("</TryCatch>\n");
     }
 }
