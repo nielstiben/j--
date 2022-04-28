@@ -259,7 +259,7 @@ class JMethodDeclaration extends JAST implements JMember {
             p.println("</FormalParameters>");
         }
 
-        if (!exceptions.isEmpty()){
+        if (exceptions != null && !exceptions.isEmpty()){
             p.println("<Exceptions>");
             for (Type exception: exceptions) {
                 p.indentRight();
