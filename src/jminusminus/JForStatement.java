@@ -116,13 +116,13 @@ class JForStatement extends JStatement {
         p.println();
         expres.writeToStdOut(p);
         p.print("</expres>");
-        p.println();
         if (forUpdate != null) {
+            p.println();
             p.print("<forUpdate>");
             p.println();
             forUpdate.writeToStdOut(p);
             p.print("</forUpdate>");
-        }
+        } 
         p.println();
         p.printf("<Body>\n");
         body.writeToStdOut(p);
