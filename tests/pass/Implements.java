@@ -1,11 +1,12 @@
+package pass;
 
-
-//interface Test {
-//
-//}
-
-public class Test {
-//    public static void main(String[] args) {
-//
-//    }
+interface TestInterface {
+    public int f(int x);
 }
+
+class TestClass implements TestInterface {
+    public int f(int x) {
+        return x * x;
+    }
+}
+

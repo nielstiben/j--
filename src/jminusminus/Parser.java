@@ -511,7 +511,7 @@ public class Parser {
         } else {
             superClass = Type.OBJECT;
         }
-        return new JClassDeclaration(line, mods, name, superClass, classBody());
+        return new JClassDeclaration(line, mods, name, superClass, null, classBody());
     }
 
     private JInterfaceDeclaration interfaceDeclaration(ArrayList<String> mods) {
