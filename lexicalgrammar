@@ -6,7 +6,6 @@
 
 // Single line comment -- ignored
 "//" {~("\n"|"\r")} ("\n"|"\r"["\n"])
-//little lol
 // Reserved words
 ABSTRACT    ::= "abstract"
 BOOLEAN     ::= "boolean"
