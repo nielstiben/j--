@@ -20,9 +20,5 @@ public class For {
         for (double q = 0.0; q < 5.5; q = q + 0.1) {
 
         }
-
-        for (double q = 0.0; q < 5.5;) {
-            q+=0.2;
-        }
     }
 }

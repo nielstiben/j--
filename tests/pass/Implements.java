@@ -7,7 +7,8 @@ public class Implements implements Interface {
 
     }
 
-    @Override
+    // Override is not required for the project
+//    @Override
     public void eatBananasAndStayHealthy(int bananas) {
 
     }

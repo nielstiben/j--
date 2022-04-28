@@ -645,11 +645,11 @@ private JMember interfaceMemberDecl( ArrayList<String>  mods ): {
             <IDENTIFIER> { name = token.image; }
             params = formalParameters()
             <SEMI>
-
+            // TODO: We use NULL at the exceptions position.
             {
                 memberDecl =
                    new JMethodDeclaration( line, mods, name,
-                                           type, params, null );
+                                           type, params, null, null );
             }
         ) |
         (
@@ -717,8 +717,9 @@ private JMember memberDecl(ArrayList<String> mods): {
             params = formalParameters()
             body = block()
             {
+                // TODO: We use NULL at the exceptions position.
                 memberDecl = new JConstructorDeclaration(line, mods,
-                                                         name, params, body);
+                                                         name, params, null, body);
             }
         ) |
         LOOKAHEAD((<VOID> | type()) <IDENTIFIER> <LPAREN>)
@@ -735,8 +736,9 @@ private JMember memberDecl(ArrayList<String> mods): {
                 <SEMI>
             )
             {
+                // TODO: We use NULL at the exceptions position.
                 memberDecl = new JMethodDeclaration(line, mods, name,
-                                                    type, params, body);
+                                                    type, params, null, body);
             }
         ) |
         // initializer block

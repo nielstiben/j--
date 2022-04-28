@@ -5,7 +5,8 @@ public class EqualityOperators {
         return a == b;
     }
 
-    public boolean notEqual(int a, int b) {
-        return a != b;
-    }
+    // Not needed for the project:
+//    public boolean notEqual(int a, int b) {
+//        return a != b;
+//    }
 }
