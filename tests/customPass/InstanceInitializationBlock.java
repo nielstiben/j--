@@ -1,6 +1,6 @@
 public class InstanceInitializationBlock {
 
-    {
+    {   
         
     }
 
@@ -11,6 +11,6 @@ public class InstanceInitializationBlock {
 
         }
 
-        
+
     }
 }
