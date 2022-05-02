@@ -30,8 +30,11 @@ blockStatement ::= localVariableDeclarationStatement
                  | statement
 
 statement ::= block
+            | TRY statement CATCH LPAREN FormalParameter statement RPAREN [FINALLY statement]
             | IF parExpression statement [ELSE statement]
             | WHILE parExpression statement 
+            | FOR LPAREN [variableDeclaration expression] [variableDeclaration relationalExpression [statementExpression]] statement RPAREN
+            | THROW expression
             | RETURN [expression] SEMI
             | SEMI 
             | statementExpression SEMI
@@ -61,7 +64,7 @@ arguments ::= LPAREN [expression {COMMA expression}] RPAREN
 
 type ::= referenceType | basicType
 
-basicType ::= BOOLEAN | CHAR | INT 
+basicType ::= BOOLEAN | CHAR | INT | DOUBLE
 
 referenceType ::= basicType LBRACK RBRACK {LBRACK RBRACK}
                 | qualifiedIdentifier {LBRACK RBRACK}
@@ -123,5 +126,5 @@ creator ::= (basicType | qualifiedIdentifier)
 newArrayDeclarator ::= LBRACK expression RBRACK 
                          {LBRACK expression RBRACK} {LBRACK RBRACK}
 
-literal ::= INT_LITERAL | CHAR_LITERAL | STRING_LITERAL
+literal ::= INT_LITERAL | DOULBE_LITERAL | CHAR_LITERAL | STRING_LITERAL
           | TRUE        | FALSE        | NULL
