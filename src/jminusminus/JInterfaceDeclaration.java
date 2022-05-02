@@ -208,10 +208,10 @@ class JInterfaceDeclaration extends JAST implements JTypeDecl {
                 methods += "\n" + method;
             }
             JAST.compilationUnit.reportSemanticError(line,
-                    "interface must be declared abstract since it defines "
+                    "interface methods must be emptys since it defines"
                             + "the following abstract methods: %s", methods);
-
         }
+
         return this;
     }
 
