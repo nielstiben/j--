@@ -199,19 +199,6 @@ class JInterfaceDeclaration extends JAST implements JTypeDecl {
         for (JMember member : interfaceBlock) {
             ((JAST) member).analyze(this.context);
         }
-
-        // Finally, ensure that a non-abstract interface has
-        // no abstract methods.
-        if (!thisType.isAbstract() && thisType.abstractMethods().size() > 0) {
-            String methods = "";
-            for (Method method : thisType.abstractMethods()) {
-                methods += "\n" + method;
-            }
-            JAST.compilationUnit.reportSemanticError(line,
-                    "interface must be declared abstract since it defines "
-                            + "the following abstract methods: %s", methods);
-
-        }
         return this;
     }
 

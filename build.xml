@@ -280,6 +280,10 @@
 
     </target>
 
+    <target name="alias1" depends="clean, javacc, compileJavaCC">
+
+    </target>
+
     <!-- 
     testScanner: Tests handwritten scanner by running it on all tests under
     tests/pass directory.

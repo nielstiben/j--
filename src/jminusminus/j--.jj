@@ -497,7 +497,7 @@ private JInterfaceDeclaration interfaceDeclaration( ArrayList<String> mods ): {
         <IDENTIFIER> { name = token.image; }
         [
             <EXTENDS>
-            {superInterface =qualifiedIdentifier();}
+            {superInterface =qualifiedIdentifier(); }
         ]
         interfaceBody = interfaceBody()
 
@@ -630,6 +630,7 @@ private JMember interfaceMemberDecl( ArrayList<String>  mods ): {
     ArrayList<JFormalParameter> params = null;
     ArrayList<JVariableDeclarator> variableDeclarators = null;
     JMember memberDecl = null;
+    JBlock dummyBlock = new JBlock(line, new ArrayList<JStatement>());
 }
 {
     try {
@@ -645,11 +646,13 @@ private JMember interfaceMemberDecl( ArrayList<String>  mods ): {
             <IDENTIFIER> { name = token.image; }
             params = formalParameters()
             <SEMI>
-            // TODO: We use NULL at the exceptions position.
             {
-                memberDecl =
-                   new JMethodDeclaration( line, mods, name,
-                                           type, params, null, null );
+                // If mods contains the keyword "abstract", then parameter block is null.
+                if (mods.contains("abstract")) {
+                    memberDecl = new JMethodDeclaration( line, mods, name, type, params, null, null );
+                } else {
+                    memberDecl = new JMethodDeclaration( line, mods, name, type, params, null, dummyBlock );
+                }
             }
         ) |
         (
