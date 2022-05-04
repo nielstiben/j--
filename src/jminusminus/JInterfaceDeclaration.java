@@ -237,12 +237,11 @@ class JInterfaceDeclaration extends JAST implements JTypeDecl {
 
         // Generate an interface initialization method?
         if (fields.size() > 0) {
-            codegenInterfaceInit(output);
+            codegenInterfaceFields(output);
         }
     }
 
-    // TODO: Rename this method
-    private void codegenInterfaceInit(CLEmitter output) {
+    private void codegenInterfaceFields(CLEmitter output) {
         ArrayList<String> mods = new ArrayList<String>();
         mods.add("public");
         mods.add("static");

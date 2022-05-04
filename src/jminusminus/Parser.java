@@ -510,17 +510,21 @@ public class Parser {
         mustBe(CLASS);
         mustBe(IDENTIFIER);
         String name = scanner.previousToken().image();
+        ArrayList<Type> abstractions = new ArrayList<>();
+
         Type superClass;
         if (have(EXTENDS)) {
             superClass = qualifiedIdentifier();
         } else if (have(IMPLEMENTS)) {
-            mustBe(IDENTIFIER);
-            // For now, this is just parsable the line below has to be changed eventually
+            abstractions.add(qualifiedIdentifier());
+            while (have(COMMA)) {
+                abstractions.add(qualifiedIdentifier());
+            }
             superClass = Type.OBJECT;
         } else {
             superClass = Type.OBJECT;
         }
-        return new JClassDeclaration(line, mods, name, superClass, null, classBody());
+        return new JClassDeclaration(line, mods, name, superClass, abstractions, classBody());
     }
 
     private JInterfaceDeclaration interfaceDeclaration(ArrayList<String> mods) {
