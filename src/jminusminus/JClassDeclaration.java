@@ -62,10 +62,16 @@ class JClassDeclaration extends JAST implements JTypeDecl {
      */
     private ArrayList<JFieldDeclaration> instanceFieldInitializations;
 
+
     /**
      * Static (class) fields of this class.
      */
     private ArrayList<JFieldDeclaration> staticFieldInitializations;
+
+    private ArrayList<JBlockInner> staticInnerBlocks;
+
+    private ArrayList<JBlockInner> innerBlocks;
+
 
     /**
      * Constructs an AST node for a class declaration given the line number, list
@@ -90,6 +96,8 @@ class JClassDeclaration extends JAST implements JTypeDecl {
         hasExplicitConstructor = false;
         instanceFieldInitializations = new ArrayList<JFieldDeclaration>();
         staticFieldInitializations = new ArrayList<JFieldDeclaration>();
+        innerBlocks = new ArrayList<JBlockInner>();
+        staticInnerBlocks = new ArrayList<JBlockInner>();
     }
 
     /**
@@ -247,6 +255,13 @@ class JClassDeclaration extends JAST implements JTypeDecl {
                 } else {
                     instanceFieldInitializations.add(fieldDecl);
                 }
+            } else if (member instanceof JBlockInner) {
+                JBlockInner block = (JBlockInner) member;
+                if (block.getMods().contains("static")) {
+                    staticInnerBlocks.add(block);
+                } else {
+                    innerBlocks.add(block);
+                }
             }
         }
 
@@ -289,7 +304,7 @@ class JClassDeclaration extends JAST implements JTypeDecl {
         }
 
         // Generate a class initialization method?
-        if (staticFieldInitializations.size() > 0) {
+        if (staticFieldInitializations.size() > 0 || staticInnerBlocks.size() > 0) {
             codegenClassInit(output);
         }
     }
@@ -327,6 +342,7 @@ class JClassDeclaration extends JAST implements JTypeDecl {
             p.indentLeft();
             p.println("</ClassBlock>");
         }
+
         p.indentLeft();
         p.println("</JClassDeclaration>");
     }
@@ -347,6 +363,7 @@ class JClassDeclaration extends JAST implements JTypeDecl {
         partial.addNoArgInstruction(ALOAD_0);
         partial.addMemberAccessInstruction(INVOKESPECIAL, superType.jvmName(),
                 "<init>", "()V");
+
 
         // Return
         partial.addNoArgInstruction(RETURN);
@@ -375,6 +392,10 @@ class JClassDeclaration extends JAST implements JTypeDecl {
             instanceField.codegenInitializations(output);
         }
 
+        for (JBlockInner block : innerBlocks) {
+            block.codegen(output);
+        }
+
         // Return
         output.addNoArgInstruction(RETURN);
     }
@@ -399,8 +420,14 @@ class JClassDeclaration extends JAST implements JTypeDecl {
             staticField.codegenInitializations(output);
         }
 
+        for (JBlockInner staticBlock : staticInnerBlocks) {
+            staticBlock.codegen(output);
+        }
+
         // Return
         output.addNoArgInstruction(RETURN);
     }
+
+
 
 }

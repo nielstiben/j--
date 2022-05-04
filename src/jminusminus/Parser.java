@@ -647,10 +647,7 @@ public class Parser {
                     scanner.recordPosition();
         } else {
             Type type = null;
-            if (have(STATIC)){
-                JBlock body = block();
-                memberDecl = new JStaticBlock(line, body);
-            } else if (have(LCURLY)) {
+             if (have(LCURLY)) {
                 scanner.returnToPosition();
                 JBlock body = block();
                 memberDecl = new JBlockInner(line, body, mods);
