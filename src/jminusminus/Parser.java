@@ -1283,7 +1283,9 @@ public class Parser {
         while (more) {
             if (have(EQUAL)) {
                 lhs = new JEqualOp(line, lhs, relationalExpression());
-            } else {
+            } else if(have(NEQ)){
+                lhs = new JNotEqualOp(line, lhs, relationalExpression());
+            } {
                 more = false;
             }
         }
