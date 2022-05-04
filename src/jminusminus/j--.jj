@@ -702,10 +702,12 @@ private JMember memberDecl(ArrayList<String> mods): {
 }
 {
     try {
+         LOOKAHEAD(<LCURLY>)
          (
-            body = block()
 
             {line =token.beginLine;}
+            body = block()
+
             {
                 memberDecl = new JBlockInner(line, body, mods);
             }

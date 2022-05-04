@@ -118,11 +118,13 @@ class JMessageExpression extends JExpression {
         // Then analyze the target
         if (target == null) {
             // Implied this (or, implied type for statics)
-            if (!context.methodContext().isStatic()) {
+            // TODO: This is dirty fix (the context.methodContext() for null). We should be able to fix this the right way.
+            if (context.methodContext() != null && !context.methodContext().isStatic()) {
                 target = new JThis(line()).analyze(context);
             } else {
                 target = new JVariable(line(), context.definingType()
                         .toString()).analyze(context);
+                // a.b.c
             }
         } else {
             target = (JExpression) target.analyze(context);
