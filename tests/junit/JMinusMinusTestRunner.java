@@ -16,11 +16,13 @@ public class JMinusMinusTestRunner {
 
     public static Test suite() {
         TestSuite suite = new TestSuite();
+        suite.addTestSuite(TryCatchTest.class);
         suite.addTestSuite(HelloWorldTest.class);
         suite.addTestSuite(FactorialTest.class);
         suite.addTestSuite(GCDTest.class);
         suite.addTestSuite(SeriesTest.class);
         suite.addTestSuite(ClassesTest.class);
+
         return suite;
     }
 

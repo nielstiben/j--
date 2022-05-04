@@ -12,6 +12,14 @@ public class TypeErrors {
     public static void main(String[] args) {
         int n = Integer.parseInt(args[0]);
         System.out.println(n == true);
+
+        try{
+            System.out.println(n == true);
+        } catch (int 1) {
+            System.out.println("Caught exception");
+        }
     }
+
+
 
 }

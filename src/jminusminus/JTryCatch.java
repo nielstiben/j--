@@ -4,7 +4,7 @@ package jminusminus;
 
 import java.util.ArrayList;
 
-import static jminusminus.CLConstants.GOTO;
+import static jminusminus.CLConstants.*;
 
 /**
  * The AST node for a for-statement.
@@ -45,13 +45,14 @@ class JTryCatch extends JStatement {
     public JTryCatch analyze(Context context) {
         tryBody = (JBlock) tryBody.analyze(context);
         if (catchBodies != null) {
-            for (int i = 0; i < cParameters.size(); i++) {
-                JFormalParameter param = cParameters.get(i);
-                cParameters.set(i, (JFormalParameter) cParameters.get(i).analyze(context));
+            for (JFormalParameter cParameter : cParameters) {
+                cParameter.analyze(context);
+//                if (!cParameter.type().matchesExpected(Type.OBJECT)) {
+//                    JAST.compilationUnit.reportSemanticError(cParameter.line(), "Catch parameter must be an exception got:" +  param.type().jvmName());
+//                }
             }
             for (int i = 0; i < catchBodies.size(); i++) {
                 catchBodies.set(i, (JBlock) catchBodies.get(i).analyze(context));
-
             }
         }
         if (finallyBody != null) {
@@ -69,24 +70,52 @@ class JTryCatch extends JStatement {
      */
 
     public void codegen(CLEmitter output) {
-        //TODO : Needs to be implementet- this has been taken from whileloops
-        // Need two labels
-        String test = output.createLabel();
-        String out = output.createLabel();
+        // Labels
+        String tryLabel = output.createLabel();
+        String endTryLabel = output.createLabel();
+        String handlerLabel = output.createLabel();
+        String finallyLabel = output.createLabel();
+        String endLabel = output.createLabel();
 
-        // Branch out of the loop on the test condition
-        // being false
-        output.addLabel(test);
-
-
-        // Codegen body
+        // Try block
+        output.addLabel(tryLabel);
         tryBody.codegen(output);
+        output.addLabel(endTryLabel);
+        if (finallyBody != null) {
+            finallyBody.codegen(output);
+        }
+        output.addBranchInstruction(GOTO, endLabel);
+        // Catch blocks
+        if (catchBodies != null) {
+            for (int i = 0; i < catchBodies.size(); i++) {
+                output.addLabel(handlerLabel + i);
+                output.addNoArgInstruction(ASTORE_2); // weet niet
+                output.addExceptionHandler(
+                        tryLabel,
+                        endTryLabel,
+                        handlerLabel + i,
+                        cParameters.get(catchBodies.indexOf(catchBodies.get(i))).type().jvmName());
+                catchBodies.get(i).codegen(output);
+                if (finallyBody != null) {
+                    finallyBody.codegen(output);
+                }
+                output.addBranchInstruction(GOTO, endLabel);
+            }
+        }
+        output.addLabel(finallyLabel);
+        if (finallyBody != null) {
+            output.addNoArgInstruction(ASTORE_3);
 
-        // Unconditional jump back up to test
-        output.addBranchInstruction(GOTO, test);
+            output.addExceptionHandler(tryLabel, endTryLabel, finallyLabel, null);
+            // Loops through all catch blocks and add exception handlers
+            for(int i = 0; i < catchBodies.size(); i++) {
+                output.addExceptionHandler(tryLabel, endTryLabel, finallyLabel, null);
+            }
+            finallyBody.codegen(output);
+            output.addNoArgInstruction(ALOAD_3);
+            output.addNoArgInstruction(ATHROW);        }
+        output.addLabel(endLabel);
 
-        // The label below and outside the loop
-        output.addLabel(out);
     }
 
     /**

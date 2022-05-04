@@ -208,7 +208,7 @@ TOKEN: {
 | <GT: ">">
 | <INC: "++">
 | <LAND: "&&">
-| <LE: "<=">
+| <LTE: "<=">
 | <LNOT: "!">
 | <MINUS: "-">
 | <PLUS_ASSIGN: "+=">
@@ -1577,27 +1577,28 @@ private JExpression relationalExpression(): {
 }
 {
     try {
-        lhs = additiveExpression() { line = lhs.line(); }
+        lhs = shiftExpression() { line = lhs.line(); }
         [
+
+            <GTE>
+            rhs = relationalExpression()
+            { lhs = new JGreaterThanOrEqualOp(line, lhs, rhs); } |
+
+            <LTE>
+            rhs = relationalExpression()
+            { lhs = new JLessEqualOp(line, lhs, rhs); }
+
             <LT>
-            rhs = additiveExpression()
+            rhs = relationalExpression()
             { lhs = new JLessThanOp(line, lhs, rhs); } |
 
             <GT>
-            rhs = additiveExpression()
+            rhs = relationalExpression()
             { lhs = new JGreaterThanOp(line, lhs, rhs); } |
 
-            <LE>
-            rhs = additiveExpression()
-            { lhs = new JLessEqualOp(line, lhs, rhs); } |
-
-            <GTE>
-            rhs = additiveExpression()
-            { lhs = new JGreaterEqualOp(line, lhs, rhs); } |
-
             <INSTANCEOF>
-            type = referenceType()
-            { lhs = new JInstanceOfOp(line, lhs, type); }
+            rhs = referenceType()
+            { lhs = new JInstanceOfOp(line, lhs, rhs); }
         ]
     }
     catch (ParseException e) {
@@ -1605,6 +1606,45 @@ private JExpression relationalExpression(): {
     }
     { return lhs; }
 }
+
+/**
+ * Parse a shfit expression.
+ *
+ * <pre>
+ *   shiftExpression ::= additiveExpression            // level 4
+ *                              {(USHIFT_RIGHT | SHIFT_RIGHT | SHIFT_LEFT) additiveExpression}
+ * </pre>
+ *
+ * @return an AST for a shiftexpression.
+ */
+
+private JExpression shiftExpression(): {
+    int line = 0;
+    JExpression lhs = null, rhs = null;
+}
+{
+    try {
+        lhs = additiveExpression() { line = lhs.line(); }
+        [
+            <USHIFT_RIGHT>
+            rhs = shiftExpression()
+            { lhs = new JUShiftRightOp(line, lhs, rhs); } |
+
+            <SHIFT_RIGHT>
+            rhs = shiftExpression()
+            { lhs = new JShfitRightOp(line, lhs, rhs); } |
+
+            <SHIFT_LEFT>
+            rhs = shiftExpression()
+            { lhs = new JShiftLeft(line, lhs, rhs); }
+        ]
+    }
+    catch (ParseException e) {
+        recoverFromError(new int[] { SEMI, EOF }, e);
+    }
+    { return lhs; }
+}
+
 
 /**
  * Parse an additive expression.

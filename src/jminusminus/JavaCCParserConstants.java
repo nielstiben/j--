@@ -61,7 +61,7 @@ public interface JavaCCParserConstants {
   int GT = 63;
   int INC = 64;
   int LAND = 65;
-  int LE = 66;
+  int LTE = 66;
   int LNOT = 67;
   int MINUS = 68;
   int PLUS_ASSIGN = 69;

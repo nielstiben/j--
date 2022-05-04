@@ -58,6 +58,7 @@ class Type {
     /** The type java.lang.Object. */
     public static Type OBJECT = typeFor(java.lang.Object.class);
 
+
     /** The void type. */
     public final static Type VOID = typeFor(void.class);
 
