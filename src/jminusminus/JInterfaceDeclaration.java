@@ -40,6 +40,9 @@ class JInterfaceDeclaration extends JAST implements JTypeDecl {
     /** Whether this interface has an explicit constructor. */
     private boolean hasExplicitConstructor;
 
+    /** Fields **/
+    private ArrayList<JFieldDeclaration> fields;
+
     /**
      * Constructs an AST node for a interface declaration given the line number, list
      * of interface modifiers, name of the interface, its super interface type, and the
@@ -63,7 +66,8 @@ class JInterfaceDeclaration extends JAST implements JTypeDecl {
         this.name = name;
         this.superType = superType;
         this.interfaceBlock = interfaceBlock;
-        hasExplicitConstructor = false;
+        this.hasExplicitConstructor = false;
+        this.fields = new ArrayList<JFieldDeclaration>();
     }
 
     /**
@@ -170,17 +174,17 @@ class JInterfaceDeclaration extends JAST implements JTypeDecl {
             }
         }
 
-        // Add the implicit empty constructor?
-        if (!hasExplicitConstructor) {
-            codegenPartialImplicitConstructor(partial);
-        }
-
         // Get the interface rep for the (partial) interface and make it
         // the
         // representation for this type
         Type id = this.context.lookupType(name);
         if (id != null && !JAST.compilationUnit.errorHasOccurred()) {
             id.setClassRep(partial.toClass());
+        }
+
+        // Now we call it an interface instead of a class
+        if(!mods.contains(TokenKind.INTERFACE.image())){
+            mods.add(TokenKind.INTERFACE.image());
         }
     }
 
@@ -197,21 +201,13 @@ class JInterfaceDeclaration extends JAST implements JTypeDecl {
     public JAST analyze(Context context) {
         // Analyze all members
         for (JMember member : interfaceBlock) {
-            ((JAST) member).analyze(this.context);
+            if (member instanceof JFieldDeclaration) {
+                JFieldDeclaration fieldDecl = (JFieldDeclaration) member;
+                fields.add(fieldDecl);
+            }
+
         }
-//
-//        // Finally, ensure that a non-abstract interface has
-//        // no abstract methods.
-//        if (!thisType.isAbstract() && thisType.abstractMethods().size() > 0) {
-//            String methods = "";
-//            for (Method method : thisType.abstractMethods()) {
-//                methods += "\n" + method;
-//            }
-//            JAST.compilationUnit.reportSemanticError(line,
-//                    "interface must be declared abstract since it defines "
-//                            + "the following abstract methods: %s", methods);
-//
-//        }
+
         return this;
     }
 
@@ -233,31 +229,42 @@ class JInterfaceDeclaration extends JAST implements JTypeDecl {
             output.addClass(mods, qualifiedName, Type.OBJECT.jvmName(), null, false);
         }
 
-        // The implicit empty constructor?
-        if (!hasExplicitConstructor) {
-            codegenImplicitConstructor(output);
-        }
-
         // The members
         for (JMember member : interfaceBlock) {
             ((JAST) member).codegen(output);
         }
 
 
+        // Generate an interface initialization method?
+        if (fields.size() > 0) {
+            codegenInterfaceInit(output);
+        }
     }
+
+    // TODO: Rename this method
+    private void codegenInterfaceInit(CLEmitter output) {
+        ArrayList<String> mods = new ArrayList<String>();
+        mods.add("public");
+        mods.add("static");
+        output.addMethod(mods, "<clinit>", "()V", null, false);
+
+        // If there are instance initializations, generate code
+        // for them
+        for (JFieldDeclaration staticField : fields) {
+            staticField.codegenInitializations(output);
+        }
+
+        // Return
+        output.addNoArgInstruction(RETURN);
+    }
+
 
     /**
      * {@inheritDoc}
      */
 
     public void writeToStdOut(PrettyPrinter p) {
-        if (superType == null) {
-            p.printf("<JInterfaceDeclaration line=\"%d\" name=\"%s\">\n", line(), name);
-        } else {
-            p.printf("<JInterfaceDeclaration line=\"%d\" name=\"%s\""
-                    + " super=\"%s\">\n", line(), name, superType.toString());
-
-        }
+        p.printf("<JInterfaceDeclaration line=\"%d\" name=\"%s\"" + " super=\"%s\">\n", line(), name, superType.toString());
         p.indentRight();
         if (context != null) {
             context.writeToStdOut(p);
@@ -271,94 +278,24 @@ class JInterfaceDeclaration extends JAST implements JTypeDecl {
             p.indentLeft();
             p.println("</Modifiers>");
         }
+        p.printf("<SuperInterfaces>");
+        p.indentRight();
+//        for(String superInterfaceName : abstractNames){
+//            p.printf("<Interface name =\"%s\"/>\n",superInterfaceName);
+//        }
+        p.indentLeft();
+        p.println("</SuperInterfaces");
         if (interfaceBlock != null) {
-            p.println("<interfaceBlock>");
+            p.println("<InterfaceBlock>");
             p.indentRight();
             for (JMember member : interfaceBlock) {
                 ((JAST) member).writeToStdOut(p);
             }
             p.indentLeft();
-            p.println("</interfaceBlock>");
+            p.println("</InterfaceBlock>");
         }
         p.indentLeft();
         p.println("</JInterfaceDeclaration>");
+
     }
-
-    /**
-     * Generates code for an implicit empty constructor. (Necessary only if there
-     * is not already an explicit one.)
-     *
-     * @param partial
-     *            the code emitter (basically an abstraction for producing a
-     *            Java interface).
-     */
-
-    private void codegenPartialImplicitConstructor(CLEmitter partial) {
-        // Invoke super constructor
-        ArrayList<String> mods = new ArrayList<String>();
-        mods.add("public");
-        partial.addMethod(mods, "<init>", "()V", null, false);
-        partial.addNoArgInstruction(ALOAD_0);
-        if (superType != null) {
-            partial.addMemberAccessInstruction(INVOKESPECIAL, superType.jvmName(),
-                    "<init>", "()V");
-        } else {
-            partial.addMemberAccessInstruction(INVOKESPECIAL, Type.OBJECT.jvmName(),
-                    "<init>", "()V");
-        }
-
-        // Return
-        partial.addNoArgInstruction(RETURN);
-    }
-
-    /**
-     * Generates code for an implicit empty constructor. (Necessary only if there
-     * is not already an explicit one.
-     *
-     * @param output
-     *            the code emitter (basically an abstraction for producing the
-     *            .interface file).
-     */
-
-    private void codegenImplicitConstructor(CLEmitter output) {
-        // Invoke super constructor
-        ArrayList<String> mods = new ArrayList<String>();
-        mods.add("public");
-        output.addMethod(mods, "<init>", "()V", null, false);
-        output.addNoArgInstruction(ALOAD_0);
-        if (superType != null) {
-            output.addMemberAccessInstruction(INVOKESPECIAL, superType.jvmName(),
-                    "<init>", "()V");
-        } else {
-            output.addMemberAccessInstruction(INVOKESPECIAL, Type.OBJECT.jvmName(),
-                    "<init>", "()V");
-        }
-
-
-
-        // Return
-        output.addNoArgInstruction(RETURN);
-    }
-
-    /**
-     * Generates code for interface initialization, in j-- this means static field
-     * initializations.
-     *
-     * @param output
-     *            the code emitter (basically an abstraction for producing the
-     *            .interface file).
-     */
-
-    private void codegenClassInit(CLEmitter output) {
-        ArrayList<String> mods = new ArrayList<String>();
-        mods.add("public");
-        mods.add("static");
-        output.addMethod(mods, "<clinit>", "()V", null, false);
-
-
-
-        // Return
-        output.addNoArgInstruction(RETURN);
-    }
-
 }

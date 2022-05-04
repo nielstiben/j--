@@ -98,6 +98,14 @@ class JInterfaceMethodDeclaration extends JAST implements JMember {
         this.isPrivate = mods.contains("private");
         this.isFinal = mods.contains("final");
         this.exceptions = exceptions;
+
+        // Make abstract and public if it is not already
+        if (!mods.contains("abstract")) {
+            mods.add("abstract");
+        }
+        if (!mods.contains("public")) {
+            mods.add("public");
+        }
     }
 
     /**
