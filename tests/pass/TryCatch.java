@@ -1,5 +1,5 @@
 package pass;
-
+import java.lang.ArithmeticException;
 public class TryCatch {
 
     public boolean try_it(boolean a) {
@@ -20,7 +20,7 @@ public class TryCatch {
             int tsts = 2 / 0;
         } catch (ArithmeticException e) {
             tst = 1;
-        } catch (int e) {
+        } catch (Exception e) {
             tst = 0;
         }
         return a;

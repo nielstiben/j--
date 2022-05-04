@@ -850,6 +850,7 @@ private JStatement statement(): {
     JVariableDeclaration forInit = null;
     JStatement forUpdate  = null;
     JExpression expres    = null;
+
 }
 {
     try {
@@ -935,6 +936,9 @@ private JStatement statement(): {
         ]
         <SEMI>
         { statement = new JReturnStatement(line, expr); } |
+        <THROW> { line = token.beginLine;
+                  expr = expression();
+                  statement = new JThrowStatement(line, expr);} |
 
         <SEMI>
         { line = token.beginLine;

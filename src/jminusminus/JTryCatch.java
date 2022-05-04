@@ -47,9 +47,11 @@ class JTryCatch extends JStatement {
         if (catchBodies != null) {
             for (JFormalParameter cParameter : cParameters) {
                 cParameter.analyze(context);
-//                if (!cParameter.type().matchesExpected(Type.OBJECT)) {
-//                    JAST.compilationUnit.reportSemanticError(cParameter.line(), "Catch parameter must be an exception got:" +  param.type().jvmName());
-//                }
+                if (cParameter.type() != null && cParameter.type().classRep() != null) {
+                    if (!cParameter.type().classRep().getSuperclass().getName().equals(Type.EXCEPTION.jvmName())) {
+                        JAST.compilationUnit.reportSemanticError(line(), "Catch parameter must be of type Exception and not " + cParameter.type().classRep().getSuperclass().getName());
+                    }
+                }
             }
             for (int i = 0; i < catchBodies.size(); i++) {
                 catchBodies.set(i, (JBlock) catchBodies.get(i).analyze(context));
@@ -107,7 +109,6 @@ class JTryCatch extends JStatement {
             output.addNoArgInstruction(ASTORE_3);
 
             output.addExceptionHandler(tryLabel, endTryLabel, finallyLabel, null);
-            // Loops through all catch blocks and add exception handlers
             if  (catchBodies != null) {
                 for (int i = 0; i < catchBodies.size(); i++) {
                     output.addExceptionHandler(tryLabel, endTryLabel, finallyLabel, null);
