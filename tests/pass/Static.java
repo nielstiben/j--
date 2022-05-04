@@ -1,5 +1,6 @@
 package pass;
 
+import java.lang.System;
 public class Static {
 
 //    public static int x = 0;

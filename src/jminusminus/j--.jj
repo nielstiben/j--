@@ -129,6 +129,7 @@ class JavaCCParser {
     }
 }
 
+
 PARSER_END(JavaCCParser)
 
 /////////////////////////////////////////////////////////
@@ -478,6 +479,8 @@ private ArrayList<String> modifiers(): {
     }
     { return mods; }
 }
+
+
 /**
 * Parse a interface declaration.
 */
@@ -494,7 +497,7 @@ private JInterfaceDeclaration interfaceDeclaration( ArrayList<String> mods ): {
         <IDENTIFIER> { name = token.image; }
         [
             <EXTENDS>
-            {superInterface =qualifiedIdentifier();}
+            {superInterface =qualifiedIdentifier(); }
         ]
         interfaceBody = interfaceBody()
 
@@ -505,7 +508,11 @@ private JInterfaceDeclaration interfaceDeclaration( ArrayList<String> mods ): {
     {
         return new JInterfaceDeclaration( line, mods, name, superInterface, interfaceBody );
     }
+
 }
+
+
+
 /**
  * Parse a class declaration. A class which doesn't explicitly extend another
  * (super) class implicitly extends the superclass java.lang.Object.
@@ -531,7 +538,6 @@ private JClassDeclaration classDeclaration( ArrayList<String> mods ): {
 }
 {
     try {
-
         <CLASS> { line = token.beginLine; }
         <IDENTIFIER> { name = token.image; }
         [
@@ -581,6 +587,7 @@ private ArrayList<JMember> interfaceBody(): {
     { return members; }
 }
 
+
 /**
  * Parse a class body.
  *
@@ -623,6 +630,7 @@ private JMember interfaceMemberDecl( ArrayList<String>  mods ): {
     ArrayList<JFormalParameter> params = null;
     ArrayList<JVariableDeclarator> variableDeclarators = null;
     JMember memberDecl = null;
+    JBlock dummyBlock = new JBlock(line, new ArrayList<JStatement>());
 }
 {
     try {
@@ -638,12 +646,13 @@ private JMember interfaceMemberDecl( ArrayList<String>  mods ): {
             <IDENTIFIER> { name = token.image; }
             params = formalParameters()
             <SEMI>
-
             {
-                mods.add("abstract");
-                memberDecl =
-                   new JMethodDeclaration( line, mods, name,
-                                           type, params, null );
+                // If mods contains the keyword "abstract", then parameter block is null.
+                if (mods.contains("abstract")) {
+                    memberDecl = new JMethodDeclaration( line, mods, name, type, params, null, null );
+                } else {
+                    memberDecl = new JMethodDeclaration( line, mods, name, type, params, null, dummyBlock );
+                }
             }
         ) |
         (
@@ -661,12 +670,14 @@ private JMember interfaceMemberDecl( ArrayList<String>  mods ): {
     }
     { return memberDecl; }
 }
-
 /**
  * Parse a member declaration.
  *
  * <pre>
- *   memberDecl ::= IDENTIFIER            // constructor
+ *   memberDecl ::=
+                    block
+                    formalParameters
+                  | IDENTIFIER            // constructor
  *                    formalParameters
  *                    block
  *                | (VOID | type) IDENTIFIER  // method
@@ -709,8 +720,9 @@ private JMember memberDecl(ArrayList<String> mods): {
             params = formalParameters()
             body = block()
             {
+                // TODO: We use NULL at the exceptions position.
                 memberDecl = new JConstructorDeclaration(line, mods,
-                                                         name, params, body);
+                                                         name, params, null, body);
             }
         ) |
         LOOKAHEAD((<VOID> | type()) <IDENTIFIER> <LPAREN>)
@@ -727,12 +739,12 @@ private JMember memberDecl(ArrayList<String> mods): {
                 <SEMI>
             )
             {
+                // TODO: We use NULL at the exceptions position.
                 memberDecl = new JMethodDeclaration(line, mods, name,
-                                                    type, params, body);
+                                                    type, params, null, body);
             }
         ) |
         // initializer block
-
         (
             type = type() { line = token.beginLine; }
             variableDeclarators = variableDeclarators(type)
@@ -892,14 +904,16 @@ private JStatement statement(): {
         */
 
         // FOR loop
-        LOOKAHEAD(<FOR> <LPAREN> localVariableDeclarationStatement() relationalExpression() <SEMI> statementExpression() <RPAREN>)
+        LOOKAHEAD(<FOR> <LPAREN> localVariableDeclarationStatement() relationalExpression() <SEMI>)
         <FOR> { line = token.beginLine; }               // for
         <LPAREN>                                        // (
         forInit = localVariableDeclarationStatement()   // int i = 0;
         expres = relationalExpression()                 // i < 10
         <SEMI>                                          // ;
-        forUpdate = statementExpression()               // i++
-        <RPAREN>                                        // )
+        [                                                   // <Optional>
+            forUpdate = statementExpression()               // i++
+        ]                                                   // </Optional>
+        <RPAREN>                                         // )
         statement = statement()                          // {}
         { statement = new JForStatement(line, statement, forInit, forUpdate, expres); } |
 

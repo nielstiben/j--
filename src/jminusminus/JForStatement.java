@@ -11,11 +11,11 @@ import static jminusminus.CLConstants.*;
 class JForStatement extends JStatement {
 
     /** The body. */
-    private JStatement body;
-    private JVariableDeclaration forInit;
-    private JStatement forUpdate;
-    private JExpression expres;
-
+    private JStatement body;                // To run at every loop iteration
+    private JVariableDeclaration forInit;   // Initialize a variable
+    private JStatement forUpdate;           // Statement that updates the variable for the next iteration
+    private JExpression expres;             // Condition for the loop
+    private LocalContext localContext;      // Local context for the loop init variable
 
     /**
      * Constructs an AST node for a for-statement given its line number, the
@@ -51,8 +51,17 @@ class JForStatement extends JStatement {
      */
 
     public JForStatement analyze(Context context) {
-        //TODO : Needs to be implementet- this has been taken from whileloops
-        body = (JStatement) body.analyze(context);
+        // Create new local context for the loop
+        // This allows us to use the init variable, and body variables outside the for loop
+        localContext = new LocalContext(context);
+        forInit = (JVariableDeclaration) forInit.analyze(localContext);
+        expres = expres.analyze(localContext);
+        expres.type().mustMatchExpected(line(), Type.BOOLEAN);
+        if (forUpdate != null) {
+            forUpdate = (JStatement) forUpdate.analyze(localContext);
+        }
+        body = (JStatement) body.analyze(localContext);
+
         return this;
     }
 
@@ -108,10 +117,12 @@ class JForStatement extends JStatement {
         expres.writeToStdOut(p);
         p.print("</expres>");
         p.println();
-        p.print("<forUpdate>");
-        p.println();
-        forUpdate.writeToStdOut(p);
-        p.print("</forUpdate>");
+        if (forUpdate != null) {
+            p.print("<forUpdate>");
+            p.println();
+            forUpdate.writeToStdOut(p);
+            p.print("</forUpdate>");
+        }
         p.println();
         p.printf("<Body>\n");
         body.writeToStdOut(p);

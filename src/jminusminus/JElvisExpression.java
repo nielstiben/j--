@@ -2,6 +2,8 @@
 
 package jminusminus;
 
+import static jminusminus.CLConstants.INEG;
+
 /**
  * The AST node for a elvis (?) expression.
  */

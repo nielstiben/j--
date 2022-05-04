@@ -3,7 +3,6 @@
 package jminusminus;
 
 import java.util.ArrayList;
-
 import static jminusminus.CLConstants.*;
 
 /**
@@ -112,13 +111,13 @@ class JInterfaceDeclaration extends JAST implements JTypeDecl {
      */
 
     public void declareThisType(Context context) {
-//        String qualifiedName = JAST.compilationUnit.packageName() == "" ? name
-//                : JAST.compilationUnit.packageName() + "/" + name;
-//        CLEmitter partial = new CLEmitter(false);
-//        partial.addClass(mods, qualifiedName, Type.OBJECT.jvmName(), null,
-//                false); // Object for superClass, just for now
-//        thisType = Type.typeFor(partial.toClass());
-//        context.addType(line, thisType);
+        String qualifiedName = JAST.compilationUnit.packageName() == "" ? name
+                : JAST.compilationUnit.packageName() + "/" + name;
+        CLEmitter partial = new CLEmitter(false);
+        partial.addClass(mods, qualifiedName, Type.OBJECT.jvmName(), null,
+                false); // Object for superClass, just for now
+        thisType = Type.typeFor(partial.toClass());
+        context.addType(line, thisType);
     }
 
     /**
@@ -144,12 +143,9 @@ class JInterfaceDeclaration extends JAST implements JTypeDecl {
             }
         }
 
-        if (!mods.contains("abstract")) {
-            mods.add("abstract");
-        }
-        if (!mods.contains("public")) {
-            mods.add("public");
-        }
+        // Creating a partial interface in memory can result in a
+        // java.lang.VerifyError if the semantics below are
+        // violated, so we can't defer these checks to analyze()
 
 
         // Create the (partial) interface
@@ -168,6 +164,15 @@ class JInterfaceDeclaration extends JAST implements JTypeDecl {
         // interface
         for (JMember member : interfaceBlock) {
             member.preAnalyze(this.context, partial);
+            if (member instanceof JConstructorDeclaration
+                    && ((JConstructorDeclaration) member).params.size() == 0) {
+                hasExplicitConstructor = true;
+            }
+        }
+
+        // Add the implicit empty constructor?
+        if (!hasExplicitConstructor) {
+            codegenPartialImplicitConstructor(partial);
         }
 
         // Get the interface rep for the (partial) interface and make it

@@ -9,7 +9,7 @@ import static jminusminus.CLConstants.*;
  * The AST node for a method declaration.
  */
 
-class JMethodDeclaration extends JAST implements JMember {
+class JInterfaceMethodDeclaration extends JAST implements JMember {
 
     /**
      * Method modifiers.
@@ -68,6 +68,8 @@ class JMethodDeclaration extends JAST implements JMember {
      */
     protected boolean isPrivate;
 
+    protected boolean isFinal;
+
     /**
      * Constructs an AST node for a method declaration given the
      * line number, method name, return type, formal parameters,
@@ -82,7 +84,7 @@ class JMethodDeclaration extends JAST implements JMember {
      * @param body       method body.
      */
 
-    public JMethodDeclaration(int line, ArrayList<String> mods,
+    public JInterfaceMethodDeclaration(int line, ArrayList<String> mods,
                               String name, Type returnType,
                               ArrayList<JFormalParameter> params, ArrayList<Type> exceptions, JBlock body) {
         super(line);
@@ -94,6 +96,7 @@ class JMethodDeclaration extends JAST implements JMember {
         this.isAbstract = mods.contains("abstract");
         this.isStatic = mods.contains("static");
         this.isPrivate = mods.contains("private");
+        this.isFinal = mods.contains("final");
         this.exceptions = exceptions;
     }
 
@@ -114,20 +117,11 @@ class JMethodDeclaration extends JAST implements JMember {
         // Resolve return type
         returnType = returnType.resolve(context);
 
-        // Check proper local use of abstract
-        if (isAbstract && body != null) {
+        if (body != null){
             JAST.compilationUnit.reportSemanticError(line(),
-                    "abstract method cannot have a body");
-        } else if (body == null && !isAbstract) {
-            JAST.compilationUnit.reportSemanticError(line(),
-                    "Method with null body must be abstract");
-        } else if (isAbstract && isPrivate) {
-            JAST.compilationUnit.reportSemanticError(line(),
-                    "private method cannot be declared abstract");
-        } else if (isAbstract && isStatic) {
-            JAST.compilationUnit.reportSemanticError(line(),
-                    "static method cannot be declared abstract");
+                    "interface methods is abstract and can therefor not have a body");
         }
+
 
         // Compute descriptor
         descriptor = "(";
@@ -232,7 +226,7 @@ class JMethodDeclaration extends JAST implements JMember {
      */
 
     public void writeToStdOut(PrettyPrinter p) {
-        p.printf("<JMethodDeclaration line=\"%d\" name=\"%s\" "
+        p.printf("<JInterfaceMethodDeclaration line=\"%d\" name=\"%s\" "
                         + "returnType=\"%s\">\n", line(),
                 name,
                 returnType.toString());
@@ -259,7 +253,7 @@ class JMethodDeclaration extends JAST implements JMember {
             p.println("</FormalParameters>");
         }
 
-        if (exceptions != null && !exceptions.isEmpty()){
+        if (!exceptions.isEmpty()){
             p.println("<Exceptions>");
             for (Type exception: exceptions) {
                 p.indentRight();
@@ -277,7 +271,7 @@ class JMethodDeclaration extends JAST implements JMember {
             p.println("</Body>");
         }
         p.indentLeft();
-        p.println("</JMethodDeclaration>");
+        p.println("</JInterfaceMethodDeclaration>");
     }
 
 }

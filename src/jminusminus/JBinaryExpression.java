@@ -4,6 +4,8 @@ package jminusminus;
 
 import static jminusminus.CLConstants.*;
 
+import java.util.ArrayList;
+
 /**
  * This abstract base class is the AST node for a binary expression.
  * A binary expression has an operator and two operands: a lhs and a rhs.
@@ -81,7 +83,7 @@ class JPlusOp extends JBinaryExpression {
      * @param line
      *            line in which the addition expression occurs in the source
      *            file.
-     * @param lhs
+     * @param lhsJ
      *            the lhs operand.
      * @param rhs
      *            the rhs operand.
@@ -223,8 +225,11 @@ class JMultiplyOp extends JBinaryExpression {
      * @param line
      *            line in which the multiplication expression occurs in the
      *            source file.
-     * @param lhs
-     *            the lhs operand.
+     * @param lhsif (!lhs.type().mustMatchExpected(line(), Type.BOOLEAN)){
+            type = Type.ANY;
+            JAST.compilationUnit.reportSemanticError(line(),
+            "Invalid operand types for %");
+        }
      * @param rhs
      *            the rhs operand.
      */
@@ -309,6 +314,70 @@ class JDivideOp extends JBinaryExpression {
         output.addNoArgInstruction(IDIV);
     }
 }
+
+
+
+
+
+class JTernaryOp extends JBinaryExpression {
+    private JExpression rhs2;
+    public JTernaryOp(int line, JExpression lhs, JExpression rhs, JExpression rh2) {
+        super(line, "?", lhs, rhs);
+        this.rhs2 = rh2;
+    }
+
+    public JExpression analyze(Context context) {
+        lhs = (JExpression) lhs.analyze(context);
+        rhs = (JExpression) rhs.analyze(context);
+        rhs2 = (JExpression) rhs2.analyze(context);
+        lhs.type().mustMatchExpected(line(), Type.BOOLEAN);
+        
+        if (rhs.type == rhs2.type){
+            type = rhs.type;
+        } else {
+            type = Type.ANY;
+            JAST.compilationUnit.reportSemanticError(line(),
+                    "Invalid operand types for ?");
+        }
+
+        return this;
+    }
+
+    public void codegen(CLEmitter output) {
+        lhs.codegen(output);
+        rhs.codegen(output);
+        rhs2.codegen(output);
+        output.addNoArgInstruction(IREM);
+    }
+
+
+    public void writeToStdOut(PrettyPrinter p) {
+        p.printf("<JBinaryExpression line=\"%d\" type=\"%s\" "
+                + "operator=\"%s\">\n", line(), ((type == null) ? "" : type
+                .toString()), Util.escapeSpecialXMLChars(operator));
+        p.indentRight();
+        p.printf("<Lhs>\n");
+        p.indentRight();
+        lhs.writeToStdOut(p);
+        p.indentLeft();
+        p.printf("</Lhs>\n");
+        p.printf("<Rhs>\n");
+        p.indentRight();
+        rhs.writeToStdOut(p);
+        p.indentLeft();
+        p.printf("</Rhs>\n");
+        p.indentLeft();
+        p.printf("<Rhs2>\n");
+        p.indentRight();
+        rhs2.writeToStdOut(p);
+        p.indentLeft();
+        p.printf("</Rhs2>\n");
+        p.indentLeft();
+        p.printf("</JBinaryExpression>\n");
+    }
+
+}
+
 
 class JRemainderOp extends JBinaryExpression {
     public JRemainderOp(int line, JExpression lhs, JExpression rhs) {

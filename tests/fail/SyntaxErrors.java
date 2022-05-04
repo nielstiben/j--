@@ -22,4 +22,18 @@ public class SyntaxErrors {
         System.out.println(x + "! = " + factorial(x));
     }
 
+    public static void faultyForLoops() {
+
+    }
+
+    public static void faultyForLoops() {
+        for (double i = 0.0; i < 10.0; i=i+"2") {
+            // String is not a number to increment by
+        }
+
+        for (int i = 0; 13; i++) {
+            // 13 is an integer, not a boolean
+        }
+}
+
 }

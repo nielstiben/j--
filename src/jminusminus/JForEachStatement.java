@@ -49,8 +49,10 @@ class JForEachStatement extends JStatement {
      */
 
     public JForEachStatement analyze(Context context) {
-        //TODO : Needs to be implementet- this has been taken from whileloops
+        forInit.analyze(context);
+        expres.analyze(context);
         body = (JStatement) body.analyze(context);
+
         return this;
     }
 

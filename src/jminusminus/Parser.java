@@ -304,7 +304,10 @@ public class Parser {
             return true;
         } else {
             scanner.recordPosition();
-            if (have(BOOLEAN) || have(CHAR)  || have(DOUBLE) || have(INT)) {
+            if (have(BOOLEAN)
+            || have(CHAR)
+            || have(DOUBLE)
+            || have(INT)) {
                 if (have(LBRACK) && see(RBRACK)) {
                     scanner.returnToPosition();
                     return true;
@@ -433,6 +436,7 @@ public class Parser {
         boolean scannedSTATIC = false;
         boolean scannedABSTRACT = false;
         boolean more = true;
+        scanner.recordPosition();
         while (more)
             if (have(PUBLIC)) {
                 mods.add("public");
@@ -462,11 +466,16 @@ public class Parser {
                 }
                 scannedPRIVATE = true;
             } else if (have(STATIC)) {
+                if (!have(LCURLY)){
                 mods.add("static");
                 if (scannedSTATIC) {
                     reportParserError("Repeated modifier: static");
                 }
                 scannedSTATIC = true;
+            } else {
+                more = false;
+                scanner.returnToPosition();
+            }
             } else if (have(ABSTRACT)) {
                 mods.add("abstract");
                 if (scannedABSTRACT) {
@@ -524,7 +533,7 @@ public class Parser {
         } else {
             superClass = Type.OBJECT;
         }
-        return new JInterfaceDeclaration(line, mods, name, superClass, classBody());
+        return new JInterfaceDeclaration(line, mods, name, superClass, InterfaceBody());
     }
 
     /**
@@ -549,6 +558,16 @@ public class Parser {
         return members;
     }
 
+    private ArrayList<JMember> InterfaceBody() {
+        ArrayList<JMember> members = new ArrayList<JMember>();
+        mustBe(LCURLY);
+        while (!see(RCURLY) && !see(EOF)) {
+            members.add(interfaceMemberDecl(modifiers()));
+        }
+        mustBe(RCURLY);
+        return members;
+    }
+
     /**
      * Parse a member declaration.
      * 
@@ -556,6 +575,7 @@ public class Parser {
      *   memberDecl ::= IDENTIFIER            // constructor
      *                    formalParameters
      *                    block
+
      *                | (VOID | type) IDENTIFIER  // method
      *                    formalParameters
      *                    (block | SEMI)
@@ -567,28 +587,22 @@ public class Parser {
      * @return an AST for a memberDecl.
      */
 
-    private JMember memberDecl(ArrayList<String> mods) {
+
+    private JMember interfaceMemberDecl(ArrayList<String> mods) {
         int line = scanner.token().line();
+        ArrayList<Type> exceptions = new ArrayList<>();
         JMember memberDecl = null;
-        if (seeIdentLParen()) {
-            // A constructor
-            mustBe(IDENTIFIER);
-            String name = scanner.previousToken().image();
-            ArrayList<JFormalParameter> params = formalParameters();
-            JBlock body = block();
-            memberDecl = new JConstructorDeclaration(line, mods, name, params,
-                    body);
-        } else {
             Type type = null;
-            if (have(VOID)) {
+             if (have(VOID)) {
                 // void method
                 type = Type.VOID;
                 mustBe(IDENTIFIER);
                 String name = scanner.previousToken().image();
                 ArrayList<JFormalParameter> params = formalParameters();
+                getExceptions(line, exceptions);
                 JBlock body = have(SEMI) ? null : block();
-                memberDecl = new JMethodDeclaration(line, mods, name, type,
-                        params, body);
+                memberDecl = new JInterfaceMethodDeclaration(line, mods, name, type,
+                        params, exceptions, body);
             } else {
                 type = type();
                 if (seeIdentLParen()) {
@@ -596,19 +610,77 @@ public class Parser {
                     mustBe(IDENTIFIER);
                     String name = scanner.previousToken().image();
                     ArrayList<JFormalParameter> params = formalParameters();
+                    getExceptions(line, exceptions);
                     JBlock body = have(SEMI) ? null : block();
-                    memberDecl = new JMethodDeclaration(line, mods, name, type,
-                            params, body);
-                } else {
-                    // Field
+                    memberDecl = new JInterfaceMethodDeclaration(line, mods, name, type,
+                            params, exceptions, body);
+                }  else {
                     memberDecl = new JFieldDeclaration(line, mods,
                             variableDeclarators(type));
                     mustBe(SEMI);
                 }
             }
+        return memberDecl;
+    }
+
+    private void getExceptions(int line, ArrayList<Type> exceptions) {
+        if (have(THROWS)){
+            exceptions.add(type());
+            while(have(COMMA)){
+                    exceptions.add(type());
+            }
+        }
+    }
+
+    private JMember memberDecl(ArrayList<String> mods) {
+        int line = scanner.token().line();
+        ArrayList<Type> exceptions = new ArrayList<>();
+        JMember memberDecl = null;
+        if (seeIdentLParen()) {
+            // A constructor
+            mustBe(IDENTIFIER);
+            String name = scanner.previousToken().image();
+            ArrayList<JFormalParameter> params = formalParameters();
+            JBlock body = block();
+            memberDecl = new JConstructorDeclaration(line, mods, name, params, exceptions,
+                    body);
+        } else {
+            Type type = null;
+            if (have(STATIC)){
+                JBlock body = block();
+                memberDecl = new JStaticBlock(line, body);
+            } else if (have(VOID)) {
+                // void method
+                type = Type.VOID;
+                mustBe(IDENTIFIER);
+                String name = scanner.previousToken().image();
+                ArrayList<JFormalParameter> params = formalParameters();
+                getExceptions(line, exceptions);
+                JBlock body = have(SEMI) ? null : block();
+                memberDecl = new JMethodDeclaration(line, mods, name, type,
+                        params, exceptions, body);
+            } else {
+                type = type();
+                if (seeIdentLParen()) {
+                    // Non void method
+                    mustBe(IDENTIFIER);
+                    String name = scanner.previousToken().image();
+                    ArrayList<JFormalParameter> params = formalParameters();
+                    getExceptions(line, exceptions);
+                    JBlock body = have(SEMI) ? null : block();
+                    memberDecl = new JMethodDeclaration(line, mods, name, type,
+                            params, exceptions, body);
+                }  else {
+                    memberDecl = new JFieldDeclaration(line, mods,
+                            variableDeclarators(type));
+                    mustBe(SEMI);
+
+                }
+            }
         }
         return memberDecl;
     }
+
 
     /**
      * Parse a block.
@@ -623,6 +695,7 @@ public class Parser {
     private JBlock block() {
         int line = scanner.token().line();
         ArrayList<JStatement> statements = new ArrayList<JStatement>();
+
         mustBe(LCURLY);
         while (!see(RCURLY) && !see(EOF)) {
             statements.add(blockStatement());
@@ -700,20 +773,6 @@ public class Parser {
             JExpression test = parExpression();
             JStatement statement = statement();
             return new JWhileStatement(line, test, statement);
-            /**
-             * Okay.. so the code below is kinda funny
-             * 
-             * If we have FOR - we continue
-             *      after for we look for LPARAM
-             *          then we record scannar pos
-             *              jump forward two times
-             *                  if we find COLON we know it is a foreach
-             *                      we set ifEach true and we regain the recorded scanner pos
-             *  if its a foreach loop, a special method is used to avoid the missing semi, and replaces it with a need for a colon
-             *  if not then everything proceeds as normal.
-             *  
-             *  feel free to come op with a better solution :)
-             */
         } else if (have(FOR)) {
             mustBe(LPAREN);
             Boolean ifEach = false;
@@ -726,7 +785,7 @@ public class Parser {
             scanner.returnToPosition();
             if(ifEach){
                 JVariableDeclaration forInit = colonLocalVariableDeclarationStatement();
-                JExpression expres = relationalExpression();
+                JExpression expres = expression();
                 mustBe(RPAREN);
                 JStatement statement = statement();
                 return new JForEachStatement(line, statement, forInit, expres);
@@ -739,6 +798,9 @@ public class Parser {
                 JStatement statement = statement();
                 return new JForStatement(line, statement, forInit, forUpdate, expres);
             }
+        } else if (have(THROW)){
+            JExpression expr = expression();
+            return new JLiteralException(line, expr);
         } else if (have(RETURN)) {
             if (have(SEMI)) {
                 return new JReturnStatement(line, null);
@@ -773,7 +835,7 @@ public class Parser {
         ArrayList<JFormalParameter> parameters = new ArrayList<JFormalParameter>();
         mustBe(LPAREN);
         if (have(RPAREN))
-            return parameters; // ()
+            return parameters;
         do {
             parameters.add(formalParameter());
         } while (have(COMMA));
@@ -1051,7 +1113,11 @@ public class Parser {
     private JStatement statementExpression() {
         int line = scanner.token().line();
         JExpression expr = expression();
-        if (expr instanceof JAssignment || expr instanceof JPreIncrementOp
+
+        if (       expr instanceof JAssignment
+                || expr instanceof JPreIncrementOp
+                || expr instanceof JTernaryOp
+                || expr instanceof JLiteralException
                 || expr instanceof JPostDecrementOp
                 || expr instanceof JPreDecrementOp
                 || expr instanceof JPostIncrementOp
@@ -1169,7 +1235,7 @@ public class Parser {
      * @return an AST for a conditionalExpression.
      */
 
-    private JExpression conditionalAndExpression() {
+    private JExpression conditionalExpression() {
         int line = scanner.token().line();
         boolean more = true;
         JExpression lhs = equalityExpression();
@@ -1178,7 +1244,12 @@ public class Parser {
                 lhs = new JLogicalAndOp(line, lhs, equalityExpression());
             } else if (have(LOR)) {
                 lhs = new JLogicalOrOp(line, lhs, equalityExpression());
-            } else {
+            } else if (have(QUESTIONMARK)){
+                JExpression rhs = conditionalExpression();
+                mustBe(COLON);
+                JExpression rhs2 = conditionalExpression();
+                lhs = new JTernaryOp(line, lhs, rhs, rhs2);
+            }else {
                 more = false;
             }
         }
