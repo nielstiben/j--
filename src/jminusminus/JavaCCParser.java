@@ -351,7 +351,7 @@ class JavaCCParser implements JavaCCParserConstants {
     String name = "";
     Type superClass = Type.OBJECT;
     ArrayList<JMember> classBody = null;
-    ArrayList<Type> abstractions = null;
+    ArrayList<Type> abstractions = new ArrayList<Type>();
     try {
       jj_consume_token(CLASS);
                   line = token.beginLine;
@@ -369,8 +369,7 @@ class JavaCCParser implements JavaCCParserConstants {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case IMPLEMENTS:
         jj_consume_token(IMPLEMENTS);
-                 abstractions = new ArrayList<Type>();
-                abstractions.add(qualifiedIdentifier());
+                 abstractions.add(qualifiedIdentifier());
         label_5:
         while (true) {
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -2359,6 +2358,16 @@ class JavaCCParser implements JavaCCParserConstants {
     finally { jj_save(18, xla); }
   }
 
+  final private boolean jj_3R_46() {
+    if (jj_3R_58()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_59()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
   final private boolean jj_3_19() {
     if (jj_scan_token(LBRACK)) return true;
     if (jj_scan_token(RBRACK)) return true;
@@ -2394,14 +2403,14 @@ class JavaCCParser implements JavaCCParserConstants {
     return false;
   }
 
-  final private boolean jj_3R_140() {
-    if (jj_3R_126()) return true;
-    return false;
-  }
-
   final private boolean jj_3R_68() {
     if (jj_scan_token(DOT)) return true;
     if (jj_scan_token(IDENTIFIER)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_140() {
+    if (jj_3R_126()) return true;
     return false;
   }
 
@@ -3432,25 +3441,15 @@ class JavaCCParser implements JavaCCParserConstants {
     return false;
   }
 
-  final private boolean jj_3R_57() {
-    if (jj_scan_token(LBRACK)) return true;
-    if (jj_scan_token(RBRACK)) return true;
-    return false;
-  }
-
   final private boolean jj_3_1() {
     if (jj_scan_token(DOT)) return true;
     if (jj_scan_token(IDENTIFIER)) return true;
     return false;
   }
 
-  final private boolean jj_3R_46() {
-    if (jj_3R_58()) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_59()) { jj_scanpos = xsp; break; }
-    }
+  final private boolean jj_3R_57() {
+    if (jj_scan_token(LBRACK)) return true;
+    if (jj_scan_token(RBRACK)) return true;
     return false;
   }
 
