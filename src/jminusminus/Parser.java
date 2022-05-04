@@ -610,7 +610,7 @@ public class Parser {
                     mustBe(IDENTIFIER);
                     String name = scanner.previousToken().image();
                     ArrayList<JFormalParameter> params = formalParameters();
-                    getExceptions(line, exceptions);
+                    getExceptions(line, exceptions);    
                     JBlock body = have(SEMI) ? null : block();
                     memberDecl = new JInterfaceMethodDeclaration(line, mods, name, type,
                             params, exceptions, body);
@@ -644,11 +644,16 @@ public class Parser {
             JBlock body = block();
             memberDecl = new JConstructorDeclaration(line, mods, name, params, exceptions,
                     body);
+                    scanner.recordPosition();
         } else {
             Type type = null;
             if (have(STATIC)){
                 JBlock body = block();
                 memberDecl = new JStaticBlock(line, body);
+            } else if (have(LCURLY)) {
+                scanner.returnToPosition();
+                JBlock body = block();
+                memberDecl = new JBlockInner(line, body, mods);
             } else if (have(VOID)) {
                 // void method
                 type = Type.VOID;
@@ -791,7 +796,13 @@ public class Parser {
                 JVariableDeclaration forInit = localVariableDeclarationStatement();
                 JExpression expres = relationalExpression();
                 mustBe(SEMI);
-                JStatement forUpdate = statementExpression();
+                JStatement forUpdate;
+                if (!see(RPAREN)){
+                    forUpdate = statementExpression();
+                } else {
+                    forUpdate = null;
+                }
+
                 mustBe(RPAREN);
                 JStatement statement = statement();
                 return new JForStatement(line, statement, forInit, forUpdate, expres);
