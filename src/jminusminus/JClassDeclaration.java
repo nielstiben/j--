@@ -3,6 +3,7 @@
 package jminusminus;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import static jminusminus.CLConstants.*;
 
@@ -202,6 +203,11 @@ class JClassDeclaration extends JAST implements JTypeDecl {
             }
         }
 
+        // check that the methods of the interface have been implemented
+        if (!abstractions.isEmpty() && !mods.contains(TokenKind.ABSTRACT.image())) {
+            checkInterfacesImplemented();
+        }
+
         // Add the implicit empty constructor?
         if (!hasExplicitConstructor) {
             codegenPartialImplicitConstructor(partial);
@@ -218,6 +224,36 @@ class JClassDeclaration extends JAST implements JTypeDecl {
             } catch (NoClassDefFoundError e) {
                 // Just ignore it
             }
+        }
+    }
+
+    public void checkInterfacesImplemented() {
+        // get class methods
+        HashSet<String> classMethods = new HashSet<>();
+        for (JMember classMember : classBlock) {
+            if (classMember instanceof JMethodDeclaration) {
+                JMethodDeclaration method = (JMethodDeclaration) classMember;
+                String methodString = method.name + method.descriptor;
+                classMethods.add(methodString);
+            }
+        }
+        // TODO Does not work (yet)
+        HashSet<String> interfaceMethods = new HashSet<>();
+//        for (Type intImpl : abstractions) {
+//            JAST.compilationUnit.reportSemanticError(line, "Interface %s is not implemented", intImpl.abstractMethods());
+//            JAST.compilationUnit.errorHasOccurred();
+////            if (intImpl != null && intImpl.abstractMethods() != null) {
+////                ArrayList<Method> intMethods = intImpl.abstractMethods();
+////                for (Method method : intMethods) {
+////                    String methodString = method.name() + method.toDescriptor();
+////                    interfaceMethods.add(methodString);
+////                }
+////            }
+//        }
+
+        if (!classMethods.containsAll(interfaceMethods)) {
+            JAST.compilationUnit.reportSemanticError(line,
+                    "Class must define all methods declared in the implemented interfaces");
         }
     }
 
