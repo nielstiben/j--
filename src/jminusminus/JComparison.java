@@ -91,9 +91,10 @@ class JGreaterThanOp extends JComparison {
             output.addNoArgInstruction(onTrue? DCMPG : DCMPL);
             output.addBranchInstruction(onTrue ? IFGT : IFLE,
                     targetLabel);
+        }else {
+            output.addBranchInstruction(onTrue ? IF_ICMPGT : IF_ICMPLE,
+                    targetLabel);
         }
-        output.addBranchInstruction(onTrue ? IF_ICMPGT : IF_ICMPLE,
-                        targetLabel);
     }
 
 }
@@ -137,7 +138,10 @@ class JLessEqualOp extends JComparison {
     public void codegen(CLEmitter output, String targetLabel, boolean onTrue) {
         lhs.codegen(output);
         rhs.codegen(output);
-        
+        if (lhs.type() == Type.DOUBLE) {
+            output.addNoArgInstruction(onTrue? DCMPL : DCMPG);
+            output.addBranchInstruction(onTrue ? IFLE : IFGT, targetLabel);
+        }
         output.addBranchInstruction(onTrue ? IF_ICMPLE : IF_ICMPGT,
                         targetLabel);
     }
@@ -178,9 +182,12 @@ class JLessThanOp extends JComparison {
     public void codegen(CLEmitter output, String targetLabel, boolean onTrue) {
         lhs.codegen(output);
         rhs.codegen(output);
-        
-        output.addBranchInstruction(onTrue ? IF_ICMPGT : IF_ICMPLE,
-                        targetLabel);
+        if (lhs.type() == Type.DOUBLE) {
+            output.addNoArgInstruction(onTrue? DCMPL : DCMPG);
+            output.addBranchInstruction(onTrue ? IFLT : IFGT, targetLabel);
+        } else {
+            output.addBranchInstruction(onTrue ? IF_ICMPLT : IF_ICMPGT, targetLabel);
+        }
     }
 
 }
@@ -220,8 +227,12 @@ class JGreaterEqualOp extends JComparison {
         lhs.codegen(output);
         rhs.codegen(output);
 
-        output.addBranchInstruction(onTrue ? IF_ICMPGE : IF_ICMPLE,
-                targetLabel);
+        if (lhs.type() == Type.DOUBLE) {
+            output.addNoArgInstruction(onTrue? DCMPL : DCMPG);
+            output.addBranchInstruction(onTrue ? IFGE : IFLE, targetLabel);
+        } else {
+            output.addBranchInstruction(onTrue ? IF_ICMPGE : IF_ICMPLE, targetLabel);
+        }
     }
 
 }

@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 import static jminusminus.TokenKind.*;
 
-/**
+/**ant
  * A recursive descent parser that, given a lexical analyzer (a
  * {@link LookaheadScanner}), parses a Java compilation unit (program file),
  * taking tokens from the LookaheadScanner, and produces an abstract syntax
@@ -1166,7 +1166,7 @@ public class Parser {
 
     private JExpression assignmentExpression() {
         int line = scanner.token().line();
-        JExpression lhs = conditionalAndExpression();
+        JExpression lhs = conditionalExpression();
         if (have(ASSIGN)) {
             return new JAssignOp(line, lhs, assignmentExpression());
         } else if (seeCompoundAssignmentExpression()) {

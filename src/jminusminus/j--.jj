@@ -1595,24 +1595,24 @@ private JExpression relationalExpression(): {
         [
 
             <GTE>
-            rhs = relationalExpression()
-            { lhs = new JGreaterThanOrEqualOp(line, lhs, rhs); } |
+            rhs = shiftExpression()
+            { lhs = new JGreaterEqualOp(line, lhs, rhs); } |
 
             <LTE>
-            rhs = relationalExpression()
-            { lhs = new JLessEqualOp(line, lhs, rhs); }
+            rhs = shiftExpression()
+            { lhs = new JLessEqualOp(line, lhs, rhs); } |
 
             <LT>
-            rhs = relationalExpression()
+            rhs = shiftExpression()
             { lhs = new JLessThanOp(line, lhs, rhs); } |
 
             <GT>
-            rhs = relationalExpression()
+            rhs = shiftExpression()
             { lhs = new JGreaterThanOp(line, lhs, rhs); } |
 
             <INSTANCEOF>
-            rhs = referenceType()
-            { lhs = new JInstanceOfOp(line, lhs, rhs); }
+            type = referenceType()
+            { lhs = new JInstanceOfOp(line, lhs, type); }
         ]
     }
     catch (ParseException e) {
@@ -1646,11 +1646,11 @@ private JExpression shiftExpression(): {
 
             <SHIFT_RIGHT>
             rhs = shiftExpression()
-            { lhs = new JShfitRightOp(line, lhs, rhs); } |
+            { lhs = new JShiftRightOp(line, lhs, rhs); } |
 
             <SHIFT_LEFT>
             rhs = shiftExpression()
-            { lhs = new JShiftLeft(line, lhs, rhs); }
+            { lhs = new JShiftLeftOp(line, lhs, rhs); }
         ]
     }
     catch (ParseException e) {

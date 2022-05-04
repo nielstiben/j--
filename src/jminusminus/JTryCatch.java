@@ -108,8 +108,10 @@ class JTryCatch extends JStatement {
 
             output.addExceptionHandler(tryLabel, endTryLabel, finallyLabel, null);
             // Loops through all catch blocks and add exception handlers
-            for(int i = 0; i < catchBodies.size(); i++) {
-                output.addExceptionHandler(tryLabel, endTryLabel, finallyLabel, null);
+            if  (catchBodies != null) {
+                for (int i = 0; i < catchBodies.size(); i++) {
+                    output.addExceptionHandler(tryLabel, endTryLabel, finallyLabel, null);
+                }
             }
             finallyBody.codegen(output);
             output.addNoArgInstruction(ALOAD_3);
