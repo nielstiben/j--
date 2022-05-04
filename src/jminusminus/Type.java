@@ -43,6 +43,7 @@ class Type {
     /** The primitive type, boolean. */
     public final static Type BOOLEAN = typeFor(boolean.class);
 
+
     /** java.lang.Integer. */
     public final static Type BOXED_INT = typeFor(java.lang.Integer.class);
 
@@ -60,6 +61,7 @@ class Type {
 
     /** The type java.lang.Object. */
     public static Type OBJECT = typeFor(java.lang.Object.class);
+
 
     /** The void type. */
     public final static Type VOID = typeFor(void.class);

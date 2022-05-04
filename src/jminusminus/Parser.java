@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 import static jminusminus.TokenKind.*;
 
-/**
+/**ant
  * A recursive descent parser that, given a lexical analyzer (a
  * {@link LookaheadScanner}), parses a Java compilation unit (program file),
  * taking tokens from the LookaheadScanner, and produces an abstract syntax
@@ -301,12 +301,12 @@ public class Parser {
 
     private boolean seeReferenceType() {
         if (see(IDENTIFIER)) {
-            return true;    
+            return true;
         } else {
             scanner.recordPosition();
-            if (have(BOOLEAN) 
-            || have(CHAR)  
-            || have(DOUBLE) 
+            if (have(BOOLEAN)
+            || have(CHAR)
+            || have(DOUBLE)
             || have(INT)) {
                 if (have(LBRACK) && see(RBRACK)) {
                     scanner.returnToPosition();
@@ -430,7 +430,7 @@ public class Parser {
 
     private ArrayList<String> modifiers() {
         ArrayList<String> mods = new ArrayList<String>();
-        boolean scannedPUBLIC = false; 
+        boolean scannedPUBLIC = false;
         boolean scannedPROTECTED = false;
         boolean scannedPRIVATE = false;
         boolean scannedSTATIC = false;
@@ -683,7 +683,7 @@ public class Parser {
                     memberDecl = new JFieldDeclaration(line, mods,
                             variableDeclarators(type));
                     mustBe(SEMI);
-                    
+
                 }
             }
         }
@@ -704,7 +704,7 @@ public class Parser {
     private JBlock block() {
         int line = scanner.token().line();
         ArrayList<JStatement> statements = new ArrayList<JStatement>();
-        
+
         mustBe(LCURLY);
         while (!see(RCURLY) && !see(EOF)) {
             statements.add(blockStatement());
@@ -754,23 +754,25 @@ public class Parser {
         int line = scanner.token().line();
         if (see(LCURLY)) {
             return block();
-        }else if (have(TRY)){
-            ArrayList<JStatement> catchBodies = new ArrayList<>();
+        } else if (have(TRY)){
+            // TryCatch is right now loose in the sense that the exception can be any Formal Parameter.
+            ArrayList<JBlock> catchBodies = new ArrayList<>();
             ArrayList<JFormalParameter> cParameters = new ArrayList<>();
-            JStatement statement = statement();
-            JStatement finalBody = null;
+            JBlock statement = block();
+            JBlock finallyBody = null;
             while (have(CATCH)){
                 mustBe(LPAREN);
                 JFormalParameter cParameter = formalParameter();
                 cParameters.add(cParameter);
                 mustBe(RPAREN);
-                JStatement catchBody = statement();
+                JBlock catchBody = block();
                 catchBodies.add(catchBody);
             }
             if (have(FINALLY)){
-                finalBody = statement();
-            }            
-            return new JTryCatch(line, statement, catchBodies, cParameters,finalBody);
+                finallyBody = block();
+            }
+            return new JTryCatch(line, statement, catchBodies, cParameters, finallyBody);
+
         }else if (have(IF)) {
             JExpression test = parExpression();
             JStatement consequent = statement();
@@ -1126,9 +1128,9 @@ public class Parser {
     private JStatement statementExpression() {
         int line = scanner.token().line();
         JExpression expr = expression();
-        
-        if (       expr instanceof JAssignment 
-                || expr instanceof JPreIncrementOp 
+
+        if (       expr instanceof JAssignment
+                || expr instanceof JPreIncrementOp
                 || expr instanceof JTernaryOp
                 || expr instanceof JLiteralException
                 || expr instanceof JPostDecrementOp
@@ -1258,9 +1260,9 @@ public class Parser {
             } else if (have(LOR)) {
                 lhs = new JLogicalOrOp(line, lhs, equalityExpression());
             } else if (have(QUESTIONMARK)){
-                JExpression rhs = conditionalExpression(); 
+                JExpression rhs = conditionalExpression();
                 mustBe(COLON);
-                JExpression rhs2 = conditionalExpression(); 
+                JExpression rhs2 = conditionalExpression();
                 lhs = new JTernaryOp(line, lhs, rhs, rhs2);
             }else {
                 more = false;
