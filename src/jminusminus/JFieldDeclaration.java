@@ -13,7 +13,7 @@ class JFieldDeclaration extends JAST implements JMember {
     /** Field modifiers. */
     private ArrayList<String> mods;
 
-    /** Variable declarators. */
+    /** \Variable declarators. */
     private ArrayList<JVariableDeclarator> decls;
 
     /** Variable initializations. */

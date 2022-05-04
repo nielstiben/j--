@@ -1,0 +1,39 @@
+package pass;
+
+public class TryCatch {
+
+    public boolean try_it(boolean a) {
+        int tst;
+        try {
+            int tsts = 2 / 0;
+        } catch (ArithmeticException e) {
+            tst = 1;
+        } finally {
+            tst = 0;
+        }
+        return a;
+    }
+
+    public boolean try_double_catch(boolean a) {
+        int tst;
+        try {
+            int tsts = 2 / 0;
+        } catch (ArithmeticException e) {
+            tst = 1;
+        } catch (int e) {
+            tst = 0;
+        }
+        return a;
+    }
+
+    public boolean try_finally(boolean a) {
+        int tst;
+        try {
+            int tsts = 2 / 0;
+        } finally {
+            tst = 0;
+        }
+        return a;
+    }
+
+}

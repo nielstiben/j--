@@ -2,9 +2,9 @@
 
 package jminusminus;
 
-import static jminusminus.CLConstants.*;
-
 import java.util.ArrayList;
+
+import static jminusminus.CLConstants.*;
 
 /**
  * The AST node for a for-statement.
@@ -13,79 +13,111 @@ import java.util.ArrayList;
 class JTryCatch extends JStatement {
 
     /** The body. */
-    private JStatement tryBody;
-    private ArrayList<JStatement> catchBodies;
+    private JBlock tryBody;
+    private ArrayList<JBlock> catchBodies;
     private ArrayList <JFormalParameter> cParameters;
-    private JStatement finalBody;
-    
+    private JBlock finallyBody;
 
 
-    /**
-     * Constructs an AST node for a for-statement given its line number, the
-     * test expression, and the body.
-     * 
-     * @param line
-     *            line in which the for-statement occurs in the source file.
-     * @param condition
-     * 
-     * @param assignment
-     * 
-     * @param comparison
-     *            test expression.
-     * @param body
-     *            
-     */
 
-    public JTryCatch(int line, JStatement tryBody, ArrayList<JStatement> catchBodies, ArrayList<JFormalParameter> cParameters, JStatement finalBody) {
+
+    public JTryCatch(int line, JBlock tryBody,
+                     ArrayList<JBlock> catchBodies,
+                     ArrayList<JFormalParameter> cParameters,
+                     JBlock finallyBody) {
         super(line);
         this.tryBody = tryBody;
         this.catchBodies = catchBodies;
         this.cParameters = cParameters;
-        this.finalBody = finalBody;
+        this.finallyBody = finallyBody;
+
     }
 
     /**
      * Analysis involves analyzing the test, checking its type and analyzing the
      * body statement.
-     * 
+     *
      * @param context
      *            context in which names are resolved.
      * @return the analyzed (and possibly rewritten) AST subtree.
      */
 
     public JTryCatch analyze(Context context) {
-        //tryBody = (JStatement) tryBody.analyze(context);
-       // catchBody = (JStatement) catchBody.analyze(context);
+        tryBody = (JBlock) tryBody.analyze(context);
+        if (catchBodies != null) {
+            for (JFormalParameter cParameter : cParameters) {
+                cParameter.analyze(context);
+//                if (!cParameter.type().matchesExpected(Type.OBJECT)) {
+//                    JAST.compilationUnit.reportSemanticError(cParameter.line(), "Catch parameter must be an exception got:" +  param.type().jvmName());
+//                }
+            }
+            for (int i = 0; i < catchBodies.size(); i++) {
+                catchBodies.set(i, (JBlock) catchBodies.get(i).analyze(context));
+            }
+        }
+        if (finallyBody != null) {
+            finallyBody = (JBlock) finallyBody.analyze(context);
+        }
         return this;
     }
 
     /**
      * Generates code for the for loo<JWildExpressionp.
-     * 
+     *
      * @param output
      *            the code emitter (basically an abstraction for producing the
      *            .class file).
      */
 
     public void codegen(CLEmitter output) {
-        //TODO : Needs to be implementet- this has been taken from whileloops
-        // Need two labels
-        String test = output.createLabel();
-        String out = output.createLabel();
+        // Labels
+        String tryLabel = output.createLabel();
+        String endTryLabel = output.createLabel();
+        String handlerLabel = output.createLabel();
+        String finallyLabel = output.createLabel();
+        String endLabel = output.createLabel();
 
-        // Branch out of the loop on the test condition
-        // being false
-        output.addLabel(test);
-       
-
-        // Codegen body
+        // Try block
+        output.addLabel(tryLabel);
         tryBody.codegen(output);
+        output.addLabel(endTryLabel);
+        if (finallyBody != null) {
+            finallyBody.codegen(output);
+        }
+        output.addBranchInstruction(GOTO, endLabel);
+        // Catch blocks
+        if (catchBodies != null) {
+            for (int i = 0; i < catchBodies.size(); i++) {
+                output.addLabel(handlerLabel + i);
+                output.addNoArgInstruction(ASTORE_2); // weet niet
+                output.addExceptionHandler(
+                        tryLabel,
+                        endTryLabel,
+                        handlerLabel + i,
+                        cParameters.get(catchBodies.indexOf(catchBodies.get(i))).type().jvmName());
+                catchBodies.get(i).codegen(output);
+                if (finallyBody != null) {
+                    finallyBody.codegen(output);
+                }
+                output.addBranchInstruction(GOTO, endLabel);
+            }
+        }
+        output.addLabel(finallyLabel);
+        if (finallyBody != null) {
+            output.addNoArgInstruction(ASTORE_3);
 
-        // Unconditional jump back up to test
-        output.addBranchInstruction(GOTO, test);
+            output.addExceptionHandler(tryLabel, endTryLabel, finallyLabel, null);
+            // Loops through all catch blocks and add exception handlers
+            if  (catchBodies != null) {
+                for (int i = 0; i < catchBodies.size(); i++) {
+                    output.addExceptionHandler(tryLabel, endTryLabel, finallyLabel, null);
+                }
+            }
+            finallyBody.codegen(output);
+            output.addNoArgInstruction(ALOAD_3);
+            output.addNoArgInstruction(ATHROW);        }
+        output.addLabel(endLabel);
 
-        // The label below and outside the loop
-        output.addLabel(out);
     }
 
     /**
@@ -107,26 +139,24 @@ class JTryCatch extends JStatement {
         tryBody.writeToStdOut(p);
         p.printf("</TryBody>\n");
         p.print("<CatchParameter>");
-            
-        for (JFormalParameter cParameter : cParameters) {
-            cParameter.writeToStdOut(p);    
-        }  
-        p.print("</CatchParameter>");
         p.println();
-        p.printf("<CatchBody>\n");
-        for (JStatement catchBody : catchBodies) {
-            catchBody.writeToStdOut(p);    
+        if (cParameters != null) {
+            for (JFormalParameter cParameter : cParameters) {
+                cParameter.writeToStdOut(p);
+            }
+            p.print("</CatchParameter>");
+            p.println();
+            p.printf("<CatchBody>\n");
+            for (JStatement catchBody : catchBodies) {
+                catchBody.writeToStdOut(p);
+            }
         }
         p.printf("</Catch>\n");
-        
-        if (finalBody != null){
-            p.printf("<Finally>");
-            p.println();
-            finalBody.writeToStdOut(p);
-            p.printf("</Finally>");
-            p.println();
+        if (finallyBody != null) {
+            p.printf("<FinallyBody>\n");
+            finallyBody.writeToStdOut(p);
+            p.printf("</FinallyBody>\n");
         }
-        
         p.printf("</TryCatch>\n");
     }
 }

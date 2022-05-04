@@ -259,7 +259,12 @@
             </test>
         </junit>
     </target>
-
+    <target name="magic">
+        <exec executable="ant"><arg value="clean"/></exec>
+        <exec executable="ant"><arg value="javacc"/></exec>
+        <exec executable="ant"><arg value="compileJavaCC"/></exec>
+        <exec executable="ant"><arg value="jar"/></exec>
+    </target>
     <target name="verifyNoError" if="test.error">
         <fail message="JUnit tests had errors."/>
     </target>
@@ -462,12 +467,6 @@
                 <formatter type="plain" usefile="false"/>
             </test>
         </junit>
-    </target>
-    <target name="magic">
-        <exec executable="ant"><arg value="clean"/></exec>
-        <exec executable="ant"><arg value="javacc"/></exec>
-        <exec executable="ant"><arg value="compileJavaCC"/></exec>
-        <exec executable="ant"><arg value="jar"/></exec>
     </target>
     <!-- clean: Removes generated files and folders. -->
     <target name="clean">
