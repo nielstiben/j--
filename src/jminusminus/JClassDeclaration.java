@@ -3,6 +3,7 @@
 package jminusminus;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import static jminusminus.CLConstants.*;
 
@@ -41,6 +42,7 @@ class JClassDeclaration extends JAST implements JTypeDecl {
      * Super abstraction type.
      */
     private ArrayList<Type> abstractions;
+    private ArrayList<String> abstractionNames;
 
     /**
      * This class type.
@@ -86,6 +88,7 @@ class JClassDeclaration extends JAST implements JTypeDecl {
         this.name = name;
         this.superType = superType;
         this.abstractions = abstractions;
+        this.abstractionNames = new ArrayList<>();
         this.classBlock = classBlock;
         hasExplicitConstructor = false;
         instanceFieldInitializations = new ArrayList<JFieldDeclaration>();
@@ -174,12 +177,8 @@ class JClassDeclaration extends JAST implements JTypeDecl {
             }
         }
 
-
-        ArrayList<String> abstractionNames = new ArrayList<>();
-        if (abstractions != null) {
-            for (Type e : this.abstractions) {
-                abstractionNames.add(e.jvmName());
-            }
+        for (Type e : this.abstractions) {
+            abstractionNames.add(e.jvmName());
         }
 
         // Create the (partial) class
@@ -204,6 +203,11 @@ class JClassDeclaration extends JAST implements JTypeDecl {
             }
         }
 
+        // check that the methods of the interface have been implemented
+        if (!abstractions.isEmpty() && !mods.contains(TokenKind.ABSTRACT.image())) {
+            checkInterfacesImplemented();
+        }
+
         // Add the implicit empty constructor?
         if (!hasExplicitConstructor) {
             codegenPartialImplicitConstructor(partial);
@@ -220,6 +224,36 @@ class JClassDeclaration extends JAST implements JTypeDecl {
             } catch (NoClassDefFoundError e) {
                 // Just ignore it
             }
+        }
+    }
+
+    public void checkInterfacesImplemented() {
+        // get class methods
+        HashSet<String> classMethods = new HashSet<>();
+        for (JMember classMember : classBlock) {
+            if (classMember instanceof JMethodDeclaration) {
+                JMethodDeclaration method = (JMethodDeclaration) classMember;
+                String methodString = method.name + method.descriptor;
+                classMethods.add(methodString);
+            }
+        }
+        // TODO Does not work (yet)
+        HashSet<String> interfaceMethods = new HashSet<>();
+//        for (Type intImpl : abstractions) {
+//            JAST.compilationUnit.reportSemanticError(line, "Interface %s is not implemented", intImpl.abstractMethods());
+//            JAST.compilationUnit.errorHasOccurred();
+////            if (intImpl != null && intImpl.abstractMethods() != null) {
+////                ArrayList<Method> intMethods = intImpl.abstractMethods();
+////                for (Method method : intMethods) {
+////                    String methodString = method.name() + method.toDescriptor();
+////                    interfaceMethods.add(methodString);
+////                }
+////            }
+//        }
+
+        if (!classMethods.containsAll(interfaceMethods)) {
+            JAST.compilationUnit.reportSemanticError(line,
+                    "Class must define all methods declared in the implemented interfaces");
         }
     }
 
@@ -276,7 +310,7 @@ class JClassDeclaration extends JAST implements JTypeDecl {
         // The class header
         String qualifiedName = JAST.compilationUnit.packageName() == "" ? name
                 : JAST.compilationUnit.packageName() + "/" + name;
-        output.addClass(mods, qualifiedName, superType.jvmName(), null, false);
+        output.addClass(mods, qualifiedName, superType.jvmName(), abstractionNames, false);
 
         // The implicit empty constructor?
         if (!hasExplicitConstructor) {
@@ -299,10 +333,6 @@ class JClassDeclaration extends JAST implements JTypeDecl {
      */
 
     public void writeToStdOut(PrettyPrinter p) {
-        String abstractionsString = "null";
-        if (abstractions != null) {
-            abstractionsString = abstractions.toString();
-        }
         p.printf("<JClassDeclaration line=\"%d\" name=\"%s\""
                 + " super=\"%s\", implements=\"%s\">\n", line(), name, superType.toString(), abstractions);
         p.indentRight();
@@ -317,6 +347,15 @@ class JClassDeclaration extends JAST implements JTypeDecl {
             }
             p.indentLeft();
             p.println("</Modifiers>");
+        }
+        if (abstractions != null) {
+            p.println("<Implements>");
+            p.indentRight();
+            for (Type interfaceImplemented : abstractions) {
+                p.printf("<Implements name=\"%s\"/>\n", interfaceImplemented.toString());
+            }
+            p.indentLeft();
+            p.println("</Implements>");
         }
         if (classBlock != null) {
             p.println("<ClassBlock>");

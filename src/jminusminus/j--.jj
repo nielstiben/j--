@@ -534,7 +534,7 @@ private JClassDeclaration classDeclaration( ArrayList<String> mods ): {
     String name = "";
     Type superClass = Type.OBJECT;
     ArrayList<JMember> classBody = null;
-    ArrayList<Type> abstractions = null;
+    ArrayList<Type> abstractions = new ArrayList<Type>();
 }
 {
     try {
@@ -545,8 +545,7 @@ private JClassDeclaration classDeclaration( ArrayList<String> mods ): {
         ]
         [
         	<IMPLEMENTS>
-        	{abstractions = new ArrayList<Type>();
-        	abstractions.add(qualifiedIdentifier());}
+        	{abstractions.add(qualifiedIdentifier());}
         	(
         	<COMMA>
         	{abstractions.add(qualifiedIdentifier());}

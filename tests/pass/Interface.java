@@ -2,7 +2,7 @@ package pass;
 import java.lang.System;
 
 interface BananaCaller {
-    abstract void callBanana();
+    void callBanana();
     abstract void eatBanana();
 }
 
