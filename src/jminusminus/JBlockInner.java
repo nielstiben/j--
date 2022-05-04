@@ -48,6 +48,7 @@ public class JBlockInner extends JBlock implements JMember {
     }
 
     public void codegen(CLEmitter output) {
+        body.codegen(output);
     }
 
     @Override
