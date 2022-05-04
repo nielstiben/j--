@@ -213,8 +213,13 @@ class JClassDeclaration extends JAST implements JTypeDecl {
         // the
         // representation for this type
         Type id = this.context.lookupType(name);
+
         if (id != null && !JAST.compilationUnit.errorHasOccurred()) {
-            id.setClassRep(partial.toClass());
+            try { // OK this is the most lazy fix for making interfaces to work. I know.
+                id.setClassRep(partial.toClass());
+            } catch (NoClassDefFoundError e) {
+                // Just ignore it
+            }
         }
     }
 
