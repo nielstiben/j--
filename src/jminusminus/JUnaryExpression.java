@@ -11,22 +11,23 @@ import static jminusminus.CLConstants.*;
 
 abstract class JUnaryExpression extends JExpression {
 
-    /** The operator. */
+    /**
+     * The operator.
+     */
     private String operator;
 
-    /** The operand. */
+    /**
+     * The operand.
+     */
     protected JExpression arg;
 
     /**
      * Constructs an AST node for an unary expression given its line number, the
      * unary operator, and the operand.
-     * 
-     * @param line
-     *            line in which the unary expression occurs in the source file.
-     * @param operator
-     *            the unary operator.
-     * @param arg
-     *            the operand.
+     *
+     * @param line     line in which the unary expression occurs in the source file.
+     * @param operator the unary operator.
+     * @param arg      the operand.
      */
 
     protected JUnaryExpression(int line, String operator, JExpression arg) {
@@ -221,6 +222,9 @@ class JPostDecrementOp extends JUnaryExpression {
                 type = Type.DOUBLE;
             } else if (arg.type() == Type.INT){
                 type = Type.INT;
+            } else {
+                JAST.compilationUnit.reportSemanticError(line,
+                        "Operand to expr-- must be int or double.");
             }
         }
         return this;
@@ -321,8 +325,8 @@ class JPreIncrementOp extends JUnaryExpression {
 
     /**
      * In generating code for a pre-increment operation, we treat simple
-     * variable ({@link JVariable}) operands specially since the JVM has an 
-     * increment instruction. 
+     * variable ({@link JVariable}) operands specially since the JVM has an
+     * increment instruction.
      * Otherwise, we rely on the {@link JLhs} code generation support for
      * generating the proper code. Notice that we distinguish between
      * expressions that are statement expressions and those that are not; we
@@ -340,7 +344,15 @@ class JPreIncrementOp extends JUnaryExpression {
             // have replaced it with an explicit field selection.
             int offset = ((LocalVariableDefn) ((JVariable) arg).iDefn())
                     .offset();
-            output.addIINCInstruction(offset, 1);
+
+            if (type == Type.INT) {
+                output.addIINCInstruction(offset, 1);
+            } else if (type == Type.DOUBLE) {
+                output.addOneArgInstruction(DLOAD, offset);
+                output.addNoArgInstruction(DCONST_1);
+                output.addNoArgInstruction(DADD);
+                output.addOneArgInstruction(DSTORE, offset);
+            }
             if (!isStatementExpression) {
                 // Loading its original rvalue
                 arg.codegen(output);
@@ -348,8 +360,13 @@ class JPreIncrementOp extends JUnaryExpression {
         } else {
             ((JLhs) arg).codegenLoadLhsLvalue(output);
             ((JLhs) arg).codegenLoadLhsRvalue(output);
-            output.addNoArgInstruction(ICONST_1);
-            output.addNoArgInstruction(IADD);
+            if (type == Type.INT) {
+                output.addNoArgInstruction(ICONST_1);
+                output.addNoArgInstruction(IADD);
+            } else if (type == Type.DOUBLE) {
+                output.addNoArgInstruction(DCONST_1);
+                output.addNoArgInstruction(DADD);
+            }
             if (!isStatementExpression) {
                 // Loading its original rvalue
                 ((JLhs) arg).codegenDuplicateRvalue(output);
@@ -419,24 +436,33 @@ class JPostIncrementOp extends JUnaryExpression {
 
     public void codegen(CLEmitter output) {
         if (arg instanceof JVariable) {
-            // Local variables are already on the stack.
-            JVariable argJVariable = ((JVariable) arg);
-            LocalVariableDefn lvd = (LocalVariableDefn) argJVariable.iDefn();
-            int offset = lvd.offset();
+            // A local variable; otherwise analyze() would
+            // have replaced it with an explicit field selection.
+            int offset = ((LocalVariableDefn) ((JVariable) arg).iDefn())
+                    .offset();
             if (!isStatementExpression) {
-                arg.codegen(output); // Load value
+                // Loading its original rvalue
+                arg.codegen(output);
             }
-            output.addIINCInstruction(offset, 1); // Increment with -1
+            if (type == Type.INT) {
+                output.addIINCInstruction(offset, 1);
+            } else if (type == Type.DOUBLE) {
+                output.addOneArgInstruction(DLOAD, offset);
+                output.addNoArgInstruction(DCONST_1);
+                output.addNoArgInstruction(DADD);
+                output.addOneArgInstruction(DSTORE, offset);
+            }
         } else {
             ((JLhs) arg).codegenLoadLhsLvalue(output);
             ((JLhs) arg).codegenLoadLhsRvalue(output);
             if (!isStatementExpression) {
-                ((JLhs) arg).codegenDuplicateRvalue(output); // Load value
+                // Loading its original rvalue
+                ((JLhs) arg).codegenDuplicateRvalue(output);
             }
-            if(type==Type.INT){
+            if (type == Type.INT) {
                 output.addNoArgInstruction(ICONST_1);
                 output.addNoArgInstruction(IADD);
-            } else if (type==Type.DOUBLE){
+            } else if (type == Type.DOUBLE) {
                 output.addNoArgInstruction(DCONST_1);
                 output.addNoArgInstruction(DADD);
             }
@@ -509,26 +535,36 @@ class JPreDecrementOp extends JUnaryExpression {
 
     public void codegen(CLEmitter output) {
         if (arg instanceof JVariable) {
-            // Local variables are already on the stack.
-            JVariable argJVariable = ((JVariable) arg);
-            LocalVariableDefn lvd = (LocalVariableDefn) argJVariable.iDefn();
-            int offset = lvd.offset();
-            if (!isStatementExpression) {
-                arg.codegen(output); // Load value
+            // A local variable; otherwise analyze() would
+            // have replaced it with an explicit field selection.
+            int offset = ((LocalVariableDefn) ((JVariable) arg).iDefn())
+                    .offset();
+
+            if (type == Type.INT) {
+                output.addIINCInstruction(offset, -1);
+            } else if (type == Type.DOUBLE) {
+                output.addOneArgInstruction(DLOAD, offset);
+                output.addNoArgInstruction(DCONST_1);
+                output.addNoArgInstruction(DSUB);
+                output.addOneArgInstruction(DSTORE, offset);
             }
-            output.addIINCInstruction(offset, -1); // Increment with -1
+            if (!isStatementExpression) {
+                // Loading its original rvalue
+                arg.codegen(output);
+            }
         } else {
             ((JLhs) arg).codegenLoadLhsLvalue(output);
             ((JLhs) arg).codegenLoadLhsRvalue(output);
-            if (!isStatementExpression) {
-                ((JLhs) arg).codegenDuplicateRvalue(output); // Load value
-            }
-            if(type==Type.INT){
+            if (type == Type.INT) {
                 output.addNoArgInstruction(ICONST_1);
                 output.addNoArgInstruction(ISUB);
-            } else if (type==Type.DOUBLE){
+            } else if (type == Type.DOUBLE) {
                 output.addNoArgInstruction(DCONST_1);
                 output.addNoArgInstruction(DSUB);
+            }
+            if (!isStatementExpression) {
+                // Loading its original rvalue
+                ((JLhs) arg).codegenDuplicateRvalue(output);
             }
             ((JLhs) arg).codegenStore(output);
         }

@@ -51,8 +51,12 @@ class JForEachStatement extends JStatement {
     public JForEachStatement analyze(Context context) {
         forInit.analyze(context);
         expres.analyze(context);
+       if (!expres.type().isArray()){
+        JAST.compilationUnit.reportSemanticError(line,
+         "Expression must be of type []");
+       }
+       
         body = (JStatement) body.analyze(context);
-
         return this;
     }
 
@@ -65,15 +69,15 @@ class JForEachStatement extends JStatement {
      */
 
     public void codegen(CLEmitter output) {
-        //TODO : Needs to be implementet- this has been taken from whileloops
-        // Need two labels
+        boolean isLoopDone = false;
         String test = output.createLabel();
         String out = output.createLabel();
 
         // Branch out of the loop on the test condition
         // being false
+        forInit.codegen(output);
         output.addLabel(test);
-       
+        
 
         // Codegen body
         body.codegen(output);

@@ -2,9 +2,10 @@ package pass;
 public class InstanceInitializationBlock {
 
     public static String bananas = "ananas";
+    
     {   
         int a = 4;
-        bananas = "apples";
+       
     }
 
     static {
