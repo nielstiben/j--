@@ -74,20 +74,22 @@ class JForStatement extends JStatement {
      */
 
     public void codegen(CLEmitter output) {
-        //TODO : Needs to be implementet- this has been taken from whileloops
-        // Need two labels
+       
         String test = output.createLabel();
         String out = output.createLabel();
 
         // Branch out of the loop on the test condition
         // being false
+        forInit.codegen(output);
         output.addLabel(test);
-       
+        expres.codegen(output, out, false);
 
         // Codegen body
         body.codegen(output);
 
         // Unconditional jump back up to test
+        if (forUpdate != null){forUpdate.codegen(output);}
+        
         output.addBranchInstruction(GOTO, test);
 
         // The label below and outside the loop
