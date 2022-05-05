@@ -19,8 +19,7 @@ public class StatementsTest extends TestCase {
             assertEquals(a, 1);
         } catch (Exception e) {
             a = 2;
-        }
-        finally {
+        } finally {
             a = a + 1;
             assertEquals(a, 2);
         }
@@ -35,6 +34,15 @@ public class StatementsTest extends TestCase {
         assertEquals(a, 2);
     }
 
-
-
+    public void test_inc_dec() {
+        int a = 0;
+        a = a--;
+        assertEquals(a, -15);
+        a = a++;
+        assertEquals(a, 0);
+        a = --a;
+        assertEquals(a, -1);
+        a = ++a;
+        assertEquals(a, 0);
+    }
 }
