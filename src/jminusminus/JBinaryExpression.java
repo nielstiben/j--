@@ -344,10 +344,14 @@ class JTernaryOp extends JBinaryExpression {
     }
 
     public void codegen(CLEmitter output) {
-        lhs.codegen(output);
+        String alternate = output.createLabel();
+        String end = output.createLabel();
+        lhs.codegen(output, alternate, false);
         rhs.codegen(output);
+        output.addBranchInstruction(GOTO, end);
+        output.addLabel(alternate);
         rhs2.codegen(output);
-        output.addNoArgInstruction(IREM);
+        output.addLabel(end);
     }
 
 
