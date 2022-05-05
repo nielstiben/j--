@@ -1,3 +1,4 @@
+package pass;
 public class StaticBlock {
 
     public static int minusminus(int a){
