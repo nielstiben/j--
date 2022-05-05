@@ -65,10 +65,12 @@ class JNegateOp extends JUnaryExpression {
     /**
      * Constructs an AST node for a negation expression given its line number,
      * and the operand.
-     *
-     * @param line line in which the negation expression occurs in the source
-     *             file.
-     * @param arg  the operand.
+     * 
+     * @param line
+     *            line in which the negation expression occurs in the source
+     *            file.
+     * @param arg
+     *            the operand.
      */
 
     public JNegateOp(int line, JExpression arg) {
@@ -78,8 +80,9 @@ class JNegateOp extends JUnaryExpression {
     /**
      * Analyzing the negation operation involves analyzing its operand, checking
      * its type and determining the result type.
-     *
-     * @param context context in which names are resolved.
+     * 
+     * @param context
+     *            context in which names are resolved.
      * @return the analyzed (and possibly rewritten) AST subtree.
      */
 
@@ -93,9 +96,10 @@ class JNegateOp extends JUnaryExpression {
     /**
      * Generating code for the negation operation involves generating code for
      * the operand, and then the negation instruction.
-     *
-     * @param output the code emitter (basically an abstraction for producing the
-     *               .class file).
+     * 
+     * @param output
+     *            the code emitter (basically an abstraction for producing the
+     *            .class file).
      */
 
     public void codegen(CLEmitter output) {
@@ -114,10 +118,12 @@ class JLogicalNotOp extends JUnaryExpression {
     /**
      * Constructs an AST for a logical NOT expression given its line number, and
      * the operand.
-     *
-     * @param line line in which the logical NOT expression occurs in the source
-     *             file.
-     * @param arg  the operand.
+     * 
+     * @param line
+     *            line in which the logical NOT expression occurs in the source
+     *            file.
+     * @param arg
+     *            the operand.
      */
 
     public JLogicalNotOp(int line, JExpression arg) {
@@ -127,8 +133,9 @@ class JLogicalNotOp extends JUnaryExpression {
     /**
      * Analyzing a logical NOT operation means analyzing its operand, insuring
      * it's a boolean, and setting the result to boolean.
-     *
-     * @param context context in which names are resolved.
+     * 
+     * @param context
+     *            context in which names are resolved.
      */
 
     public JExpression analyze(Context context) {
@@ -139,12 +146,13 @@ class JLogicalNotOp extends JUnaryExpression {
     }
 
     /**
-     * Generates code for the case where we actually want a boolean value
+     * Generates code for the case where we actually want a boolean value 
      * ({@code true} or {@code false}) computed onto the stack. For example,
      * assignment to a boolean variable.
-     *
-     * @param output the code emitter (basically an abstraction for producing the
-     *               .class file).
+     * 
+     * @param output
+     *            the code emitter (basically an abstraction for producing the
+     *            .class file).
      */
 
     public void codegen(CLEmitter output) {
@@ -161,9 +169,10 @@ class JLogicalNotOp extends JUnaryExpression {
     /**
      * The code generation necessary for branching simply flips the condition on
      * which we branch.
-     *
-     * @param output the code emitter (basically an abstraction for producing the
-     *               .class file).
+     * 
+     * @param output
+     *            the code emitter (basically an abstraction for producing the
+     *            .class file).
      */
 
     public void codegen(CLEmitter output, String targetLabel, boolean onTrue) {
@@ -181,9 +190,11 @@ class JPostDecrementOp extends JUnaryExpression {
     /**
      * Constructs an AST node for an expr-- expression given its line number, and
      * the operand.
-     *
-     * @param line line in which the expression occurs in the source file.
-     * @param arg  the operand.
+     * 
+     * @param line
+     *            line in which the expression occurs in the source file.
+     * @param arg
+     *            the operand.
      */
 
     public JPostDecrementOp(int line, JExpression arg) {
@@ -193,8 +204,9 @@ class JPostDecrementOp extends JUnaryExpression {
     /**
      * Analyzes the operand as a lhs (since there is a side effect), checks types
      * and determines the type of the result.
-     *
-     * @param context context in which names are resolved.
+     * 
+     * @param context
+     *            context in which names are resolved.
      * @return the analyzed (and possibly rewritten) AST subtree.
      */
 
@@ -205,10 +217,11 @@ class JPostDecrementOp extends JUnaryExpression {
             type = Type.ANY;
         } else {
             arg = (JExpression) arg.analyze(context);
-            if (arg.type() == Type.INT) {
-                type = Type.INT;
-            } else if (arg.type() == Type.DOUBLE) {
+            arg.type().mustMatchOneOf(line(), Type.INT, Type.DOUBLE);
+            if (arg.type() == Type.DOUBLE){
                 type = Type.DOUBLE;
+            } else if (arg.type() == Type.INT){
+                type = Type.INT;
             } else {
                 JAST.compilationUnit.reportSemanticError(line,
                         "Operand to expr-- must be int or double.");
@@ -219,16 +232,17 @@ class JPostDecrementOp extends JUnaryExpression {
 
     /**
      * In generating code for a post-decrement operation, we treat simple
-     * variable ({@link JVariable}) operands specially since the JVM has an
-     * increment instruction.
+     * variable ({@link JVariable}) operands specially since the JVM has an 
+     * increment instruction. 
      * Otherwise, we rely on the {@link JLhs} code generation support for
      * generating the proper code. Notice that we distinguish between
      * expressions that are statement expressions and those that are not; we
      * insure the proper value (before the decrement) is left atop the stack in
      * the latter case.
-     *
-     * @param output the code emitter (basically an abstraction for producing the
-     *               .class file).
+     * 
+     * @param output
+     *            the code emitter (basically an abstraction for producing the
+     *            .class file).
      */
 
     public void codegen(CLEmitter output) {
@@ -241,14 +255,7 @@ class JPostDecrementOp extends JUnaryExpression {
                 // Loading its original rvalue
                 arg.codegen(output);
             }
-            if (type == Type.INT) {
-                output.addIINCInstruction(offset, -1);
-            } else if (type == Type.DOUBLE) {
-                output.addOneArgInstruction(DLOAD, offset);
-                output.addNoArgInstruction(DCONST_1);
-                output.addNoArgInstruction(DSUB);
-                output.addOneArgInstruction(DSTORE, offset);
-            }
+            output.addIINCInstruction(offset, -1);
         } else {
             ((JLhs) arg).codegenLoadLhsLvalue(output);
             ((JLhs) arg).codegenLoadLhsRvalue(output);
@@ -263,6 +270,7 @@ class JPostDecrementOp extends JUnaryExpression {
                 output.addNoArgInstruction(DCONST_1);
                 output.addNoArgInstruction(DSUB);
             }
+
             ((JLhs) arg).codegenStore(output);
         }
     }
@@ -278,9 +286,11 @@ class JPreIncrementOp extends JUnaryExpression {
     /**
      * Constructs an AST node for a ++expr given its line number, and the
      * operand.
-     *
-     * @param line line in which the expression occurs in the source file.
-     * @param arg  the operand.
+     * 
+     * @param line
+     *            line in which the expression occurs in the source file.
+     * @param arg
+     *            the operand.
      */
 
     public JPreIncrementOp(int line, JExpression arg) {
@@ -290,8 +300,9 @@ class JPreIncrementOp extends JUnaryExpression {
     /**
      * Analyzes the operand as a lhs (since there is a side effect), check types
      * and determine the type of the result.
-     *
-     * @param context context in which names are resolved.
+     * 
+     * @param context
+     *            context in which names are resolved.
      * @return the analyzed (and possibly rewritten) AST subtree.
      */
 
@@ -302,13 +313,11 @@ class JPreIncrementOp extends JUnaryExpression {
             type = Type.ANY;
         } else {
             arg = (JExpression) arg.analyze(context);
-            if (arg.type() == Type.INT) {
-                type = Type.INT;
-            } else if (arg.type() == Type.DOUBLE) {
+            arg.type().mustMatchOneOf(line(), Type.INT, Type.DOUBLE);
+            if (arg.type() == Type.DOUBLE) {
                 type = Type.DOUBLE;
             } else {
-                JAST.compilationUnit.reportSemanticError(line,
-                        "Operand to ++expr must be int or double.");
+                type = Type.INT;
             }
         }
         return this;
@@ -323,9 +332,10 @@ class JPreIncrementOp extends JUnaryExpression {
      * expressions that are statement expressions and those that are not; we
      * insure the proper value (after the increment) is left atop the stack in
      * the latter case.
-     *
-     * @param output the code emitter (basically an abstraction for producing the
-     *               .class file).
+     * 
+     * @param output
+     *            the code emitter (basically an abstraction for producing the
+     *            .class file).
      */
 
     public void codegen(CLEmitter output) {
@@ -364,6 +374,7 @@ class JPreIncrementOp extends JUnaryExpression {
             ((JLhs) arg).codegenStore(output);
         }
     }
+
 }
 
 class JPostIncrementOp extends JUnaryExpression {
@@ -371,9 +382,11 @@ class JPostIncrementOp extends JUnaryExpression {
     /**
      * Constructs an AST node for a expr++ given its line number, and the
      * operand.
-     *
-     * @param line line in which the expression occurs in the source file.
-     * @param arg  the operand.
+     * 
+     * @param line
+     *            line in which the expression occurs in the source file.
+     * @param arg
+     *            the operand.
      */
 
     public JPostIncrementOp(int line, JExpression arg) {
@@ -383,8 +396,9 @@ class JPostIncrementOp extends JUnaryExpression {
     /**
      * Analyzes the operand as a lhs (since there is a side effect), check types
      * and determine the type of the result.
-     *
-     * @param context context in which names are resolved.
+     * 
+     * @param context
+     *            context in which names are resolved.
      * @return the analyzed (and possibly rewritten) AST subtree.
      */
 
@@ -395,14 +409,11 @@ class JPostIncrementOp extends JUnaryExpression {
             type = Type.ANY;
         } else {
             arg = (JExpression) arg.analyze(context);
-            if (arg.type() == Type.INT) {
-                type = Type.INT;
-            } else if (arg.type() == Type.DOUBLE) {
+            arg.type().mustMatchOneOf(line(), Type.INT, Type.DOUBLE);
+            if (arg.type() == Type.DOUBLE) {
                 type = Type.DOUBLE;
-            } else {
-                type = Type.ANY;
-                JAST.compilationUnit.reportSemanticError(line,
-                        "Operand to expr++ must be int or double.");
+            } else if (arg.type() == Type.INT) {
+                type = Type.INT;
             }
         }
         return this;
@@ -410,16 +421,17 @@ class JPostIncrementOp extends JUnaryExpression {
 
     /**
      * In generating code for a post-increment operation, we treat simple
-     * variable ({@link JVariable}) operands specially since the JVM has an
-     * increment instruction.
+     * variable ({@link JVariable}) operands specially since the JVM has an 
+     * increment instruction. 
      * Otherwise, we rely on the {@link JLhs} code generation support for
      * generating the proper code. Notice that we distinguish between
      * expressions that are statement expressions and those that are not; we
      * insure the proper value (before the increment) is left atop the stack in
      * the latter case.
-     *
-     * @param output the code emitter (basically an abstraction for producing the
-     *               .class file).
+     * 
+     * @param output
+     *            the code emitter (basically an abstraction for producing the
+     *            .class file).
      */
 
     public void codegen(CLEmitter output) {
@@ -459,7 +471,6 @@ class JPostIncrementOp extends JUnaryExpression {
     }
 
 }
-
 /**
  * The AST node for a --expr expression.
  */
@@ -469,9 +480,11 @@ class JPreDecrementOp extends JUnaryExpression {
     /**
      * Constructs an AST node for a --expr given its line number, and the
      * operand.
-     *
-     * @param line line in which the expression occurs in the source file.
-     * @param arg  the operand.
+     * 
+     * @param line
+     *            line in which the expression occurs in the source file.
+     * @param arg
+     *            the operand.
      */
 
     public JPreDecrementOp(int line, JExpression arg) {
@@ -481,8 +494,9 @@ class JPreDecrementOp extends JUnaryExpression {
     /**
      * Analyzes the operand as a lhs (since there is a side effect), check types
      * and determine the type of the result.
-     *
-     * @param context context in which names are resolved.
+     * 
+     * @param context
+     *            context in which names are resolved.
      * @return the analyzed (and possibly rewritten) AST subtree.
      */
 
@@ -493,31 +507,30 @@ class JPreDecrementOp extends JUnaryExpression {
             type = Type.ANY;
         } else {
             arg = (JExpression) arg.analyze(context);
-            if (arg.type() == Type.INT) {
-                type = Type.INT;
-            } else if (arg.type() == Type.DOUBLE) {
-                type = Type.DOUBLE;
-            } else {
-                type = Type.ANY;
-                JAST.compilationUnit.reportSemanticError(line,
-                        "Operand to --expr must be int or double.");
-            }
+            arg.type().mustMatchOneOf(line(), Type.INT, Type.DOUBLE);
+        if (arg.type() == Type.DOUBLE){
+            type = Type.DOUBLE;
+        } else if (arg.type() == Type.INT){
+            type = Type.INT;
+        }  
+            
         }
         return this;
     }
 
     /**
      * In generating code for a pre-decrement operation, we treat simple
-     * variable ({@link JVariable}) operands specially since the JVM has an
-     * increment instruction.
+     * variable ({@link JVariable}) operands specially since the JVM has an 
+     * increment instruction. 
      * Otherwise, we rely on the {@link JLhs} code generation support for
      * generating the proper code. Notice that we distinguish between
      * expressions that are statement expressions and those that are not; we
      * insure the proper value (after the decrement) is left atop the stack in
      * the latter case.
-     *
-     * @param output the code emitter (basically an abstraction for producing the
-     *               .class file).
+     * 
+     * @param output
+     *            the code emitter (basically an abstraction for producing the
+     *            .class file).
      */
 
     public void codegen(CLEmitter output) {
