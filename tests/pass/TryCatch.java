@@ -1,4 +1,5 @@
 package pass;
+import java.lang.Exception;
 import java.lang.ArithmeticException;
 public class TryCatch {
 
