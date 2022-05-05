@@ -2,7 +2,7 @@ package junit;
 
 import junit.framework.TestCase;
 
-public class TryCatchTest extends TestCase {
+public class StatementsTest extends TestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -26,5 +26,15 @@ public class TryCatchTest extends TestCase {
         }
 
     }
+
+    public void testTernary() {
+        int a = 0;
+        a = a == 0 ? 1 : 2;
+        assertEquals(a, 1);
+        a = a == 0 ? 1 : 2;
+        assertEquals(a, 2);
+    }
+
+
 
 }
