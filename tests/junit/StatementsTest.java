@@ -36,13 +36,13 @@ public class StatementsTest extends TestCase {
 
     public void test_inc_dec() {
         int a = 0;
-        a = a--;
-        assertEquals(a, -15);
-        a = a++;
-        assertEquals(a, 0);
-        a = --a;
+        a--;
         assertEquals(a, -1);
-        a = ++a;
+        a++;
+        assertEquals(a, 0);
+        --a;
+        assertEquals(a, -1);
+       ++a;
         assertEquals(a, 0);
     }
 }
