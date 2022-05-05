@@ -790,11 +790,11 @@ public class Parser {
             }
             scanner.returnToPosition();
             if(ifEach){
-                JVariableDeclaration forInit = colonLocalVariableDeclarationStatement();
+                Type forInitType = colonLocalVariableDeclarationStatement();
                 JExpression expres = expression();
                 mustBe(RPAREN);
                 JStatement statement = statement();
-                return new JForEachStatement(line, statement, forInit, expres);
+                return new JForEachStatement(line, statement, forInitType, expres);
             } else {
                 JVariableDeclaration forInit = localVariableDeclarationStatement();
                 JExpression expres = relationalExpression();
@@ -912,12 +912,10 @@ public class Parser {
         return new JVariableDeclaration(line, mods, vdecls);
     }
 
-    private JVariableDeclaration colonLocalVariableDeclarationStatement() {
+    private Type colonLocalVariableDeclarationStatement() {
         int line = scanner.token().line();
-        ArrayList<String> mods = new ArrayList<String>();
-        ArrayList<JVariableDeclarator> vdecls = variableDeclarators(type());
         mustBe(COLON);
-        return new JVariableDeclaration(line, mods, vdecls);
+        return type();
     }
   
 

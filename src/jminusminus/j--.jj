@@ -883,6 +883,7 @@ private JStatement statement(): {
     JBlock finallyBlock = null;
     JExpression expr      = null;
     JVariableDeclaration forInit = null;
+    Type forInitType = null;
     JStatement forUpdate  = null;
     JExpression expres    = null;
 
@@ -956,14 +957,14 @@ private JStatement statement(): {
         { statement = new JForStatement(line, statement, forInit, forUpdate, expres); } |
 
         // FOR-EACH loop
-        LOOKAHEAD(<FOR> <LPAREN> colonLocalVariableDeclarationStatement() relationalExpression() <RPAREN>)
+        LOOKAHEAD(<FOR> <LPAREN> colonLocalVariableDeclarationStatement() expression() <RPAREN>)
         <FOR> { line = token.beginLine; }                   // for
         <LPAREN>                                            // (
-        forInit = colonLocalVariableDeclarationStatement()  // int i :
-        expres = relationalExpression()                     // i < 10
+        forInitType = colonLocalVariableDeclarationStatement()  // int i :
+        expres = expression()                   // a = array[1]
         <RPAREN>                                            // )
         statement = statement()                             // {}
-        { statement = new JForEachStatement(line, statement, forInit, expres); } |
+        { statement = new JForEachStatement(line, statement, forInitType, expres); } |
 
         <RETURN> { line = token.beginLine; }
         [
@@ -1104,7 +1105,7 @@ private JVariableDeclaration localVariableDeclarationStatement(): {
     { return new JVariableDeclaration(line, mods, vdecls); }
 }
 
-private JVariableDeclaration colonLocalVariableDeclarationStatement(): {
+private Type colonLocalVariableDeclarationStatement(): {
     int line = 0;
     Type type = null;
     ArrayList<JVariableDeclarator> vdecls = null;
@@ -1119,7 +1120,7 @@ private JVariableDeclaration colonLocalVariableDeclarationStatement(): {
     } catch (ParseException e) {
               recoverFromError(new int[] { SEMI, EOF }, e);
     }
-    {return new JVariableDeclaration(line, mods, vdecls);}
+    {return type;}
 
 }
 

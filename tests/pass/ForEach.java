@@ -1,11 +1,9 @@
 public class ForEach {
     public static void main(String[] args) {
-        String[] strings = new String[10];
-        for (String a 
-        : 
-        strings) {
-            //.a do something
+        int[] intArray = new int[]{ 1,2};
+        int total = 0;
+        for (int a: intArray) {
+            total += a;
         }
-
     }
 }

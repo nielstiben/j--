@@ -2,6 +2,8 @@
 
 package jminusminus;
 
+import java.util.ArrayList;
+
 import static jminusminus.CLConstants.*;
 
 /**
@@ -12,8 +14,13 @@ class JForEachStatement extends JStatement {
 
     /** The body. */
     private JStatement body;
-    private JVariableDeclaration forInit;
+    private Type type;
     private JExpression expres;
+    private int arrayOffset;
+    private int localOffset;
+
+    private JVariableDeclaration varDecs;
+    private JVariableDeclarator varDec;
 
 
     /**
@@ -32,10 +39,10 @@ class JForEachStatement extends JStatement {
      *            
      */
 
-    public JForEachStatement(int line, JStatement body, JVariableDeclaration forInit, JExpression expres) {
+    public JForEachStatement(int line, JStatement body, Type type, JExpression expres) {
         super(line);
         this.body = body;
-        this.forInit = forInit;
+        this.type = type;
         this.expres = expres;
     }
 
@@ -49,15 +56,38 @@ class JForEachStatement extends JStatement {
      */
 
     public JForEachStatement analyze(Context context) {
-        forInit.analyze(context);
-        expres.analyze(context);
-       if (!expres.type().isArray()){
-        JAST.compilationUnit.reportSemanticError(line,
-         "Expression must be of type []");
-       }
-       
-        body = (JStatement) body.analyze(context);
-        return this;
+        localOffset = ((LocalContext) context).nextOffset();
+        LocalVariableDefn offset = new LocalVariableDefn(Type.INT, localOffset);
+        context.addEntry(line, "offsetDefn", offset);
+
+        arrayOffset = ((LocalContext) context).nextOffset();
+        LocalVariableDefn arrayOffsetDefn = new LocalVariableDefn(Type.INT, arrayOffset);
+        context.addEntry(line, "arrayOffsetDefn", arrayOffsetDefn);
+
+        JExpression init = (JExpression )new JLiteralInt(line, "0");
+
+        type = type.resolve(context);
+        varDec = new JVariableDeclarator(line,name,  type, init);
+        ArrayList<JVariableDeclarator> decs = new ArrayList<JVariableDeclarator>();
+        decs.add(varDec);
+        ArrayList<String> mods = new ArrayList<String>();
+
+        varDecs = new JVariableDeclaration(line, mods, decs);
+
+        varDecs = (JVariableDeclaration) varDecs.analyze(context);
+        iterator = new JVariable(line, name);
+        iterator = (JVariable) iterator.analyze(context);
+
+
+
+        JExpression expression = expres.analyze(context);
+        if (!expression.type().isArray()) {
+            JAST.compilationUnit.reportSemanticError(line, "Array type expected");
+        }
+        body.analyze(context);
+
+
+
     }
 
     /**
@@ -69,24 +99,32 @@ class JForEachStatement extends JStatement {
      */
 
     public void codegen(CLEmitter output) {
-        boolean isLoopDone = false;
-        String test = output.createLabel();
-        String out = output.createLabel();
+        String loopLabel = output.createLabel();
+        String exitLabel = output.createLabel();
+        expres.codegen(output);
+        output.addNoArgInstruction(ARRAYLENGTH);
+        output.addOneArgInstruction(ISTORE, arrayOffset);
 
-        // Branch out of the loop on the test condition
-        // being false
-        forInit.codegen(output);
-        output.addLabel(test);
-        
+        output.addNoArgInstruction(ICONST_0);
+        output.addOneArgInstruction(ISTORE, localOffset);
 
-        // Codegen body
+        output.addLabel(loopLabel);
+        output.addBranchInstruction(IF_ICMPGT, exitLabel);
+
+        expres.codegen(output);
+        output.addOneArgInstruction(ILOAD, localOffset);
+        output.addNoArgInstruction(IALOAD);
+
+        forInit.codegenStore()
+
+
         body.codegen(output);
 
-        // Unconditional jump back up to test
-        output.addBranchInstruction(GOTO, test);
+        output.addOneArgInstruction(IINC, localOffset);
+        output.addBranchInstruction(GOTO, loopLabel);
 
-        // The label below and outside the loop
-        output.addLabel(out);
+        output.addLabel(exitLabel);
+
     }
 
     /**
