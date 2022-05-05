@@ -216,8 +216,12 @@ class JPostDecrementOp extends JUnaryExpression {
             type = Type.ANY;
         } else {
             arg = (JExpression) arg.analyze(context);
-            arg.type().mustMatchExpected(line(), Type.INT);
-            type = Type.INT;
+            arg.type().mustMatchOneOf(line(), Type.INT, Type.DOUBLE);
+            if (arg.type() == Type.DOUBLE){
+                type = Type.DOUBLE;
+            } else if (arg.type() == Type.INT){
+                type = Type.INT;
+            }
         }
         return this;
     }
@@ -255,8 +259,14 @@ class JPostDecrementOp extends JUnaryExpression {
                 // Loading its original rvalue
                 ((JLhs) arg).codegenDuplicateRvalue(output);
             }
-            output.addNoArgInstruction(ICONST_1);
-            output.addNoArgInstruction(ISUB);
+            if (type == Type.INT) {
+                output.addNoArgInstruction(ICONST_1);
+                output.addNoArgInstruction(ISUB);
+            } else if (type == Type.DOUBLE) {
+                output.addNoArgInstruction(DCONST_1);
+                output.addNoArgInstruction(DSUB);
+            }
+
             ((JLhs) arg).codegenStore(output);
         }
     }
@@ -299,8 +309,12 @@ class JPreIncrementOp extends JUnaryExpression {
             type = Type.ANY;
         } else {
             arg = (JExpression) arg.analyze(context);
-            arg.type().mustMatchExpected(line(), Type.INT);
-            type = Type.INT;
+            arg.type().mustMatchOneOf(line(), Type.INT, Type.DOUBLE);
+            if (arg.type() == Type.DOUBLE) {
+                type = Type.DOUBLE;
+            } else {
+                type = Type.INT;
+            }
         }
         return this;
     }
@@ -379,12 +393,11 @@ class JPostIncrementOp extends JUnaryExpression {
         } else {
             arg = (JExpression) arg.analyze(context);
             arg.type().mustMatchOneOf(line(), Type.INT, Type.DOUBLE);
-        if (arg.type() == Type.DOUBLE){
-            type = Type.DOUBLE;
-        } else if (arg.type() == Type.INT){
-            type = Type.INT;
-        }  
-            
+            if (arg.type() == Type.DOUBLE) {
+                type = Type.DOUBLE;
+            } else if (arg.type() == Type.INT) {
+                type = Type.INT;
+            }
         }
         return this;
     }
@@ -405,7 +418,30 @@ class JPostIncrementOp extends JUnaryExpression {
      */
 
     public void codegen(CLEmitter output) {
-        // This is yet to be implementet
+        if (arg instanceof JVariable) {
+            // Local variables are already on the stack.
+            JVariable argJVariable = ((JVariable) arg);
+            LocalVariableDefn lvd = (LocalVariableDefn) argJVariable.iDefn();
+            int offset = lvd.offset();
+            if (!isStatementExpression) {
+                arg.codegen(output); // Load value
+            }
+            output.addIINCInstruction(offset, 1); // Increment with -1
+        } else {
+            ((JLhs) arg).codegenLoadLhsLvalue(output);
+            ((JLhs) arg).codegenLoadLhsRvalue(output);
+            if (!isStatementExpression) {
+                ((JLhs) arg).codegenDuplicateRvalue(output); // Load value
+            }
+            if(type==Type.INT){
+                output.addNoArgInstruction(ICONST_1);
+                output.addNoArgInstruction(IADD);
+            } else if (type==Type.DOUBLE){
+                output.addNoArgInstruction(DCONST_1);
+                output.addNoArgInstruction(DADD);
+            }
+            ((JLhs) arg).codegenStore(output);
+        }
     }
 
 }
@@ -472,7 +508,30 @@ class JPreDecrementOp extends JUnaryExpression {
      */
 
     public void codegen(CLEmitter output) {
-        //TODO: This is yet to be implementet
+        if (arg instanceof JVariable) {
+            // Local variables are already on the stack.
+            JVariable argJVariable = ((JVariable) arg);
+            LocalVariableDefn lvd = (LocalVariableDefn) argJVariable.iDefn();
+            int offset = lvd.offset();
+            if (!isStatementExpression) {
+                arg.codegen(output); // Load value
+            }
+            output.addIINCInstruction(offset, -1); // Increment with -1
+        } else {
+            ((JLhs) arg).codegenLoadLhsLvalue(output);
+            ((JLhs) arg).codegenLoadLhsRvalue(output);
+            if (!isStatementExpression) {
+                ((JLhs) arg).codegenDuplicateRvalue(output); // Load value
+            }
+            if(type==Type.INT){
+                output.addNoArgInstruction(ICONST_1);
+                output.addNoArgInstruction(ISUB);
+            } else if (type==Type.DOUBLE){
+                output.addNoArgInstruction(DCONST_1);
+                output.addNoArgInstruction(DSUB);
+            }
+            ((JLhs) arg).codegenStore(output);
+        }
     }
 
 }
