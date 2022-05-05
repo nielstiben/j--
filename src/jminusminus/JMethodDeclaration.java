@@ -3,6 +3,8 @@
 package jminusminus;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
+
 import static jminusminus.CLConstants.*;
 
 /**
@@ -162,6 +164,23 @@ class JMethodDeclaration extends JAST implements JMember {
             // Offset 0 is used to address "this".
             this.context.nextOffset();
         }
+        exceptions = (ArrayList<Type>) exceptions
+                .stream()
+                .map(e -> e.resolve(context))
+                .collect(Collectors.toList());
+
+        if (exceptions.size() > 0) {
+
+            for (Type exception : exceptions) {
+                exception.resolve(context);
+                if (!Throwable.class.isAssignableFrom(
+                        exception.classRep())) {
+                    JAST.compilationUnit.reportSemanticError(line(),
+                            "Exception " + exception + " is not a subclass of Throwable");
+                }
+
+            }
+        }
 
         // Declare the parameters. We consider a formal parameter 
         // to be always initialized, via a function call.
@@ -224,6 +243,12 @@ class JMethodDeclaration extends JAST implements JMember {
         // Add implicit RETURN
         if (returnType == Type.VOID) {
             output.addNoArgInstruction(RETURN);
+        } else if (returnType == Type.INT) {
+            output.addNoArgInstruction(ICONST_0);
+            output.addNoArgInstruction(IRETURN);
+        } else if (returnType == Type.DOUBLE) {
+            output.addNoArgInstruction(DCONST_0);
+            output.addNoArgInstruction(DRETURN);
         }
     }
 

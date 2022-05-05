@@ -3,6 +3,7 @@
 package jminusminus;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 import static jminusminus.CLConstants.*;
 
@@ -45,10 +46,12 @@ class JTryCatch extends JStatement {
     public JTryCatch analyze(Context context) {
         tryBody = (JBlock) tryBody.analyze(context);
         if (catchBodies != null) {
+
+
             for (JFormalParameter cParameter : cParameters) {
-                cParameter.analyze(context);
-                if (cParameter.type() != null && cParameter.type().classRep() != null) {
-                    if (!cParameter.type().classRep().getSuperclass().getName().equals(Type.EXCEPTION.jvmName())) {
+                Type type = cParameter.type().resolve(context);
+                if (type != null && type.classRep() != null) {
+                    if (!Throwable.class.isAssignableFrom(type.classRep())) {
                         JAST.compilationUnit.reportSemanticError(line(), "Catch parameter must be of type Exception and not " + cParameter.type().classRep().getSuperclass().getName());
                     }
                 }

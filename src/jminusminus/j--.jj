@@ -627,6 +627,9 @@ private JMember interfaceMemberDecl( ArrayList<String>  mods ): {
     Type type = null;
     String name = "";
     ArrayList<JFormalParameter> params = null;
+    Type exception = null;
+    ArrayList<Type> exceptions = new ArrayList<Type>();
+
     ArrayList<JVariableDeclarator> variableDeclarators = null;
     JMember memberDecl = null;
     JBlock dummyBlock = new JBlock(line, new ArrayList<JStatement>());
@@ -644,13 +647,24 @@ private JMember interfaceMemberDecl( ArrayList<String>  mods ): {
             { line = token.beginLine; }
             <IDENTIFIER> { name = token.image; }
             params = formalParameters()
+            [
+            LOOKAHEAD(<THROWS>)
+            <THROWS>
+            exception = qualifiedIdentifier()
+            { exceptions.add(exception); }
+            (
+            <COMMA>
+            exception = qualifiedIdentifier()
+            { exceptions.add(exception); }
+            )*
+            ]
             <SEMI>
             {
                 // If mods contains the keyword "abstract", then parameter block is null.
                 if (mods.contains("abstract")) {
-                    memberDecl = new JMethodDeclaration( line, mods, name, type, params, null, null );
+                    memberDecl = new JMethodDeclaration( line, mods, name, type, params, exceptions, null );
                 } else {
-                    memberDecl = new JMethodDeclaration( line, mods, name, type, params, null, dummyBlock );
+                    memberDecl = new JMethodDeclaration( line, mods, name, type, params, exceptions, dummyBlock );
                 }
             }
         ) |
@@ -698,6 +712,8 @@ private JMember memberDecl(ArrayList<String> mods): {
     JBlock body = null;
     ArrayList<JVariableDeclarator> variableDeclarators = null;
     JMember memberDecl = null;
+    Type exception = null;
+    ArrayList<Type> exceptions = new ArrayList<Type>();
 }
 {
     try {
@@ -716,6 +732,18 @@ private JMember memberDecl(ArrayList<String> mods): {
                 name = token.image;
             }
             params = formalParameters()
+            [
+            LOOKAHEAD(<THROWS>)
+                        <THROWS>
+                        exception = qualifiedIdentifier()
+                        { exceptions.add(exception); }
+                        (
+                        <COMMA>
+                        exception = qualifiedIdentifier()
+                        { exceptions.add(exception); }
+                        )*
+                        ]
+
             body = block()
             {
                 // TODO: We use NULL at the exceptions position.
@@ -732,14 +760,25 @@ private JMember memberDecl(ArrayList<String> mods): {
             { line = token.beginLine; }
             <IDENTIFIER> { name = token.image; }
             params = formalParameters()
+            [
+                        LOOKAHEAD(<THROWS>)
+                                    <THROWS>
+                                    exception = qualifiedIdentifier()
+                                    { exceptions.add(exception); }
+                                    (
+                                    <COMMA>
+                                    exception = qualifiedIdentifier()
+                                    { exceptions.add(exception); }
+                                    )*
+                                    ]
             (
                 body = block() |
                 <SEMI>
             )
             {
-                // TODO: We use NULL at the exceptions position.
+
                 memberDecl = new JMethodDeclaration(line, mods, name,
-                                                    type, params, null, body);
+                                                    type, params, exceptions, body);
             }
         ) |
         // initializer block
