@@ -1445,7 +1445,7 @@ public class Parser {
      * 
      * @return an AST for a postfixExpression.
      */
-/*
+
     private JExpression postfixExpression() {
         int line = scanner.token().line();
         JExpression primaryExpr = primary();
@@ -1460,19 +1460,8 @@ public class Parser {
         }
         return primaryExpr;
     }
-*/
-    private JExpression postfixExpression() {
-        int line = scanner.token().line();
-        JExpression primaryExpr = primary();
-        if (see(DOT)) {
-            primaryExpr = selector(primaryExpr);
-        } else if (have(DEC)) {
-            primaryExpr = new JPostDecrementOp(line, primaryExpr);
-        } else if (have(INC)) {
-            primaryExpr = new JPostIncrementOp(line, primaryExpr);
-        }
-        return primaryExpr;   
-    }
+
+   
     /**
      * Parse a selector.
      * 
