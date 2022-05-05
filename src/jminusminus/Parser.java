@@ -466,16 +466,12 @@ public class Parser {
                 }
                 scannedPRIVATE = true;
             } else if (have(STATIC)) {
-                if (!have(LCURLY)){
+                
                 mods.add("static");
                 if (scannedSTATIC) {
-                    reportParserError("Repeated modifier: static");
+                    reportParserError("Access conflig in modifiers");
                 }
                 scannedSTATIC = true;
-            } else {
-                more = false;
-                scanner.returnToPosition();
-            }
             } else if (have(ABSTRACT)) {
                 mods.add("abstract");
                 if (scannedABSTRACT) {
@@ -651,8 +647,9 @@ public class Parser {
                     scanner.recordPosition();
         } else {
             Type type = null;
+            scanner.recordPosition();
              if (have(LCURLY)) {
-                scanner.returnToPosition();
+                 scanner.returnToPosition();
                 JBlock body = block();
                 memberDecl = new JBlockInner(line, body, mods);
             } else if (have(VOID)) {
