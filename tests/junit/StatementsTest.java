@@ -45,4 +45,10 @@ public class StatementsTest extends TestCase {
        ++a;
         assertEquals(a, 0);
     }
+
+    public void or() {
+        assertEquals(true || false, true);
+        assertEquals(false || true, true);
+        assertEquals(false || false, false);
+    }
 }

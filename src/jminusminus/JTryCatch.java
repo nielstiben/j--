@@ -47,7 +47,6 @@ class JTryCatch extends JStatement {
         tryBody = (JBlock) tryBody.analyze(context);
         if (catchBodies != null) {
 
-
             for (JFormalParameter cParameter : cParameters) {
                 Type type = cParameter.type().resolve(context);
                 if (type != null && type.classRep() != null) {

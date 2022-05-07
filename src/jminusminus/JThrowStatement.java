@@ -41,6 +41,10 @@ class JThrowStatement extends JStatement {
     public JStatement analyze(Context context) {
         if (expr != null) {
             expr = expr.analyze(context);
+            if(!Throwable.class.isAssignableFrom(expr.type.classRep())) {
+                JAST.compilationUnit.reportSemanticError(line(),
+                        "Throw expression must be of type Throwable");
+            }
             expr.type().mustMatchExpected(line(), Type.EXCEPTION);
         } else {
             JAST.compilationUnit.reportSemanticError(line(),

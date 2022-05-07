@@ -2,6 +2,7 @@
 
 package jminusminus;
 
+import static jminusminus.CLConstants.GOTO;
 import static jminusminus.CLConstants.INEG;
 
 /**
@@ -36,7 +37,14 @@ class JElvisExpression extends JExpression {
 
 
     public void codegen(CLEmitter output) {
-        test.codegen(output);
+        String alternateLabel = output.createLabel();
+        String endLabel = output.createLabel();
+        test.codegen(output, alternateLabel, false);
+        consequent.codegen(output);
+        output.addBranchInstruction(GOTO, endLabel);
+        output.addLabel(alternateLabel);
+        alternate.codegen(output);
+        output.addLabel(endLabel);
     }
 
     @Override
