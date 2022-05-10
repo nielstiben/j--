@@ -47,14 +47,6 @@ class JTryCatch extends JStatement {
         tryBody = (JBlock) tryBody.analyze(context);
         if (catchBodies != null) {
 
-            for (JFormalParameter cParameter : cParameters) {
-                Type type = cParameter.type().resolve(context);
-                if (type != null && type.classRep() != null) {
-                    if (!Throwable.class.isAssignableFrom(type.classRep())) {
-                        JAST.compilationUnit.reportSemanticError(line(), "Catch parameter must be of type Exception and not " + cParameter.type().classRep().getSuperclass().getName());
-                    }
-                }
-            }
             for (int i = 0; i < catchBodies.size(); i++) {
                 catchBodies.set(i, (JBlock) catchBodies.get(i).analyze(context));
             }
@@ -78,7 +70,6 @@ class JTryCatch extends JStatement {
         String tryLabel = output.createLabel();
         String endTryLabel = output.createLabel();
         String handlerLabel = output.createLabel();
-        String finallyLabel = output.createLabel();
         String endLabel = output.createLabel();
 
         // Try block
@@ -93,7 +84,7 @@ class JTryCatch extends JStatement {
         if (catchBodies != null) {
             for (int i = 0; i < catchBodies.size(); i++) {
                 output.addLabel(handlerLabel + i);
-                output.addNoArgInstruction(ASTORE_2); // weet niet
+                output.addNoArgInstruction(ASTORE_1);
                 output.addExceptionHandler(
                         tryLabel,
                         endTryLabel,
@@ -103,22 +94,8 @@ class JTryCatch extends JStatement {
                 if (finallyBody != null) {
                     finallyBody.codegen(output);
                 }
-                output.addBranchInstruction(GOTO, endLabel);
             }
         }
-        output.addLabel(finallyLabel);
-        if (finallyBody != null) {
-            output.addNoArgInstruction(ASTORE_3);
-
-            output.addExceptionHandler(tryLabel, endTryLabel, finallyLabel, null);
-            if  (catchBodies != null) {
-                for (int i = 0; i < catchBodies.size(); i++) {
-                    output.addExceptionHandler(tryLabel, endTryLabel, finallyLabel, null);
-                }
-            }
-            finallyBody.codegen(output);
-            output.addNoArgInstruction(ALOAD_3);
-            output.addNoArgInstruction(ATHROW);        }
         output.addLabel(endLabel);
 
     }

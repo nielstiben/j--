@@ -28,6 +28,7 @@ class JMethodDeclaration extends JAST implements JMember {
      * Exception if throwable
      */
     protected ArrayList<Type>exceptions;
+    protected ArrayList<String> exceptionJVMName;
 
     /**
      * Return type.
@@ -160,6 +161,7 @@ class JMethodDeclaration extends JAST implements JMember {
                 returnType);
         this.context = methodContext;
 
+
         if (!isStatic) {
             // Offset 0 is used to address "this".
             this.context.nextOffset();
@@ -168,6 +170,9 @@ class JMethodDeclaration extends JAST implements JMember {
                 .stream()
                 .map(e -> e.resolve(context))
                 .collect(Collectors.toList());
+
+        this.exceptionJVMName = exceptions.stream().map(Type::jvmName).collect(Collectors.toCollection(ArrayList::new));;
+
 
         if (exceptions.size() > 0) {
 
@@ -212,9 +217,7 @@ class JMethodDeclaration extends JAST implements JMember {
      */
 
     public void partialCodegen(Context context, CLEmitter partial) {
-        // Generate a method with an empty body; need a return to
-        // make the class verifier happy.
-        partial.addMethod(mods, name, descriptor, null, false);
+        partial.addMethod(mods, name, descriptor, exceptionJVMName, false);
 
         // Add implicit RETURN
         if (returnType == Type.VOID) {
@@ -241,7 +244,7 @@ class JMethodDeclaration extends JAST implements JMember {
      */
 
     public void codegen(CLEmitter output) {
-        output.addMethod(mods, name, descriptor, null, false);
+        output.addMethod(mods, name, descriptor, exceptionJVMName, false);
         if (body != null) {
             body.codegen(output);
         }
