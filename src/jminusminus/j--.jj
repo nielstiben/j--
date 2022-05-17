@@ -1509,7 +1509,7 @@ private JExpression conditionalExpression(): {
             <QUESTION>
             consequent = assignmentExpression()
             <COLON>
-            alternate = conditionalExpression()
+            alternate = assignmentExpression()
             { test = new JElvisExpression(line, test, consequent, alternate); }
         )*
     } catch ( ParseException e ) {

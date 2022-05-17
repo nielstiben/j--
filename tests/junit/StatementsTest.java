@@ -26,7 +26,7 @@ public class StatementsTest extends TestCase {
 
     }
 
-    public void testTernary() {
+    public void testTernary() throws ArithmeticException {
         int a = 0;
         a = a == 0 ? 1 : 2;
         assertEquals(a, 1);
