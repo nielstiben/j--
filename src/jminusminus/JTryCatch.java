@@ -109,9 +109,9 @@ class JTryCatch extends JStatement {
                         handlerLabel + i,
                         cParameters.get(catchBodies.indexOf(catchBodies.get(i))).type().jvmName());
                 catchBodies.get(i).codegen(output);
-            }
-            if (finallyBody != null) {
-                finallyBody.codegen(output);
+                if (finallyBody != null) {
+                    finallyBody.codegen(output);
+                }
             }
         }
         output.addLabel(endLabel);
