@@ -50,6 +50,24 @@ class JTryCatch extends JStatement {
             for (int i = 0; i < catchBodies.size(); i++) {
                 catchBodies.set(i, (JBlock) catchBodies.get(i).analyze(context));
             }
+
+            for (JFormalParameter cParameter : cParameters) {
+                Type type = cParameter.type().resolve(context);
+                if (type != null && type.classRep() != null) {
+                    if (!Throwable.class.isAssignableFrom(type.classRep())) {
+                        JAST.compilationUnit.reportSemanticError(line(),
+                                "Catch parameter must be of type Throwable and not " + type.jvmName());
+                    }
+                }
+            }
+
+            for (int i = 0; i < cParameters.size(); i++) {
+                cParameters.set(i, (JFormalParameter) cParameters.get(i).analyze(context));
+                Type type  = cParameters.get(i).type().resolve(context);
+                if (!Throwable.class.isAssignableFrom(type.classRep())) {
+                    JAST.compilationUnit.reportSemanticError(cParameters.get(i).line(), "Catch parameter must be of type Throwable");
+                }
+            }
         }
         if (finallyBody != null) {
             finallyBody = (JBlock) finallyBody.analyze(context);
